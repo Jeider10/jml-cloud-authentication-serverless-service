@@ -1,4 +1,4 @@
-package com.cloud.jml.config;
+package com.cloud.jml.config.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -8,7 +8,6 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -19,17 +18,17 @@ import java.util.UUID;
 @Component
 public class JwtUtil {
 
-    @Value("${jwt.secret}")
-    private String secretKey; // 🔐 clave en Base64
-
-    @Value("${jwt.expiration:3600000}") // 1 hora por defecto (milisegundos)
-    private long expirationTime;
-
+    private final JwtProperties jwtProperties;
     private SecretKey key;
+
+    public JwtUtil(JwtProperties jwtProperties) {
+        this.jwtProperties = jwtProperties;
+        log.info("🔥 JwtUtil inicializado correctamente.");
+    }
 
     @PostConstruct
     public void init() {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        byte[] keyBytes = Decoders.BASE64.decode(jwtProperties.getSecret());
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
@@ -39,12 +38,12 @@ public class JwtUtil {
 
         return Jwts.builder()
                 .claims()
-                .add("userName", usuario)
+                .add("usuario", usuario)
                 .add("roleCode", roleCode)
                 .add("roleName", roleName)
                 .id(jti)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + expirationTime))
+                .expiration(new Date(System.currentTimeMillis() + jwtProperties.getExpiration()))
                 .and()
                 .signWith(key, Jwts.SIG.HS256)
                 .compact();

@@ -27,7 +27,7 @@ public class RoleController {
 
         RoleResponseDTO roleResponseDTO = roleService.registrarRole(roleRequestDTO);
 
-        log.info("✅ Finaliza petición para registrar role: {}", roleRequestDTO.getRoleName());
+        log.info("✅ Finaliza petición para registrar role: {} con código: {}", roleRequestDTO.getRoleName(), roleRequestDTO.getRoleCode());
 
         return ResponseEntity.ok(roleResponseDTO);
     }
@@ -38,7 +38,7 @@ public class RoleController {
 
         RoleResponseDTO roleResponseDTO = roleService.actualizarRole(roleRequestDTO);
 
-        log.info("✅ Finaliza petición para actualizar role: {}", roleRequestDTO.getRoleName());
+        log.info("✅ Finaliza petición para actualizar role: {} con código: {}", roleRequestDTO.getRoleName(), roleRequestDTO.getRoleCode());
 
         return ResponseEntity.ok(roleResponseDTO);
     }

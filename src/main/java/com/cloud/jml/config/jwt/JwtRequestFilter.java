@@ -1,11 +1,10 @@
-package com.cloud.jml.config;
+package com.cloud.jml.config.jwt;
 
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,10 +18,14 @@ import java.util.List;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+
+    public JwtRequestFilter(JwtUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
+        log.info("🔥 JwtRequestFilter inicializado correctamente.");
+    }
 
     @Override
     protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain chain) throws ServletException, IOException {
@@ -32,7 +35,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         // ✅ Excluir rutas rutas públicas que no requieren autenticación
         if (requestURI.startsWith("/role/")
                 || requestURI.startsWith("/usuario/")
-                || requestURI.startsWith("/clientes/")
                 || requestURI.startsWith("/authentication/")) {
             chain.doFilter(request, response);
             return;

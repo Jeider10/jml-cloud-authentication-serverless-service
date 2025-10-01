@@ -52,14 +52,14 @@ public class RoleService {
 
         // Mapeo de Entity DTO
         RoleResponseDTO roleResponseDTO = mapper.mapEntityToResponseDto(guardado);
-        log.info("📌 Finaliza creación de Role: {}", roleResponseDTO.getRoleName());
+        log.info("📌 Finaliza creación de Role: {} con código: {}", roleResponseDTO.getRoleName(), roleResponseDTO.getRoleCode());
 
         return roleResponseDTO;
     }
 
     @Transactional
     public RoleResponseDTO actualizarRole(RoleRequestDTO roleRequestDTO) {
-        log.info("📌 Intentando actualizar role: {}", roleRequestDTO.getRoleName());
+        log.info("📌 Intentando actualizar role: {} con código: {}", roleRequestDTO.getRoleName(), roleRequestDTO.getRoleCode());
 
         // Paso 1: Validar existencia
         RoleEntity roleEntity = roleUtils.validarExistenciaRole(roleRequestDTO);
@@ -73,7 +73,7 @@ public class RoleService {
 
         // Paso 4: Mapear a DTO
         RoleResponseDTO roleResponseDTO = mapper.mapEntityToResponseDto(actualizado);
-        log.info("📌 Finaliza actualización de Role: {}", roleResponseDTO.getRoleName());
+        log.info("📌 Finaliza actualización de Role: {} con código: {}", roleResponseDTO.getRoleName(), roleResponseDTO.getRoleCode());
 
         return roleResponseDTO;
     }
@@ -101,17 +101,18 @@ public class RoleService {
 
     @Transactional
     public void eliminarRole(RoleRequestDTO roleRequestDTO) {
-        log.info("📌 Intentando eliminar rol con código: {}", roleRequestDTO.getRoleCode());
+        log.info("📌 Intentando eliminar role: {} con código: {}", roleRequestDTO.getRoleName(), roleRequestDTO.getRoleCode());
 
         Optional<RoleEntity> roleOptional = roleRepository.findByRoleCode(roleRequestDTO.getRoleCode());
 
         if (roleOptional.isPresent()) {
             RoleEntity roleEntity = roleOptional.get();
-            log.info("📌 Rol encontrado con código: {}", roleRequestDTO.getRoleCode());
+            log.info("📌 Role: {} encontrado con código: {}", roleRequestDTO.getRoleName(), roleRequestDTO.getRoleCode());
+
             roleRepository.delete(roleEntity);
-            log.info("✅ Rol eliminado exitosamente: {}", roleRequestDTO.getRoleCode());
+            log.info("✅ Role: {} con código: {} eliminado exitosamente.", roleRequestDTO.getRoleName(), roleRequestDTO.getRoleCode());
         } else {
-            log.warn("⚠️ Rol no encontrado con código: {}", roleRequestDTO.getRoleCode());
+            log.warn("⚠️ Role: {} no encontrado con código: {}", roleRequestDTO.getRoleName(), roleRequestDTO.getRoleCode());
             throw new RoleNotFoundException(roleRequestDTO.getRoleCode());
         }
     }

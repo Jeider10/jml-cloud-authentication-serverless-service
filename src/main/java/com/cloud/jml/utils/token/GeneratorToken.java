@@ -1,6 +1,6 @@
 package com.cloud.jml.utils.token;
 
-import com.cloud.jml.config.JwtUtil;
+import com.cloud.jml.config.jwt.JwtUtil;
 import com.cloud.jml.dto.authentication.AuthenticationRequestDTO;
 import com.cloud.jml.model.AuthenticationEntity;
 import com.cloud.jml.repository.AuthenticationRepository;

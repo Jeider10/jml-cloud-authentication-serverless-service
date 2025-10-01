@@ -1,5 +1,6 @@
 package com.cloud.jml.config;
 
+import com.cloud.jml.config.jwt.JwtRequestFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -57,15 +58,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/roles/**", // Permitir acciones en rol sin autenticación
                                 "/usuario/**", // Permitir acciones en user sin autenticación
-                                "/authentication/**", // Permitir acciones en auth sin autenticación
-                                "/subsidiary/**", // Permitir acciones en subsidiary sin autenticación
-                                "/branch/**", // Permitir acciones en branch sin autenticación
-                                "/user-access/**", // Permitir acciones en user-access sin autenticación
-                                "/login.html", // Permitir acciones en login.html sin autenticación
-                                "/home.html", // Permitir acciones en home.html sin autenticación
-                                "/css/**", // Permitir acciones en css sin autenticación
-                                "/js/**", // Permitir acciones en js sin autenticación
-                                "/images/**" // Permitir acciones en images sin autenticación
+                                "/authentication/**" // Permitir acciones en auth sin autenticación
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

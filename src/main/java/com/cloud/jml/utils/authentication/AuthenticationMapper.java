@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class AuthenticationMapper {
 
     public AuthenticationEntity mapRequestDtoToEntity(AuthenticationRequestDTO authenticationRequestDTO, int roleCode, String roleName, String jti) {
-        log.info("📌 Iniciando mapeo DTO a Entity para crear autenticación de usuario.");
+        log.info("📌 Iniciando mapeo DTO a Entity para autenticación de usuario: {}", authenticationRequestDTO.getUsuario());
 
         AuthenticationEntity authenticationEntity = new AuthenticationEntity();
 
@@ -25,7 +25,7 @@ public class AuthenticationMapper {
         authenticationEntity.setJti(jti);
         authenticationEntity.setFechaCreacion(LocalDateTime.now());
 
-        log.info("📌 Finalizando mapeo DTO a Entity para crear autenticación de usuario.");
+        log.info("📌 Finalizando mapeo DTO a Entity para autenticación de usuario: {}", authenticationRequestDTO.getUsuario());
 
         return authenticationEntity;
     }

@@ -33,30 +33,15 @@ public class UserUtils {
         log.info("🔥 UserUtils inicializado correctamente.");
     }
 
-    public int validarExistenciaRoleUsuario(int role) {
-        log.info("📌 Inicia consulta de role de usuario con código: {}", role);
-
-        Optional<RoleEntity> optionalRole = roleRepository.findByRoleCode(role);
-
-        if (optionalRole.isPresent()) {
-            Integer roleCode = optionalRole.get().getRoleCode();
-            log.info("📌 Role encontrado con código: {}", role);
-            return roleCode;
-        } else {
-            log.warn("⚠️ Role no encontrado con código: {}", role);
-            throw new RoleNotFoundException(role);
-        }
-    }
-
-    public String obtenerNombreRolePorCodigo(int roleCode) {
-        log.info("📌 Inicia consulta de nombre de role con código: {}", roleCode);
+    public RoleEntity obtenerRolePorCodigo(int roleCode) {
+        log.info("📌 Inicia consulta de role con código: {}", roleCode);
 
         Optional<RoleEntity> optionalRole = roleRepository.findByRoleCode(roleCode);
 
         if (optionalRole.isPresent()) {
-            String roleName = optionalRole.get().getRoleName();
-            log.info("✅ Role encontrado: Código = {}, Nombre = {}", roleCode, roleName);
-            return roleName;
+            RoleEntity roleEntity = optionalRole.get();
+            log.info("✅ Role encontrado: Código = {}, Nombre = {}", roleCode, roleEntity.getRoleName());
+            return roleEntity;
         } else {
             log.warn("⚠️ Role no encontrado con código: {}", roleCode);
             throw new RoleNotFoundException(roleCode);
@@ -102,7 +87,9 @@ public class UserUtils {
         userEntity.setTelefono(userRequestDTO.getTelefono());
         userEntity.setDireccion(userRequestDTO.getDireccion());
         userEntity.setRoleCode(userRequestDTO.getRoleCode());
-        userEntity.setRoleName(obtenerNombreRolePorCodigo(userRequestDTO.getRoleCode()));
+
+        RoleEntity roleEntity = obtenerRolePorCodigo(userRequestDTO.getRoleCode());
+        userEntity.setRoleName(roleEntity.getRoleName());
 
         log.info("✅ Datos del usuario actualizados correctamente: {}", userEntity.getUserName());
     }

@@ -39,7 +39,7 @@ public class UserService {
         Optional<UserEntity> existingUserAndRole = userRepository.findByUserNameAndRoleCode(userRequestDTO.getUserName(), userRequestDTO.getRoleCode());
 
         if (existingUserAndRole.isPresent()) {
-            log.warn("⚠️ El usuario ya existe con ese role.");
+            log.warn("⚠️ El usuario: {} ya existe con ese role: {}", userRequestDTO.getUserName(), userRequestDTO.getRoleCode());
             throw new UserDuplicationException(userRequestDTO.getUserName());
         }
 
@@ -101,17 +101,18 @@ public class UserService {
 
     @Transactional
     public void eliminarUsuario(UserRequestDTO userRequestDTO) {
-        log.info("📌 Intentando eliminar usuario con userName: {}", userRequestDTO.getIdentificacion());
+        log.info("📌 Intentando eliminar usuario: {}", userRequestDTO.getUserName());
 
         Optional<UserEntity> userOptional = userRepository.findByIdentificacion(userRequestDTO.getIdentificacion());
 
         if (userOptional.isPresent()) {
             UserEntity userEntity = userOptional.get();
-            log.info("📌 Usuario encontrado con userName: {}", userRequestDTO.getUserName());
+            log.info("📌 Usuario: {} encontrado.", userRequestDTO.getUserName());
+
             userRepository.delete(userEntity);
-            log.info("✅ Usuario eliminado exitosamente: {}", userRequestDTO.getUserName());
+            log.info("✅ Usuario: {} eliminado exitosamente.", userRequestDTO.getUserName());
         } else {
-            log.warn("⚠️ Usuario no encontrado con userName: {}", userRequestDTO.getUserName());
+            log.warn("⚠️ Usuario: {} no encontrado.", userRequestDTO.getUserName());
             throw new UserNotFoundException(userRequestDTO.getUserName());
         }
     }

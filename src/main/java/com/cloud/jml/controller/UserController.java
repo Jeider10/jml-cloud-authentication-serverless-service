@@ -63,7 +63,9 @@ public class UserController {
         userRequestDTO.setIdentificacion(identificacion);
 
         userService.eliminarUsuario(userRequestDTO);
+
         log.info("✅ Finaliza petición para eliminar usuario con identificación: {}", identificacion);
+
         return ResponseEntity.ok().build();
     }
 }

@@ -20,7 +20,7 @@ public class RoleMapper {
     }
 
     public RoleEntity mapRequestDtoToEntity(RoleRequestDTO roleRequestDTO) {
-        log.info("📌 Iniciando mapeo DTO a Entity para crear Role");
+        log.info("📌 Iniciando mapeo DTO a Entity para crear Role: {}", roleRequestDTO.getRoleName());
 
         RoleEntity roleEntity = new RoleEntity();
 
@@ -28,13 +28,13 @@ public class RoleMapper {
         roleEntity.setRoleName(roleRequestDTO.getRoleName());
         roleEntity.setFechaCreacion(LocalDateTime.now());
 
-        log.info("📌 Finalizando mapeo DTO a Entity para crear Role");
+        log.info("📌 Finalizando mapeo DTO a Entity para crear Role: {}", roleRequestDTO.getRoleName());
 
         return roleEntity;
     }
 
     public RoleResponseDTO mapEntityToResponseDto(RoleEntity roleEntity) {
-        log.info("📌 Iniciando mapeo Entity a DTO para crear Role");
+        log.info("📌 Iniciando mapeo Entity a DTO para crear Role: {}", roleEntity.getRoleName());
 
         RoleResponseDTO roleResponseDTO = new RoleResponseDTO();
 
@@ -44,7 +44,7 @@ public class RoleMapper {
         // 🔹 Formatear fechas
         roleUtils.asignarFechasFormateadas(roleEntity, roleResponseDTO);
 
-        log.info("📌 Finalizando mapeo Entity a DTO para crear Role");
+        log.info("📌 Finalizando mapeo Entity a DTO para crear Role: {}", roleEntity.getRoleName());
 
         return roleResponseDTO;
     }
