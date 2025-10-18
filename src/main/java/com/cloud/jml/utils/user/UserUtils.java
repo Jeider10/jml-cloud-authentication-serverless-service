@@ -69,7 +69,7 @@ public class UserUtils {
 
 //        if (!passwordEncoder.matches(password, user.getPassword())) {
 //            log.warn("⚠️ Contraseña incorrecta para usuario: {}", userName);
-//            throw new BadCredentialsException("Contraseña incorrecta");
+//            throw new UserCredencialesIncorrectasException(userEntity.getUserName());
 //        }
 
         log.info("✅ Usuario autenticado correctamente: {}", userEntity.getUserName());

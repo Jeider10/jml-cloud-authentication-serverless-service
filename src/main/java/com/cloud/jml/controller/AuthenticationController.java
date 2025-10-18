@@ -30,6 +30,5 @@ public class AuthenticationController {
         log.info("✅ Login exitoso para usuario: {}", authenticationRequestDTO.getUsuario());
 
         return ResponseEntity.ok(authenticationResponseDTO);
-
     }
 }
