@@ -12,17 +12,17 @@ public class RolePersistenceException extends RoleRuntimeException {
         super(HttpStatus.INTERNAL_SERVER_ERROR, "💾 " + message + " | Causa: " + cause.getMessage());
     }
 
-    // 🔒 Error por violación de integridad (constraint, duplicado, etc.)
+    // 🔒 Error por violación de integridad (constraint, duplicado, etc.) al guardar
     public static RolePersistenceException integrityViolation(Throwable cause) {
         return new RolePersistenceException("❌ Violación de integridad en base de datos al guardar el rol", cause);
     }
 
-    // ⚙️ Error al acceder o comunicarse con la base de datos
+    // ⚙️ Error al acceder o comunicarse con la base de datos al guardar
     public static RolePersistenceException dataAccessError(Throwable cause) {
         return new RolePersistenceException("❌ Error de acceso a datos al intentar guardar el rol", cause);
     }
 
-    // 💥 Error inesperado (no contemplado en los anteriores)
+    // 💥 Error inesperado (no contemplado en los anteriores) al guardar
     public static RolePersistenceException unexpected(Throwable cause) {
         return new RolePersistenceException("❌ Error inesperado al registrar el rol", cause);
     }

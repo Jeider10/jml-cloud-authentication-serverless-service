@@ -48,6 +48,24 @@ public class RoleUtils {
         }
     }
 
+    public void eliminarRoleBD(RoleEntity roleEntity) {
+        try {
+            roleRepository.delete(roleEntity);
+
+        } catch (DataIntegrityViolationException e) {
+            log.error("🚨 Violación de integridad al eliminar el Role: {}", e.getMessage(), e);
+            throw new RolePersistenceException("Error de integridad en base de datos al eliminar el rol", e);
+
+        } catch (DataAccessException e) {
+            log.error("🚨 Error de acceso a datos al eliminar el Role: {}", e.getMessage(), e);
+            throw new RolePersistenceException("Error al eliminar el rol en la base de datos", e);
+
+        } catch (Exception e) {
+            log.error("🚨 Error inesperado al eliminar el Role: {}", e.getMessage(), e);
+            throw new RolePersistenceException("Error inesperado al eliminar el rol", e);
+        }
+    }
+
     public RoleEntity validarExistenciaRole(RoleRequestDTO roleRequestDTO) {
         log.info("📌 Inicia validación de existencia del role con código: {}", roleRequestDTO.getRoleCode());
 

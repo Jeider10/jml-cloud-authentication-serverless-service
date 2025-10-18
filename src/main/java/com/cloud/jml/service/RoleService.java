@@ -109,8 +109,8 @@ public class RoleService {
             RoleEntity roleEntity = roleOptional.get();
             log.info("📌 Role: {} encontrado con código: {}", roleRequestDTO.getRoleName(), roleRequestDTO.getRoleCode());
 
-            roleRepository.delete(roleEntity);
-            log.info("✅ Role: {} con código: {} eliminado exitosamente.", roleRequestDTO.getRoleName(), roleRequestDTO.getRoleCode());
+            roleUtils.eliminarRoleBD(roleEntity);
+            log.info("🗑️ Role: {} con código: {} eliminado exitosamente.", roleEntity.getRoleCode(), roleEntity.getRoleName());
         } else {
             log.warn("⚠️ Role: {} no encontrado con código: {}", roleRequestDTO.getRoleName(), roleRequestDTO.getRoleCode());
             throw new RoleNotFoundException(roleRequestDTO.getRoleCode());
