@@ -3,9 +3,12 @@ package com.cloud.jml.utils.role;
 import com.cloud.jml.dto.role.RoleRequestDTO;
 import com.cloud.jml.dto.role.RoleResponseDTO;
 import com.cloud.jml.exception.role.RoleNotFoundException;
+import com.cloud.jml.exception.role.RolePersistenceException;
 import com.cloud.jml.model.RoleEntity;
 import com.cloud.jml.repository.RoleRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -25,6 +28,24 @@ public class RoleUtils {
     public RoleUtils(RoleRepository roleRepository) {
         this.roleRepository = roleRepository;
         log.info("🔥 RoleUtils inicializado correctamente.");
+    }
+
+    public RoleEntity guardarRoleBD(RoleEntity roleEntity) {
+        try {
+            return roleRepository.save(roleEntity);
+
+        } catch (DataIntegrityViolationException e) {
+            log.error("🚨 Violación de integridad al guardar el Role: {}", e.getMessage(), e);
+            throw new RolePersistenceException("Error de integridad en base de datos al guardar el rol", e);
+
+        } catch (DataAccessException e) {
+            log.error("🚨 Error de acceso a datos al guardar el Role: {}", e.getMessage(), e);
+            throw new RolePersistenceException("Error al guardar el rol en la base de datos", e);
+
+        } catch (Exception e) {
+            log.error("🚨 Error inesperado al guardar el Role: {}", e.getMessage(), e);
+            throw new RolePersistenceException("Error inesperado al registrar el rol", e);
+        }
     }
 
     public RoleEntity validarExistenciaRole(RoleRequestDTO roleRequestDTO) {
