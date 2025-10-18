@@ -49,15 +49,21 @@ public class RoleService {
         // Mapeo de DTO a Entity
         RoleEntity roleEntity = mapper.mapRequestDtoToEntity(roleRequestDTO);
 
+        // Guardamos en la base de datos
+        RoleEntity guardarRole = guardarRoleBD(roleEntity);
+
+        // Mapeo de Entity DTO
+        RoleResponseDTO roleResponseDTO = mapper.mapEntityToResponseDto(guardarRole);
+        log.info("📌 Finaliza creación de Role: {} con código: {}", roleResponseDTO.getRoleName(), roleResponseDTO.getRoleCode());
+
+        return roleResponseDTO;
+    }
+
+    private RoleEntity guardarRoleBD(RoleEntity roleEntity) {
         try {
-            // Guardamos en la base de datos
             RoleEntity guardado = roleRepository.save(roleEntity);
             log.info("✅ Role: {} guardado con código: {}", roleEntity.getRoleName(), roleEntity.getRoleCode());
-
-            // Mapeo de Entity DTO
-            RoleResponseDTO roleResponseDTO = mapper.mapEntityToResponseDto(guardado);
-            log.info("📌 Finaliza creación de Role: {} con código: {}", roleResponseDTO.getRoleName(), roleResponseDTO.getRoleCode());
-            return roleResponseDTO;
+            return guardado;
 
         } catch (DataIntegrityViolationException e) {
             log.error("🚨 Violación de integridad al guardar el Role: {}", e.getMessage(), e);
