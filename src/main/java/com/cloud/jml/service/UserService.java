@@ -47,11 +47,11 @@ public class UserService {
         UserEntity userEntity = mapper.mapRequestDtoToEntity(userRequestDTO);
 
         // Guardamos en la base de datos
-        UserEntity guardado = userRepository.save(userEntity);
-        log.info("✅ Usuario: {} registrado exitosamente.", guardado.getUserName());
+        UserEntity guardarUsuario = userUtils.guardarUsuarioBD(userEntity);
+        log.info("✅ Usuario: {} registrado exitosamente.", guardarUsuario.getUserName());
 
         // Mapeo de Entity DTO
-        UserResponseDTO userResponseDTO = mapper.mapEntityToResponseDto(guardado);
+        UserResponseDTO userResponseDTO = mapper.mapEntityToResponseDto(guardarUsuario);
         log.info("📌 Finaliza creación de Usuario: {}", userResponseDTO.getUserName());
 
         return userResponseDTO;
@@ -68,7 +68,7 @@ public class UserService {
         userUtils.actualizarDatosUsuario(userRequestDTO, userEntity);
 
         // Paso 3: Guardar cambios en la BD
-        UserEntity actualizado = userRepository.save(userEntity);
+        UserEntity actualizado = userUtils.guardarUsuarioBD(userEntity);
         log.info("✅ Usuario actualizado exitosamente: {}", actualizado.getUserName());
 
         // Paso 4: Mapear a DTO
@@ -109,8 +109,8 @@ public class UserService {
             UserEntity userEntity = userOptional.get();
             log.info("📌 Usuario: {} encontrado.", userRequestDTO.getUserName());
 
-            userRepository.delete(userEntity);
-            log.info("✅ Usuario: {} eliminado exitosamente.", userRequestDTO.getUserName());
+            userUtils.eliminarUsuarioBD(userEntity);
+            log.info("🗑️ Usuario: {} con identificación: {} eliminado exitosamente.", userEntity.getUserName(), userEntity.getIdentificacion());
         } else {
             log.warn("⚠️ Usuario: {} no encontrado.", userRequestDTO.getUserName());
             throw new UserNotFoundException(userRequestDTO.getUserName());
