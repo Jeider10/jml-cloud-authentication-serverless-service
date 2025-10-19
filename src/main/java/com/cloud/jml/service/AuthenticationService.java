@@ -28,7 +28,7 @@ public class AuthenticationService {
 
     @Transactional
     public AuthenticationResponseDTO authenticationLogin(AuthenticationRequestDTO authenticationRequestDTO) {
-        log.info("🔐 Validando usuario: {}", authenticationRequestDTO.getUsuario());
+        log.info("🔐 [CONSULTA] Validando usuario: {}", authenticationRequestDTO.getUsuario());
 
         // 1️⃣ Buscar y validar usuario y contraseña
         UserEntity userEntity = authenticationUtils.validarUsuario(authenticationRequestDTO);
@@ -42,7 +42,8 @@ public class AuthenticationService {
         // 4️⃣ Devolver respuesta final
         AuthenticationResponseDTO authenticationResponseDTO = mapper.mapAuthenticationResponseDTO(options, token);
 
-        log.info("✅ Usuario {} autenticado correctamente con roleCode: {} y roleName: {}", userEntity.getUserName(), userEntity.getRoleCode(), userEntity.getRoleName());
+        log.info("✅ [FINALIZADO] Usuario {} autenticado correctamente con roleCode: {} y roleName: {}",
+                userEntity.getUserName(), userEntity.getRoleCode(), userEntity.getRoleName());
 
         return authenticationResponseDTO;
     }

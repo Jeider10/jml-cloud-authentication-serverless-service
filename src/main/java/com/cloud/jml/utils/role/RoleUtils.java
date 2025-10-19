@@ -1,7 +1,6 @@
 package com.cloud.jml.utils.role;
 
 import com.cloud.jml.dto.role.RoleRequestDTO;
-import com.cloud.jml.dto.role.RoleResponseDTO;
 import com.cloud.jml.exception.role.RoleNotFoundException;
 import com.cloud.jml.exception.role.RolePersistenceException;
 import com.cloud.jml.model.RoleEntity;
@@ -12,16 +11,11 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 import java.util.Optional;
 
 @Slf4j
 @Component // 🔹 Anotación para indicar que es un componente de Spring
 public class RoleUtils {
-
-    private static final DateTimeFormatter FORMATTER =
-            DateTimeFormatter.ofPattern("d/M/yyyy, h:mm:ss a", Locale.of("es", "CO"));
 
     private final RoleRepository roleRepository;
 
@@ -30,6 +24,9 @@ public class RoleUtils {
         log.info("🔥 RoleUtils inicializado correctamente.");
     }
 
+    /**
+     * 💾 Guarda la orden en BD con manejo de excepciones.
+     */
     public RoleEntity guardarRoleBD(RoleEntity roleEntity) {
         try {
             return roleRepository.save(roleEntity);
@@ -48,6 +45,9 @@ public class RoleUtils {
         }
     }
 
+    /**
+     * 🗑️ Elimina la orden de BD con manejo de excepciones.
+     */
     public void eliminarRoleBD(RoleEntity roleEntity) {
         try {
             roleRepository.delete(roleEntity);
@@ -89,39 +89,5 @@ public class RoleUtils {
         roleEntity.setFechaActualizacion(LocalDateTime.now());
 
         log.info("📌 Finaliza actualización de datos del role con código: {}", roleRequestDTO.getRoleCode());
-    }
-
-    public String formatearFecha(LocalDateTime fecha) {
-        String fechaFormateada = fecha.format(FORMATTER).toLowerCase();
-        log.info("📌 Fecha formateada originalmente: {}", fechaFormateada);
-
-        // Reemplazar y reasignar el valor "a. m." → "a.m." y "p. m." → "p.m."
-        fechaFormateada = fechaFormateada
-                .replace("a. m.", "a.m.")
-                .replace("p. m.", "p.m.");
-
-        log.info("📌 Fecha formateada final: {}", fechaFormateada);
-
-        return fechaFormateada;
-    }
-
-    public void asignarFechasFormateadas(RoleEntity roleEntity, RoleResponseDTO roleResponseDTO) {
-        if (roleEntity.getFechaCreacion() != null) {
-            String fechaCreacion = formatearFecha(roleEntity.getFechaCreacion());
-            log.info("📌 Fecha creación formateada: {}", fechaCreacion);
-
-            roleResponseDTO.setFechaCreacion(fechaCreacion);
-        } else {
-            roleResponseDTO.setFechaCreacion(null);
-        }
-
-        if (roleEntity.getFechaActualizacion() != null) {
-            String fechaActualizacion = formatearFecha(roleEntity.getFechaActualizacion());
-            log.info("📌 Fecha actualización formateada: {}", fechaActualizacion);
-
-            roleResponseDTO.setFechaActualizacion(fechaActualizacion);
-        } else {
-            roleResponseDTO.setFechaActualizacion(null);
-        }
     }
 }

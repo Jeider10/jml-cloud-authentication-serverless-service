@@ -14,8 +14,11 @@ import java.time.LocalDateTime;
 @Component // 🔹 Anotación para indicar que es un componente de Spring
 public class AuthenticationMapper {
 
+    /**
+     * 📦 Convierte un DTO de solicitud de autenticación en una entidad lista para persistir.
+     */
     public AuthenticationEntity mapRequestDtoToEntity(AuthenticationRequestDTO authenticationRequestDTO, int roleCode, String roleName, String jti) {
-        log.info("📌 Iniciando mapeo DTO a Entity para autenticación de usuario: {}", authenticationRequestDTO.getUsuario());
+        log.info("📦 [MAPEO] Iniciando mapeo DTO → Entity para autenticación: usuario={}", authenticationRequestDTO.getUsuario());
 
         AuthenticationEntity authenticationEntity = new AuthenticationEntity();
 
@@ -25,35 +28,41 @@ public class AuthenticationMapper {
         authenticationEntity.setJti(jti);
         authenticationEntity.setFechaCreacion(LocalDateTime.now());
 
-        log.info("📌 Finalizando mapeo DTO a Entity para autenticación de usuario: {}", authenticationRequestDTO.getUsuario());
+        log.info("✅ [MAPEO] Mapeo completado DTO → Entity para autenticación: usuario={}", authenticationEntity.getUsuario());
 
         return authenticationEntity;
     }
 
+    /**
+     * 📦 Convierte una entidad de cliente en un DTO Option de respuesta.
+     */
     public AuthenticationOptionsDTO mapEntityToAuthenticationOptionsDTO(UserEntity userEntity) {
-        log.info("📝 Construyendo DTO de opciones para usuario: {}", userEntity.getUserName());
+        log.info("📦 [MAPEO] Iniciando mapeo Entity → DTO para autenticación de usuario: nombre={}", userEntity.getUserName());
 
-        AuthenticationOptionsDTO options = new AuthenticationOptionsDTO();
+        AuthenticationOptionsDTO authenticationOptionsDTO = new AuthenticationOptionsDTO();
 
-        options.setLogin(userEntity.getUserName());
-        options.setRoleCode(userEntity.getRoleCode());
-        options.setRoleName(userEntity.getRoleName());
+        authenticationOptionsDTO.setLogin(userEntity.getUserName());
+        authenticationOptionsDTO.setRoleCode(userEntity.getRoleCode());
+        authenticationOptionsDTO.setRoleName(userEntity.getRoleName());
 
-        log.info("✅ DTO de opciones construido para usuario: {}", userEntity.getUserName());
+        log.info("✅ [MAPEO] Mapeo completado DTO → Entity para autenticación de usuario: nombre={}", authenticationOptionsDTO.getLogin());
 
-        return options;
+        return authenticationOptionsDTO;
     }
 
+    /**
+     * 📦 Convierte una entidad de cliente en un DTO de respuesta.
+     */
     public AuthenticationResponseDTO mapAuthenticationResponseDTO(AuthenticationOptionsDTO options, String token) {
-        log.info("📝 Construyendo DTO de respuesta para usuario: {}", options.getLogin());
+        log.info("📦 [MAPEO] Iniciando mapeo Entity → DTO para autenticación: login={}", options.getLogin());
 
-        AuthenticationResponseDTO response = new AuthenticationResponseDTO();
+        AuthenticationResponseDTO authenticationResponseDTO = new AuthenticationResponseDTO();
 
-        response.setOptions(options);
-        response.setAuthorization(token);
+        authenticationResponseDTO.setOptions(options);
+        authenticationResponseDTO.setAuthorization(token);
 
-        log.info("✅ DTO de respuesta construido para usuario: {}", options.getLogin());
+        log.info("✅ [MAPEO] Mapeo completado DTO → Entity para autenticación: login={}", authenticationResponseDTO.getOptions().getLogin());
 
-        return response;
+        return authenticationResponseDTO;
     }
 }

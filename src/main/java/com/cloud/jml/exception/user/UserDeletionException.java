@@ -5,25 +5,38 @@ import org.springframework.http.HttpStatus;
 public class UserDeletionException extends UserRuntimeException {
 
     public UserDeletionException(String message) {
-        super(HttpStatus.INTERNAL_SERVER_ERROR, "🗑️ " + message);
+        super(HttpStatus.INTERNAL_SERVER_ERROR, "🗑️ [ELIMINACIÓN] " + message);
     }
 
     public UserDeletionException(String message, Throwable cause) {
-        super(HttpStatus.INTERNAL_SERVER_ERROR, "🗑️ " + message + " | Causa: " + cause.getMessage());
+        super(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "🗑️ [ELIMINACIÓN] " + message +
+                        (cause != null ? " | 💥 Causa: " + cause.getMessage() : "")
+        );
     }
 
-    // 🔒 Error por violación de integridad (constraint, duplicado, etc.) al eliminar
+    // 🔒 Violación de integridad referencial (por constraints o dependencias)
     public static UserDeletionException integrityViolation(Throwable cause) {
-        return new UserDeletionException("❌ No se pudo eliminar el usuario debido a una violación de integridad referencial", cause);
+        return new UserDeletionException(
+                "❌ [INTEGRIDAD] No se pudo eliminar el usuario debido a una violación de integridad referencial",
+                cause
+        );
     }
 
-    // ⚙️ Error al acceder o comunicarse con la base de datos al eliminar
+    // ⚙️ Error de acceso a datos
     public static UserDeletionException dataAccessError(Throwable cause) {
-        return new UserDeletionException("❌ Error de acceso a datos al intentar eliminar el usuario", cause);
+        return new UserDeletionException(
+                "❌ [DATOS] Error de acceso a la base de datos al intentar eliminar el usuario",
+                cause
+        );
     }
 
-    // 💥 Error inesperado (no contemplado en los anteriores) al eliminar
+    // 💥 Error inesperado
     public static UserDeletionException unexpected(Throwable cause) {
-        return new UserDeletionException("❌ Error inesperado al intentar eliminar el usuario", cause);
+        return new UserDeletionException(
+                "💥 [INESPERADO] Ocurrió un error inesperado al intentar eliminar el usuario",
+                cause
+        );
     }
 }

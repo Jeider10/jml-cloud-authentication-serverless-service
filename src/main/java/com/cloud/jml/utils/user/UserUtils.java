@@ -1,7 +1,6 @@
 package com.cloud.jml.utils.user;
 
 import com.cloud.jml.dto.user.UserRequestDTO;
-import com.cloud.jml.dto.user.UserResponseDTO;
 import com.cloud.jml.exception.role.RoleNotFoundException;
 import com.cloud.jml.exception.user.UserCredencialesIncorrectasException;
 import com.cloud.jml.exception.user.UserNotFoundException;
@@ -15,17 +14,11 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 import java.util.Optional;
 
 @Slf4j
 @Component // 🔹 Anotación para indicar que es un componente de Spring
 public class UserUtils {
-
-    private static final DateTimeFormatter FORMATTER =
-            DateTimeFormatter.ofPattern("d/M/yyyy, h:mm:ss a", Locale.of("es", "CO"));
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -36,6 +29,9 @@ public class UserUtils {
         log.info("🔥 UserUtils inicializado correctamente.");
     }
 
+    /**
+     * 💾 Guarda la orden en BD con manejo de excepciones.
+     */
     public UserEntity guardarUsuarioBD(UserEntity userEntity) {
         try {
             return userRepository.save(userEntity);
@@ -54,6 +50,9 @@ public class UserUtils {
         }
     }
 
+    /**
+     * 🗑️ Elimina la orden de BD con manejo de excepciones.
+     */
     public void eliminarUsuarioBD(UserEntity userEntity) {
         try {
             userRepository.delete(userEntity);
@@ -111,7 +110,7 @@ public class UserUtils {
 //            throw new UserCredencialesIncorrectasException(userEntity.getUserName());
 //        }
 
-        log.info("✅ Usuario autenticado correctamente: {}", userEntity.getUserName());
+        log.info("✅ [FINALIZADO] Usuario verificado correctamente para actualización: {}", userEntity.getUserName());
 
         return userEntity;
     }
@@ -131,39 +130,5 @@ public class UserUtils {
         userEntity.setRoleName(roleEntity.getRoleName());
 
         log.info("✅ Datos del usuario actualizados correctamente: {}", userEntity.getUserName());
-    }
-
-    public String formatearFecha(LocalDateTime fecha) {
-        String fechaFormateada = fecha.format(FORMATTER).toLowerCase();
-        log.info("📌 Fecha formateada originalmente: {}", fechaFormateada);
-
-        // Reemplazar y reasignar el valor "a. m." → "a.m." y "p. m." → "p.m."
-        fechaFormateada = fechaFormateada
-                .replace("a. m.", "a.m.")
-                .replace("p. m.", "p.m.");
-
-        log.info("📌 Fecha formateada final: {}", fechaFormateada);
-
-        return fechaFormateada;
-    }
-
-    public void asignarFechasFormateadas(UserEntity userEntity, UserResponseDTO userResponseDTO) {
-        if (userEntity.getFechaCreacion() != null) {
-            String fechaCreacion = formatearFecha(userEntity.getFechaCreacion());
-            log.info("📌 Fecha creación formateada: {}", fechaCreacion);
-
-            userResponseDTO.setFechaCreacion(fechaCreacion);
-        } else {
-            userResponseDTO.setFechaCreacion(null);
-        }
-
-        if (userEntity.getFechaActualizacion() != null) {
-            String fechaActualizacion = formatearFecha(userEntity.getFechaActualizacion());
-            log.info("📌 Fecha actualización formateada: {}", fechaActualizacion);
-
-            userResponseDTO.setFechaActualizacion(fechaActualizacion);
-        } else {
-            userResponseDTO.setFechaActualizacion(null);
-        }
     }
 }

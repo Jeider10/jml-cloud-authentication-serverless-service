@@ -22,49 +22,49 @@ public class UserController {
         log.info("🔥 UserController inicializado correctamente.");
     }
 
+    @GetMapping("/list/all")
+    public ResponseEntity<List<UserResponseDTO>> listarUsuarios() {
+        log.info("📥 [SOLICITUD] Listar todos los usuarios.");
+
+        List<UserResponseDTO> usuarios = userService.listarUsuarios();
+
+        log.info("📤 [RESPUESTA] Se retornan {} usuarios", usuarios.size());
+
+        return ResponseEntity.ok(usuarios);
+    }
+
     @PostMapping("/register")
     public ResponseEntity<UserResponseDTO> registrarUsuario(@RequestBody UserRequestDTO userRequestDTO) {
-        log.info("📌 Iniciando registro de usuario: {}", userRequestDTO.getUserName());
+        log.info("📥 [SOLICITUD] Crear usuario: {}", userRequestDTO.getUserName());
 
         UserResponseDTO userResponseDTO = userService.registrarUsuario(userRequestDTO);
 
-        log.info("✅ Usuario registrado exitosamente con nombre: {}", userRequestDTO.getUserName());
+        log.info("📤 [RESPUESTA] Usuario creado: {} con identificación: {}", userResponseDTO.getUserName(), userResponseDTO.getIdentificacion());
 
         return ResponseEntity.ok(userResponseDTO);
     }
 
     @PutMapping("/update")
     public ResponseEntity<UserResponseDTO> actualizarUsuario(@RequestBody UserRequestDTO userRequestDTO) {
-        log.info("📌 Recibiendo solicitud para actualizar usuario: {}", userRequestDTO.getUserName());
+        log.info("📥 [SOLICITUD] Actualizar usuario: {}", userRequestDTO.getUserName());
 
         UserResponseDTO userResponseDTO = userService.actualizarUsuario(userRequestDTO);
 
-        log.info("✅ Usuario actualizado exitosamente con nombre: {}", userRequestDTO.getUserName());
+        log.info("📤 [RESPUESTA] Usuario actualizado correctamente: {}", userRequestDTO.getUserName());
 
         return ResponseEntity.ok(userResponseDTO);
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<List<UserResponseDTO>> listarUsuarios() {
-        log.info("📌 Recibiendo solicitud para obtener todos los usuarios.");
-
-        List<UserResponseDTO> usuarios = userService.listarUsuarios();
-
-        log.info("✅ Finaliza petición para obtener todos los usuarios.");
-
-        return ResponseEntity.ok(usuarios);
-    }
-
     @DeleteMapping("/delete")
     public ResponseEntity<Void> eliminarUsuario(@RequestParam("identificacion") Long identificacion) {
-        log.info("📌 Recibiendo solicitud para eliminar usuario con identificación: {}", identificacion);
+        log.info("📥 [SOLICITUD] Eliminar usuario con identificación: {}", identificacion);
 
         UserRequestDTO userRequestDTO = new UserRequestDTO();
         userRequestDTO.setIdentificacion(identificacion);
 
         userService.eliminarUsuario(userRequestDTO);
 
-        log.info("✅ Finaliza petición para eliminar usuario con identificación: {}", identificacion);
+        log.info("📤 [RESPUESTA] Usuario eliminado correctamente con identificación: {}", identificacion);
 
         return ResponseEntity.ok().build();
     }

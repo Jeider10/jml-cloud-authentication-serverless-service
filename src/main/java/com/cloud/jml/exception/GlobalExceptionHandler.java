@@ -15,32 +15,51 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    // 👤 Errores de usuario
     @ExceptionHandler(UserRuntimeException.class)
     public ResponseEntity<Map<String, Object>> handleUserErrors(UserRuntimeException ex) {
-        return buildErrorResponse(ex.getStatus(), "👤 Error en usuario", ex.getMessage());
+        return buildErrorResponse(
+                ex.getStatus(),
+                "👤 Error en usuario",
+                ex.getMessage());
     }
 
+    // 🛡️ Errores de roles
     @ExceptionHandler(RoleRuntimeException.class)
     public ResponseEntity<Map<String, Object>> handleRoleErrors(RoleRuntimeException ex) {
-        return buildErrorResponse(ex.getStatus(), "🛡️ Error en roles", ex.getMessage());
+        return buildErrorResponse(
+                ex.getStatus(),
+                "🛡️ Error en roles",
+                ex.getMessage());
     }
 
+    // 🔑 Errores de autenticación
     @ExceptionHandler(AuthenticationRuntimeException.class)
     public ResponseEntity<Map<String, Object>> handleAuthenticationErrors(AuthenticationRuntimeException ex) {
-        return buildErrorResponse(ex.getStatus(), "🔑 Error en autenticación", ex.getMessage());
+        return buildErrorResponse(
+                ex.getStatus(),
+                "🔑 Error en autenticación",
+                ex.getMessage());
     }
 
+    // 🔥 Errores generales no controlados
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGeneral(Exception ex) {
-        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "🔥 Error interno", ex.getMessage());
+        return buildErrorResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "🔥 [GENERAL] Error interno del servidor",
+                ex.getMessage()
+        );
     }
 
+    // 🧱 Método común de respuesta
     private ResponseEntity<Map<String, Object>> buildErrorResponse(HttpStatus status, String error, String message) {
         Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
         body.put("status", status.value());
         body.put("error", error);
         body.put("message", message);
-        body.put("timestamp", LocalDateTime.now());
+
         return ResponseEntity.status(status).body(body);
     }
 }

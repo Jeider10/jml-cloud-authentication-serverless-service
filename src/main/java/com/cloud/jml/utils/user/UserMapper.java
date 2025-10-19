@@ -15,16 +15,21 @@ import java.time.LocalDateTime;
 public class UserMapper {
 
     private final UserUtils userUtils;
+    private final UserFormatearFecha userFormatearFecha;
     private final PasswordEncoder passwordEncoder;
 
-    public UserMapper(UserUtils userUtils, PasswordEncoder passwordEncoder) {
+    public UserMapper(UserUtils userUtils, UserFormatearFecha userFormatearFecha, PasswordEncoder passwordEncoder) {
         this.userUtils = userUtils;
+        this.userFormatearFecha = userFormatearFecha;
         this.passwordEncoder = passwordEncoder; // Encriptador de contraseñas
         log.info("🔥 UserMapper inicializado correctamente.");
     }
 
+    /**
+     * 📦 Convierte un DTO de solicitud de usuario en una entidad lista para persistir.
+     */
     public UserEntity mapRequestDtoToEntity(UserRequestDTO userRequestDTO) {
-        log.info("📌 Iniciando mapeo DTO a Entity para crear Usuario: {}", userRequestDTO.getUserName());
+        log.info("📦 [MAPEO] Iniciando mapeo DTO → Entity para usuario: nombre={}", userRequestDTO.getUserName());
 
         UserEntity userEntity = new UserEntity();
 
@@ -43,26 +48,29 @@ public class UserMapper {
         userEntity.setRoleCode(roleEntity.getRoleCode());
         userEntity.setRoleName(roleEntity.getRoleName());
 
-        log.info("📌 Finalizando mapeo DTO a Entity para crear Usuario: {}", userRequestDTO.getUserName());
+        log.info("✅ [MAPEO] Mapeo completado DTO → Entity para usuario: nombre={}", userEntity.getUserName());
 
         return userEntity;
     }
 
+    /**
+     * 📦 Convierte una entidad de cliente en un DTO de respuesta.
+     */
     public UserResponseDTO mapEntityToResponseDto(UserEntity userEntity) {
-        log.info("📌 Iniciando mapeo Entity a DTO para crear Usuario: {}", userEntity.getUserName());
+        log.info("📦 [MAPEO] Iniciando mapeo Entity → DTO para usuario: nombre={}", userEntity.getUserName());
 
         UserResponseDTO userResponseDTO = buildUserResponseDTO(userEntity);
 
-        // 🔹 Formatear fechas
-        userUtils.asignarFechasFormateadas(userEntity, userResponseDTO);
+        // 🕓 Formateo de fechas
+        userFormatearFecha.asignarFechasFormateadas(userEntity, userResponseDTO);
 
-        log.info("📌 Finalizando mapeo Entity a DTO para crear Usuario: {}", userEntity.getUserName());
+        log.info("✅ [MAPEO] Mapeo completado Entity → DTO para usuario: nombre={}", userResponseDTO.getUserName());
 
         return userResponseDTO;
     }
 
     public UserResponseDTO buildUserResponseDTO(UserEntity userEntity) {
-        log.info("📌 Iniciando construcción de DTO de respuesta para Usuario: {}", userEntity.getUserName());
+        log.info("📦 [MAPEO] Iniciando construcción de DTO de respuesta para usuario: {}", userEntity.getUserName());
 
         UserResponseDTO userResponseDTO = new UserResponseDTO();
 
@@ -74,7 +82,7 @@ public class UserMapper {
         userResponseDTO.setTelefono(userEntity.getTelefono());
         userResponseDTO.setDireccion(userEntity.getDireccion());
 
-        log.info("📌 Finalizando construcción de DTO de respuesta para Usuario: {}", userEntity.getUserName());
+        log.info("✅ [MAPEO] Mapeo completado de DTO de respuesta para usuario: {}", userResponseDTO.getUserName());
 
         return userResponseDTO;
     }

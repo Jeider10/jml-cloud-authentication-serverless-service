@@ -23,11 +23,11 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponseDTO> authenticationLogin(@RequestBody @Valid AuthenticationRequestDTO authenticationRequestDTO) {
-        log.info("📌 Iniciando login para usuario: {}", authenticationRequestDTO.getUsuario());
+        log.info("📥 [SOLICITUD] Iniciando login para usuario: {}", authenticationRequestDTO.getUsuario());
 
         AuthenticationResponseDTO authenticationResponseDTO = authenticationService.authenticationLogin(authenticationRequestDTO);
 
-        log.info("✅ Login exitoso para usuario: {}", authenticationRequestDTO.getUsuario());
+        log.info("📤 [RESPUESTA] Login exitoso para usuario: {}", authenticationRequestDTO.getUsuario());
 
         return ResponseEntity.ok(authenticationResponseDTO);
     }

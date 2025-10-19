@@ -21,49 +21,49 @@ public class RoleController {
         log.info("🔥 RoleController inicializado correctamente.");
     }
 
+    @GetMapping("/list/all")
+    public ResponseEntity<List<RoleResponseDTO>> listarRoles() {
+        log.info("📥 [SOLICITUD] Listar todos los roles.");
+
+        List<RoleResponseDTO> roles = roleService.listarRoles();
+
+        log.info("📤 [RESPUESTA] Se retornan {} roles", roles.size());
+
+        return ResponseEntity.ok(roles);
+    }
+
     @PostMapping("/register")
     public ResponseEntity<RoleResponseDTO> registrarRole(@RequestBody RoleRequestDTO roleRequestDTO) {
-        log.info("📌 Recibiendo solicitud para registrar role: {} con código: {}", roleRequestDTO.getRoleName(), roleRequestDTO.getRoleCode());
+        log.info("📥 [SOLICITUD] Crear role: {} con código: {}", roleRequestDTO.getRoleName(), roleRequestDTO.getRoleCode());
 
         RoleResponseDTO roleResponseDTO = roleService.registrarRole(roleRequestDTO);
 
-        log.info("✅ Finaliza petición para registrar role: {} con código: {}", roleRequestDTO.getRoleName(), roleRequestDTO.getRoleCode());
+        log.info("📤 [RESPUESTA] Role creado: {} con código: {}", roleResponseDTO.getRoleName(), roleResponseDTO.getRoleCode());
 
         return ResponseEntity.ok(roleResponseDTO);
     }
 
     @PutMapping("/update")
     public ResponseEntity<RoleResponseDTO> actualizarRole(@RequestBody RoleRequestDTO roleRequestDTO) {
-        log.info("📌 Recibiendo solicitud para actualizar role: {} con código: {}", roleRequestDTO.getRoleName(), roleRequestDTO.getRoleCode());
+        log.info("📥 [SOLICITUD] Actualizar role: {} con código: {}", roleRequestDTO.getRoleName(), roleRequestDTO.getRoleCode());
 
         RoleResponseDTO roleResponseDTO = roleService.actualizarRole(roleRequestDTO);
 
-        log.info("✅ Finaliza petición para actualizar role: {} con código: {}", roleRequestDTO.getRoleName(), roleRequestDTO.getRoleCode());
+        log.info("📤 [RESPUESTA] Role actualizado correctamente: {} con código: {}", roleRequestDTO.getRoleName(), roleRequestDTO.getRoleCode());
 
         return ResponseEntity.ok(roleResponseDTO);
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<List<RoleResponseDTO>> listarRoles() {
-        log.info("📌 Recibiendo solicitud para obtener todos los roles.");
-
-        List<RoleResponseDTO> roles = roleService.listarRoles();
-
-        log.info("✅ Finaliza petición para obtener todos los roles.");
-
-        return ResponseEntity.ok(roles);
-    }
-
     @DeleteMapping("/delete")
     public ResponseEntity<Void> eliminarRole(@RequestParam("roleCode") int roleCode) {
-        log.info("📌 Recibiendo solicitud para eliminar role con código: {}", roleCode);
+        log.info("📥 [SOLICITUD] Eliminar role con código: {}", roleCode);
 
         RoleRequestDTO roleRequestDTO = new RoleRequestDTO();
         roleRequestDTO.setRoleCode(roleCode);
 
         roleService.eliminarRole(roleRequestDTO);
 
-        log.info("✅ Finaliza petición para eliminar role con código: {}", roleCode);
+        log.info("📤 [RESPUESTA] Role eliminado correctamente con código: {}", roleCode);
 
         return ResponseEntity.ok().build();
     }

@@ -12,15 +12,18 @@ import java.time.LocalDateTime;
 @Component // 🔹 Anotación para indicar que es un componente de Spring
 public class RoleMapper {
 
-    private final RoleUtils roleUtils;
+    private final RoleFormatearFecha roleFormatearFecha;
 
-    public RoleMapper(RoleUtils roleUtils) {
-        this.roleUtils = roleUtils;
+    public RoleMapper(RoleFormatearFecha roleFormatearFecha) {
+        this.roleFormatearFecha = roleFormatearFecha;
         log.info("🔥 RoleMapper inicializado correctamente.");
     }
 
+    /**
+     * 📦 Convierte un DTO de solicitud de rol en una entidad lista para persistir.
+     */
     public RoleEntity mapRequestDtoToEntity(RoleRequestDTO roleRequestDTO) {
-        log.info("📌 Iniciando mapeo DTO a Entity para crear Role: {}", roleRequestDTO.getRoleName());
+        log.info("📦 [MAPEO] Iniciando mapeo DTO → Entity para role: nombre={}", roleRequestDTO.getRoleName());
 
         RoleEntity roleEntity = new RoleEntity();
 
@@ -28,23 +31,26 @@ public class RoleMapper {
         roleEntity.setRoleName(roleRequestDTO.getRoleName());
         roleEntity.setFechaCreacion(LocalDateTime.now());
 
-        log.info("📌 Finalizando mapeo DTO a Entity para crear Role: {}", roleRequestDTO.getRoleName());
+        log.info("✅ [MAPEO] Mapeo completado DTO → Entity para role: nombre={}", roleEntity.getRoleName());
 
         return roleEntity;
     }
 
+    /**
+     * 📦 Convierte una entidad de cliente en un DTO de respuesta.
+     */
     public RoleResponseDTO mapEntityToResponseDto(RoleEntity roleEntity) {
-        log.info("📌 Iniciando mapeo Entity a DTO para crear Role: {}", roleEntity.getRoleName());
+        log.info("📦 [MAPEO] Iniciando mapeo Entity → DTO para role: nombre={}", roleEntity.getRoleName());
 
         RoleResponseDTO roleResponseDTO = new RoleResponseDTO();
 
         roleResponseDTO.setRoleCode(roleEntity.getRoleCode());
         roleResponseDTO.setRoleName(roleEntity.getRoleName());
 
-        // 🔹 Formatear fechas
-        roleUtils.asignarFechasFormateadas(roleEntity, roleResponseDTO);
+        // 🕓 Formateo de fechas
+        roleFormatearFecha.asignarFechasFormateadas(roleEntity, roleResponseDTO);
 
-        log.info("📌 Finalizando mapeo Entity a DTO para crear Role: {}", roleEntity.getRoleName());
+        log.info("✅ [MAPEO] Mapeo completado Entity → DTO para role: nombre={}", roleResponseDTO.getRoleName());
 
         return roleResponseDTO;
     }

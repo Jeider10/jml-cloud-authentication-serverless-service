@@ -2,9 +2,14 @@ package com.cloud.jml.utils.authentication;
 
 import com.cloud.jml.dto.authentication.AuthenticationRequestDTO;
 import com.cloud.jml.exception.authentication.AuthenticationInvalidCredentialsException;
+import com.cloud.jml.exception.authentication.AuthenticationPersistenceException;
+import com.cloud.jml.model.AuthenticationEntity;
 import com.cloud.jml.model.UserEntity;
+import com.cloud.jml.repository.AuthenticationRepository;
 import com.cloud.jml.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -13,17 +18,39 @@ import java.util.Optional;
 @Component // 🔹 Anotación para indicar que es un componente de Spring
 public class AuthenticationUtils {
 
+    private final AuthenticationRepository authenticationRepository;
     private final UserRepository userRepository;
 
-    public AuthenticationUtils(UserRepository userRepository) {
+    public AuthenticationUtils(AuthenticationRepository authenticationRepository, UserRepository userRepository) {
+        this.authenticationRepository = authenticationRepository;
         this.userRepository = userRepository;
         log.info("🔥 AuthenticationUtils inicializado correctamente.");
     }
 
-    public UserEntity validarUsuario(AuthenticationRequestDTO authenticationRequestDTO) {
-        log.info("📌 Intentando autenticar usuario: {}", authenticationRequestDTO.getUsuario());
+    /**
+     * 💾 Guarda la orden en BD con manejo de excepciones.
+     */
+    public AuthenticationEntity guardarAuthenticationBD(AuthenticationEntity authenticationEntity) {
+        try {
+            return authenticationRepository.save(authenticationEntity);
 
-        // Buscar el usuario
+        } catch (DataIntegrityViolationException e) {
+            log.error("🚨 Violación de integridad al guardar el usuario: {}", e.getMessage(), e);
+            throw new AuthenticationPersistenceException("Error de integridad en base de datos al guardar el usuario", e);
+
+        } catch (DataAccessException e) {
+            log.error("🚨 Error de acceso a datos al guardar el usuario: {}", e.getMessage(), e);
+            throw new AuthenticationPersistenceException("Error al guardar el usuario en la base de datos", e);
+
+        } catch (Exception e) {
+            log.error("🚨 Error inesperado al guardar el usuario: {}", e.getMessage(), e);
+            throw new AuthenticationPersistenceException("Error inesperado al registrar el usuario", e);
+        }
+    }
+
+    public UserEntity validarUsuario(AuthenticationRequestDTO authenticationRequestDTO) {
+        log.info("👤 [CONSULTA] Intentando autenticar usuario: {}", authenticationRequestDTO.getUsuario());
+
         Optional<UserEntity> userOpt = userRepository.findByUserName(authenticationRequestDTO.getUsuario());
 
         if (userOpt.isEmpty()) {
@@ -44,7 +71,7 @@ public class AuthenticationUtils {
 //            throw new BadCredentialsException("Contraseña incorrecta");
 //        }
 
-        log.info("✅ Usuario autenticado correctamente: {}", authenticationRequestDTO.getUsuario());
+        log.info("✅ [FINALIZADO] Usuario verificado correctamente para autenticación: {}", authenticationRequestDTO.getUsuario());
 
         return user;
     }
