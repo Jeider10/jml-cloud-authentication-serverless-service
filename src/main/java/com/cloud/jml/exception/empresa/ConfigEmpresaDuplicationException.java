@@ -1,12 +1,12 @@
-package com.cloud.jml.exception.user;
+package com.cloud.jml.exception.empresa;
 
 import org.springframework.http.HttpStatus;
 
-public class UserDuplicationException extends UserRuntimeException {
+public class ConfigEmpresaDuplicationException extends ConfigEmpresaRuntimeException {
 
-    public UserDuplicationException(String userName) {
+    public ConfigEmpresaDuplicationException(String nombreEmpresa, Long nic) {
         super(
                 HttpStatus.CONFLICT,
-                "⚠️ [DUPLICADO] Usuario duplicado: " + userName);
+                "⚠️ [DUPLICADO] Empresa duplicada: " + nombreEmpresa + "con nic: " + nic);
     }
 }

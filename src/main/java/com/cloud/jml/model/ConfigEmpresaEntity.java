@@ -1,6 +1,9 @@
 package com.cloud.jml.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,32 +12,26 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 @Entity
-@Table(name = "usuarios")
-public class UserEntity {
+@Table(name = "empresa")
+public class ConfigEmpresaEntity {
 
     @Id
     @Column(nullable = false)
-    private long identificacion;
+    private long nic;
 
     @Column(unique = true, nullable = false)
-    private String userName;
+    private String nombreEmpresa;
 
-    @Column(nullable = false)
-    private String password;
+    private String direccion;
+    private String telefono;
+    private String mensaje;
 
-    @Column(nullable = false)
-    private int roleCode;
-
-    @Column(nullable = false)
-    private String roleName;
+    @Column(name = "logo", columnDefinition = "TEXT")
+    private String logo;
 
     @Column(name = "fecha_creacion", nullable = false, updatable = false)
     private LocalDateTime fechaCreacion;
 
     @Column(name = "fecha_actualizacion")
     private LocalDateTime fechaActualizacion;
-
-    private String email;
-    private String telefono;
-    private String direccion;
 }

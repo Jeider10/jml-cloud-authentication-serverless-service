@@ -1,12 +1,12 @@
-package com.cloud.jml.exception.user;
+package com.cloud.jml.exception.empresa;
 
 import org.springframework.http.HttpStatus;
 
-public class UserNotFoundException extends UserRuntimeException {
+public class ConfigEmpresaNotFoundException extends ConfigEmpresaRuntimeException {
 
-    public UserNotFoundException(String userName) {
+    public ConfigEmpresaNotFoundException(String nombreEmpresa) {
         super(
                 HttpStatus.NOT_FOUND,
-                "❌ [CONSULTA] Usuario no encontrado: " + userName);
+                "❌ [CONSULTA] Empresa no encontrada: " + nombreEmpresa);
     }
 }

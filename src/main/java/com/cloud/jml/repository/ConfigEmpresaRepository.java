@@ -1,14 +1,12 @@
 package com.cloud.jml.repository;
 
-import com.cloud.jml.model.UserEntity;
+import com.cloud.jml.model.ConfigEmpresaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<UserEntity, Long> {
-    Optional<UserEntity> findByUserName(String userName);
+public interface ConfigEmpresaRepository extends JpaRepository<ConfigEmpresaEntity, Long> {
+    Optional<ConfigEmpresaEntity> findByNic(Long nic);
 
-    Optional<UserEntity> findByIdentificacion(Long identificacion);
-
-    Optional<UserEntity> findByUserNameAndRoleCode(String userName, int roleCode);
+    Optional<ConfigEmpresaEntity> findByNombreEmpresa(String nombreEmpresa);
 }

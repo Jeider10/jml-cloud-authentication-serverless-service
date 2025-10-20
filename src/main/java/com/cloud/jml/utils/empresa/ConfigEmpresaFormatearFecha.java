@@ -1,7 +1,7 @@
-package com.cloud.jml.utils.user;
+package com.cloud.jml.utils.empresa;
 
-import com.cloud.jml.dto.user.UserResponseDTO;
-import com.cloud.jml.model.UserEntity;
+import com.cloud.jml.dto.empresa.ConfigEmpresaResponseDTO;
+import com.cloud.jml.model.ConfigEmpresaEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +11,7 @@ import java.util.Locale;
 
 @Slf4j
 @Component // 🔹 Anotación para indicar que es un componente de Spring
-public class UserFormatearFecha {
+public class ConfigEmpresaFormatearFecha {
 
     private static final DateTimeFormatter FORMATTER =
             DateTimeFormatter.ofPattern("d/M/yyyy, h:mm:ss a", Locale.of("es", "CO"));
@@ -43,22 +43,22 @@ public class UserFormatearFecha {
      * 🧩 Asigna las fechas formateadas (creación y actualización)
      * desde la entidad a la respuesta DTO.
      */
-    public void asignarFechasFormateadas(UserEntity userEntity, UserResponseDTO userResponseDTO) {
-        if (userEntity == null || userResponseDTO == null) {
+    public void asignarFechasFormateadas(ConfigEmpresaEntity configEmpresaEntity, ConfigEmpresaResponseDTO configEmpresaResponseDTO) {
+        if (configEmpresaEntity == null || configEmpresaResponseDTO == null) {
             log.warn("⚠️ Entidad o DTO nulos al intentar asignar fechas formateadas.");
             return;
         }
 
-        log.info("📦 Asignando fechas formateadas al usuario: {}", userEntity.getRoleName());
+        log.info("📦 Asignando fechas formateadas a la empresa: {}", configEmpresaEntity.getNombreEmpresa());
 
         // Fecha de creación
-        String fechaCreacion = formatearFecha(userEntity.getFechaCreacion());
-        userResponseDTO.setFechaCreacion(fechaCreacion);
+        String fechaCreacion = formatearFecha(configEmpresaEntity.getFechaCreacion());
+        configEmpresaResponseDTO.setFechaCreacion(fechaCreacion);
         log.debug("🕓 Fecha de creación asignada: {}", fechaCreacion);
 
         // Fecha de actualización
-        String fechaActualizacion = formatearFecha(userEntity.getFechaActualizacion());
-        userResponseDTO.setFechaActualizacion(fechaActualizacion);
+        String fechaActualizacion = formatearFecha(configEmpresaEntity.getFechaActualizacion());
+        configEmpresaResponseDTO.setFechaActualizacion(fechaActualizacion);
         log.debug("🕓 Fecha de actualización asignada: {}", fechaActualizacion);
     }
 }

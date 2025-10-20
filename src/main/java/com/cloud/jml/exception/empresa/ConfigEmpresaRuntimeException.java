@@ -1,14 +1,14 @@
-package com.cloud.jml.exception.user;
+package com.cloud.jml.exception.empresa;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-public abstract class UserRuntimeException extends RuntimeException {
+public abstract class ConfigEmpresaRuntimeException extends RuntimeException {
 
     private final HttpStatus status;
 
-    protected UserRuntimeException(HttpStatus status, String message) {
+    protected ConfigEmpresaRuntimeException(HttpStatus status, String message) {
         super(message);
         this.status = status;
     }

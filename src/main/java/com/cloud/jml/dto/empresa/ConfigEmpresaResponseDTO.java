@@ -1,4 +1,4 @@
-package com.cloud.jml.dto.user;
+package com.cloud.jml.dto.empresa;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,16 +9,15 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor // Constructor sin argumentos
 @AllArgsConstructor // Constructor con todos los argumentos
-public class UserResponseDTO {
+public class ConfigEmpresaResponseDTO {
 
     // Getters y Setters
-    private String userName;
-    private long identificacion;
-    private int roleCode;
-    private String roleName;
-    private String email;
-    private String telefono;
+    private long nic;
+    private String nombreEmpresa;
     private String direccion;
+    private String telefono;
+    private String mensaje;
+    private String logo;
     private String fechaCreacion;
     private String fechaActualizacion;
 }

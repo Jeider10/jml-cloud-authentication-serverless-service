@@ -1,6 +1,7 @@
 package com.cloud.jml.exception;
 
 import com.cloud.jml.exception.authentication.AuthenticationRuntimeException;
+import com.cloud.jml.exception.empresa.ConfigEmpresaRuntimeException;
 import com.cloud.jml.exception.role.RoleRuntimeException;
 import com.cloud.jml.exception.user.UserRuntimeException;
 import org.springframework.http.HttpStatus;
@@ -39,6 +40,15 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(
                 ex.getStatus(),
                 "🔑 Error en autenticación",
+                ex.getMessage());
+    }
+
+    // 🔑 Errores de empresa
+    @ExceptionHandler(ConfigEmpresaRuntimeException.class)
+    public ResponseEntity<Map<String, Object>> handleEmpresaErrors(ConfigEmpresaRuntimeException ex) {
+        return buildErrorResponse(
+                ex.getStatus(),
+                "🔑 Error en empresa",
                 ex.getMessage());
     }
 

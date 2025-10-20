@@ -1,8 +1,8 @@
 package com.cloud.jml.controller;
 
-import com.cloud.jml.dto.user.UserRequestDTO;
-import com.cloud.jml.dto.user.UserResponseDTO;
-import com.cloud.jml.service.UserService;
+import com.cloud.jml.dto.empresa.ConfigEmpresaRequestDTO;
+import com.cloud.jml.dto.empresa.ConfigEmpresaResponseDTO;
+import com.cloud.jml.service.ConfigEmpresaService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,60 +11,74 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/usuario")
+@RequestMapping("/empresa")
 @CrossOrigin(origins = "http://localhost:8080")
-public class UserController {
+public class ConfigEmpresaController {
 
-    private final UserService userService;
+    private final ConfigEmpresaService configEmpresaService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
-        log.info("🔥 UserController inicializado correctamente.");
+    public ConfigEmpresaController(ConfigEmpresaService configEmpresaService) {
+        this.configEmpresaService = configEmpresaService;
+        log.info("🔥 ConfigEmpresaController inicializado correctamente.");
     }
 
-    @GetMapping("/list/all")
-    public ResponseEntity<List<UserResponseDTO>> listarUsuarios() {
-        log.info("📥 [SOLICITUD] Listar todos los usuarios.");
+    @GetMapping
+    public ResponseEntity<List<ConfigEmpresaResponseDTO>> obtenerPrimeraEmpresa() {
+        log.info("📥 [SOLICITUD] Obtener empresa registrada (primera encontrada).");
 
-        List<UserResponseDTO> usuarios = userService.listarUsuarios();
+        List<ConfigEmpresaResponseDTO> primeraEmpresa = configEmpresaService.obtenerPrimeraEmpresa();
 
-        log.info("📤 [RESPUESTA] Se retornan {} usuarios", usuarios.size());
+        log.info("📤 [RESPUESTA] Empresa encontrada: {}", primeraEmpresa.size());
 
-        return ResponseEntity.ok(usuarios);
+        return ResponseEntity.ok(primeraEmpresa);
+    }
+
+    @GetMapping("/{nic}")
+    public ResponseEntity<ConfigEmpresaResponseDTO> buscarEmpresaNic(@PathVariable Long nic) {
+        log.info("📥 [SOLICITUD] Buscar empresa con NIC: {}", nic);
+
+        ConfigEmpresaRequestDTO configEmpresaRequestDTO = new ConfigEmpresaRequestDTO();
+        configEmpresaRequestDTO.setNic(nic);
+
+        ConfigEmpresaResponseDTO response = configEmpresaService.buscarEmpresaNic(configEmpresaRequestDTO);
+
+        log.info("📤 [RESPUESTA] Empresa encontrada: {} con nic: {}", response.getNombreEmpresa(), response.getNic());
+
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserResponseDTO> registrarUsuario(@RequestBody UserRequestDTO userRequestDTO) {
-        log.info("📥 [SOLICITUD] Crear usuario: {}", userRequestDTO.getUserName());
+    public ResponseEntity<ConfigEmpresaResponseDTO> registrarDatosEmpresa(@RequestBody ConfigEmpresaRequestDTO configEmpresaRequestDTO) {
+        log.info("📥 [SOLICITUD] Crear empresa: {}", configEmpresaRequestDTO.getNombreEmpresa());
 
-        UserResponseDTO userResponseDTO = userService.registrarUsuario(userRequestDTO);
+        ConfigEmpresaResponseDTO configEmpresaResponseDTO = configEmpresaService.registrarDatosEmpresa(configEmpresaRequestDTO);
 
-        log.info("📤 [RESPUESTA] Usuario creado: {} con identificación: {}", userResponseDTO.getUserName(), userResponseDTO.getIdentificacion());
+        log.info("📤 [RESPUESTA] Empresa creada: {} con nic: {}", configEmpresaResponseDTO.getNombreEmpresa(), configEmpresaResponseDTO.getNic());
 
-        return ResponseEntity.ok(userResponseDTO);
+        return ResponseEntity.ok(configEmpresaResponseDTO);
     }
 
     @PutMapping("/update")
-    public ResponseEntity<UserResponseDTO> actualizarUsuario(@RequestBody UserRequestDTO userRequestDTO) {
-        log.info("📥 [SOLICITUD] Actualizar usuario: {}", userRequestDTO.getUserName());
+    public ResponseEntity<ConfigEmpresaResponseDTO> actualizarEmpresa(@RequestBody ConfigEmpresaRequestDTO configEmpresaRequestDTO) {
+        log.info("📥 [SOLICITUD] Actualizar empresa: {}", configEmpresaRequestDTO.getNombreEmpresa());
 
-        UserResponseDTO userResponseDTO = userService.actualizarUsuario(userRequestDTO);
+        ConfigEmpresaResponseDTO configEmpresaResponseDTO = configEmpresaService.actualizarEmpresa(configEmpresaRequestDTO);
 
-        log.info("📤 [RESPUESTA] Usuario actualizado correctamente: {}", userRequestDTO.getUserName());
+        log.info("📤 [RESPUESTA] Empresa actualizada correctamente: {}", configEmpresaRequestDTO.getNombreEmpresa());
 
-        return ResponseEntity.ok(userResponseDTO);
+        return ResponseEntity.ok(configEmpresaResponseDTO);
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<Void> eliminarUsuario(@RequestParam("identificacion") Long identificacion) {
-        log.info("📥 [SOLICITUD] Eliminar usuario con identificación: {}", identificacion);
+    public ResponseEntity<Void> eliminarEmpresa(@RequestParam("nic") Long nic) {
+        log.info("📥 [SOLICITUD] Eliminar empresa con nic: {}", nic);
 
-        UserRequestDTO userRequestDTO = new UserRequestDTO();
-        userRequestDTO.setIdentificacion(identificacion);
+        ConfigEmpresaRequestDTO configEmpresaRequestDTO = new ConfigEmpresaRequestDTO();
+        configEmpresaRequestDTO.setNic(nic);
 
-        userService.eliminarUsuario(userRequestDTO);
+        configEmpresaService.eliminarEmpresa(configEmpresaRequestDTO);
 
-        log.info("📤 [RESPUESTA] Usuario eliminado correctamente con identificación: {}", identificacion);
+        log.info("📤 [RESPUESTA] Empresa eliminada correctamente con nic: {}", nic);
 
         return ResponseEntity.ok().build();
     }

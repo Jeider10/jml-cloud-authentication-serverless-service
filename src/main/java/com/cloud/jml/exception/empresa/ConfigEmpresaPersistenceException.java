@@ -1,14 +1,14 @@
-package com.cloud.jml.exception.user;
+package com.cloud.jml.exception.empresa;
 
 import org.springframework.http.HttpStatus;
 
-public class UserPersistenceException extends UserRuntimeException {
+public class ConfigEmpresaPersistenceException extends ConfigEmpresaRuntimeException {
 
-    public UserPersistenceException(String message) {
+    public ConfigEmpresaPersistenceException(String message) {
         super(HttpStatus.INTERNAL_SERVER_ERROR, "💾 [PERSISTENCIA] " + message);
     }
 
-    public UserPersistenceException(String message, Throwable cause) {
+    public ConfigEmpresaPersistenceException(String message, Throwable cause) {
         super(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "💾 [PERSISTENCIA] " + message +
@@ -17,25 +17,25 @@ public class UserPersistenceException extends UserRuntimeException {
     }
 
     // 🔒 Violación de integridad (constraint, duplicado, etc.) al guardar
-    public static UserPersistenceException integrityViolation(Throwable cause) {
-        return new UserPersistenceException(
-                "❌ [INTEGRIDAD] Violación de integridad en base de datos al guardar el usuario",
+    public static ConfigEmpresaPersistenceException integrityViolation(Throwable cause) {
+        return new ConfigEmpresaPersistenceException(
+                "❌ [INTEGRIDAD] Violación de integridad en base de datos al guardar la empresa",
                 cause
         );
     }
 
     // ⚙️ Error técnico de acceso a datos
-    public static UserPersistenceException dataAccessError(Throwable cause) {
-        return new UserPersistenceException(
-                "❌ [DATOS] Error de acceso a datos al intentar guardar el usuario",
+    public static ConfigEmpresaPersistenceException dataAccessError(Throwable cause) {
+        return new ConfigEmpresaPersistenceException(
+                "❌ [DATOS] Error de acceso a datos al intentar guardar la empresa",
                 cause
         );
     }
 
     // 💥 Error inesperado
-    public static UserPersistenceException unexpected(Throwable cause) {
-        return new UserPersistenceException(
-                "💥 [INESPERADO] Ocurrió un error inesperado al registrar el usuario",
+    public static ConfigEmpresaPersistenceException unexpected(Throwable cause) {
+        return new ConfigEmpresaPersistenceException(
+                "💥 [INESPERADO] Ocurrió un error inesperado al registrar la empresa",
                 cause
         );
     }

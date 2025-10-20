@@ -1,89 +1,74 @@
-package com.cloud.jml.utils.user;
+package com.cloud.jml.utils.empresa;
 
-import com.cloud.jml.dto.user.UserRequestDTO;
-import com.cloud.jml.dto.user.UserResponseDTO;
-import com.cloud.jml.model.RoleEntity;
-import com.cloud.jml.model.UserEntity;
+import com.cloud.jml.dto.empresa.ConfigEmpresaRequestDTO;
+import com.cloud.jml.dto.empresa.ConfigEmpresaResponseDTO;
+import com.cloud.jml.model.ConfigEmpresaEntity;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
 @Slf4j
 @Component // 🔹 Anotación para indicar que es un componente de Spring
-public class UserMapper {
+public class ConfigEmpresaMapper {
 
-    private final UserUtils userUtils;
-    private final UserFormatearFecha userFormatearFecha;
-    private final PasswordEncoder passwordEncoder;
+    private final ConfigEmpresaFormatearFecha configEmpresaFormatearFecha;
 
-    public UserMapper(UserUtils userUtils, UserFormatearFecha userFormatearFecha, PasswordEncoder passwordEncoder) {
-        this.userUtils = userUtils;
-        this.userFormatearFecha = userFormatearFecha;
-        this.passwordEncoder = passwordEncoder; // Encriptador de contraseñas
-        log.info("🔥 UserMapper inicializado correctamente.");
+    public ConfigEmpresaMapper(ConfigEmpresaFormatearFecha configEmpresaFormatearFecha) {
+        this.configEmpresaFormatearFecha = configEmpresaFormatearFecha;
+        log.info("🔥 ConfigEmpresaMapper inicializado correctamente.");
     }
 
     /**
-     * 📦 Convierte un DTO de solicitud de usuario en una entidad lista para persistir.
+     * 📦 Convierte un DTO de solicitud de empresa en una entidad lista para persistir.
      */
-    public UserEntity mapRequestDtoToEntity(UserRequestDTO userRequestDTO) {
-        log.info("📦 [MAPEO] Iniciando mapeo DTO → Entity para usuario: nombre={}", userRequestDTO.getUserName());
+    public ConfigEmpresaEntity mapRequestDtoToEntity(ConfigEmpresaRequestDTO configEmpresaRequestDTO) {
+        log.info("📦 [MAPEO] Iniciando mapeo DTO → Entity para empresa: nombre={}", configEmpresaRequestDTO.getNombreEmpresa());
 
-        UserEntity userEntity = new UserEntity();
+        ConfigEmpresaEntity configEmpresaEntity = new ConfigEmpresaEntity();
 
-        // ✅ Encriptar la contraseña antes de guardarla
-//        String passwordEncriptada = passwordEncoder.encode(userRequestDTO.getPassword());
+        configEmpresaEntity.setNic(configEmpresaRequestDTO.getNic());
+        configEmpresaEntity.setNombreEmpresa(configEmpresaRequestDTO.getNombreEmpresa());
+        configEmpresaEntity.setDireccion(configEmpresaRequestDTO.getDireccion());
+        configEmpresaEntity.setTelefono(configEmpresaRequestDTO.getTelefono());
+        configEmpresaEntity.setMensaje(configEmpresaRequestDTO.getMensaje());
+        configEmpresaEntity.setFechaCreacion(LocalDateTime.now());
 
-        userEntity.setUserName(userRequestDTO.getUserName());
-        userEntity.setPassword(userRequestDTO.getPassword());
-        userEntity.setIdentificacion(userRequestDTO.getIdentificacion());
-        userEntity.setEmail(userRequestDTO.getEmail());
-        userEntity.setTelefono(userRequestDTO.getTelefono());
-        userEntity.setDireccion(userRequestDTO.getDireccion());
-        userEntity.setFechaCreacion(LocalDateTime.now());
+        log.info("✅ [MAPEO] Mapeo completado DTO → Entity para empresa: nombre={}", configEmpresaEntity.getNombreEmpresa());
 
-        RoleEntity roleEntity = userUtils.obtenerRolePorCodigo(userRequestDTO.getRoleCode());
-        userEntity.setRoleCode(roleEntity.getRoleCode());
-        userEntity.setRoleName(roleEntity.getRoleName());
-
-        log.info("✅ [MAPEO] Mapeo completado DTO → Entity para usuario: nombre={}", userEntity.getUserName());
-
-        return userEntity;
+        return configEmpresaEntity;
     }
 
     /**
-     * 📦 Convierte una entidad de cliente en un DTO de respuesta.
+     * 📦 Convierte una entidad de empresa en un DTO de respuesta.
      */
-    public UserResponseDTO mapEntityToResponseDto(UserEntity userEntity) {
-        log.info("📦 [MAPEO] Iniciando mapeo Entity → DTO para usuario: nombre={}", userEntity.getUserName());
+    public ConfigEmpresaResponseDTO mapEntityToResponseDto(ConfigEmpresaEntity configEmpresaEntity) {
+        log.info("📦 [MAPEO] Iniciando mapeo Entity → DTO para empresa: nombre={}", configEmpresaEntity.getNombreEmpresa());
 
-        UserResponseDTO userResponseDTO = buildUserResponseDTO(userEntity);
+        ConfigEmpresaResponseDTO configEmpresaResponseDTO = buildConfigEmpresaResponseDTO(configEmpresaEntity);
 
         // 🕓 Formateo de fechas
-        userFormatearFecha.asignarFechasFormateadas(userEntity, userResponseDTO);
+        configEmpresaFormatearFecha.asignarFechasFormateadas(configEmpresaEntity, configEmpresaResponseDTO);
 
-        log.info("✅ [MAPEO] Mapeo completado Entity → DTO para usuario: nombre={}", userResponseDTO.getUserName());
+        log.info("✅ [MAPEO] Mapeo completado Entity → DTO para empresa: nombre={}", configEmpresaResponseDTO.getNombreEmpresa());
 
-        return userResponseDTO;
+        return configEmpresaResponseDTO;
     }
 
-    public UserResponseDTO buildUserResponseDTO(UserEntity userEntity) {
-        log.info("📦 [MAPEO] Iniciando construcción de DTO de respuesta para usuario: {}", userEntity.getUserName());
+    public ConfigEmpresaResponseDTO buildConfigEmpresaResponseDTO(ConfigEmpresaEntity configEmpresaEntity) {
+        log.info("📦 [MAPEO] Iniciando construcción de DTO de respuesta para empresa: {}", configEmpresaEntity.getNombreEmpresa());
 
-        UserResponseDTO userResponseDTO = new UserResponseDTO();
+        ConfigEmpresaResponseDTO configEmpresaResponseDTO = new ConfigEmpresaResponseDTO();
 
-        userResponseDTO.setUserName(userEntity.getUserName());
-        userResponseDTO.setIdentificacion(userEntity.getIdentificacion());
-        userResponseDTO.setRoleCode(userEntity.getRoleCode());
-        userResponseDTO.setRoleName(userEntity.getRoleName());
-        userResponseDTO.setEmail(userEntity.getEmail());
-        userResponseDTO.setTelefono(userEntity.getTelefono());
-        userResponseDTO.setDireccion(userEntity.getDireccion());
+        configEmpresaResponseDTO.setNic(configEmpresaEntity.getNic());
+        configEmpresaResponseDTO.setNombreEmpresa(configEmpresaEntity.getNombreEmpresa());
+        configEmpresaResponseDTO.setDireccion(configEmpresaEntity.getDireccion());
+        configEmpresaResponseDTO.setTelefono(configEmpresaEntity.getTelefono());
+        configEmpresaResponseDTO.setMensaje(configEmpresaEntity.getMensaje());
+        configEmpresaResponseDTO.setLogo(configEmpresaEntity.getLogo());
 
-        log.info("✅ [MAPEO] Mapeo completado de DTO de respuesta para usuario: {}", userResponseDTO.getUserName());
+        log.info("✅ [MAPEO] Mapeo completado de DTO de respuesta para empresa: {}", configEmpresaResponseDTO.getNombreEmpresa());
 
-        return userResponseDTO;
+        return configEmpresaResponseDTO;
     }
 }
