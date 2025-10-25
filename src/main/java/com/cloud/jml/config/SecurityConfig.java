@@ -49,6 +49,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(request -> {
                     var config = new CorsConfiguration();
                     config.setAllowedOrigins(List.of("http://localhost:8080")); // frontend
+//                    config.setAllowedOriginPatterns(List.of("*")); // frontend
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
                     config.setAllowedHeaders(List.of("*"));
                     config.setAllowCredentials(true); // permite enviar headers de auth o cookies
@@ -58,7 +59,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/roles/**", // Permitir acciones en rol sin autenticación
                                 "/usuario/**", // Permitir acciones en user sin autenticación
-                                "/authentication/**" // Permitir acciones en auth sin autenticación
+                                "/authentication/**", // Permitir acciones en auth sin autenticación
+                                "/uploads/**" // permite acceso público a imágenes
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

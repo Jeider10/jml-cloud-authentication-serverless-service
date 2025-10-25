@@ -27,11 +27,12 @@ public class ConfigEmpresaMapper {
 
         ConfigEmpresaEntity configEmpresaEntity = new ConfigEmpresaEntity();
 
-        configEmpresaEntity.setNic(configEmpresaRequestDTO.getNic());
+        configEmpresaEntity.setNit(configEmpresaRequestDTO.getNit());
         configEmpresaEntity.setNombreEmpresa(configEmpresaRequestDTO.getNombreEmpresa());
         configEmpresaEntity.setDireccion(configEmpresaRequestDTO.getDireccion());
         configEmpresaEntity.setTelefono(configEmpresaRequestDTO.getTelefono());
         configEmpresaEntity.setMensaje(configEmpresaRequestDTO.getMensaje());
+        configEmpresaEntity.setLogo(configEmpresaRequestDTO.getLogo());
         configEmpresaEntity.setFechaCreacion(LocalDateTime.now());
 
         log.info("✅ [MAPEO] Mapeo completado DTO → Entity para empresa: nombre={}", configEmpresaEntity.getNombreEmpresa());
@@ -60,7 +61,7 @@ public class ConfigEmpresaMapper {
 
         ConfigEmpresaResponseDTO configEmpresaResponseDTO = new ConfigEmpresaResponseDTO();
 
-        configEmpresaResponseDTO.setNic(configEmpresaEntity.getNic());
+        configEmpresaResponseDTO.setNit(configEmpresaEntity.getNit());
         configEmpresaResponseDTO.setNombreEmpresa(configEmpresaEntity.getNombreEmpresa());
         configEmpresaResponseDTO.setDireccion(configEmpresaEntity.getDireccion());
         configEmpresaResponseDTO.setTelefono(configEmpresaEntity.getTelefono());

@@ -9,7 +9,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Slf4j
@@ -76,7 +85,7 @@ public class ConfigEmpresaUtils {
         }
 
         ConfigEmpresaEntity configEmpresaEntity = configEmpresaExistencia.get();
-        log.info("📦 [ENCONTRADO] Empresa localizada -> {} con nic: {}", configEmpresaEntity.getNombreEmpresa(), configEmpresaEntity.getNic());
+        log.info("📦 [ENCONTRADO] Empresa localizada -> {} con nit: {}", configEmpresaEntity.getNombreEmpresa(), configEmpresaEntity.getNit());
 
         log.info("✅ [FINALIZADO] Empresa verificada correctamente para actualización: {}", configEmpresaEntity.getNombreEmpresa());
 
@@ -87,13 +96,44 @@ public class ConfigEmpresaUtils {
         log.info("📌 Actualizando datos de la empresa: {}", configEmpresaRequestDTO.getNombreEmpresa());
 
         // Actualizamos solo los campos permitidos
-        configEmpresaEntity.setNic(configEmpresaRequestDTO.getNic());
+        configEmpresaEntity.setNit(configEmpresaRequestDTO.getNit());
         configEmpresaEntity.setNombreEmpresa(configEmpresaRequestDTO.getNombreEmpresa());
         configEmpresaEntity.setDireccion(configEmpresaRequestDTO.getDireccion());
         configEmpresaEntity.setTelefono(configEmpresaRequestDTO.getTelefono());
         configEmpresaEntity.setMensaje(configEmpresaRequestDTO.getMensaje());
         configEmpresaEntity.setLogo(configEmpresaRequestDTO.getLogo());
 
+        // Actualiza fecha
+        configEmpresaEntity.setFechaActualizacion(LocalDateTime.now());
+
         log.info("✅ Datos de la empresa actualizados correctamente: {}", configEmpresaEntity.getNombreEmpresa());
+    }
+
+    @Transactional
+    public String subirLogo(MultipartFile file) {
+        log.info("📂 [UPLOAD] Iniciando proceso de carga del logo: {}", file.getOriginalFilename());
+        try {
+            // Carpeta donde se guardarán los logos
+            String uploadDir = "uploads/logos/";
+            File directorio = new File(uploadDir);
+            if (!directorio.exists()) {
+                directorio.mkdirs();
+                log.info("📁 Carpeta creada: {}", directorio.getAbsolutePath());
+            }
+
+            // Renombrar archivo para evitar colisiones
+            String nombreArchivo = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+            Path destino = Paths.get(uploadDir, nombreArchivo);
+            Files.copy(file.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
+
+            String rutaRelativa = "/uploads/logos/" + nombreArchivo;
+            log.info("✅ [UPLOAD] Logo guardado correctamente en: {}", rutaRelativa);
+
+            return rutaRelativa;
+
+        } catch (IOException e) {
+            log.error("❌ [UPLOAD ERROR] Error al guardar el logo", e);
+            throw new RuntimeException("❌ Error al guardar el logo", e);
+        }
     }
 }

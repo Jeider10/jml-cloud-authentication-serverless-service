@@ -6,6 +6,7 @@ import com.cloud.jml.service.ConfigEmpresaService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -33,36 +34,41 @@ public class ConfigEmpresaController {
         return ResponseEntity.ok(primeraEmpresa);
     }
 
-    @GetMapping("/{nic}")
-    public ResponseEntity<ConfigEmpresaResponseDTO> buscarEmpresaNic(@PathVariable Long nic) {
-        log.info("📥 [SOLICITUD] Buscar empresa con NIC: {}", nic);
+    @GetMapping("/{nit}")
+    public ResponseEntity<ConfigEmpresaResponseDTO> buscarEmpresaNit(@PathVariable Long nit) {
+        log.info("📥 [SOLICITUD] Buscar empresa con NIT: {}", nit);
 
         ConfigEmpresaRequestDTO configEmpresaRequestDTO = new ConfigEmpresaRequestDTO();
-        configEmpresaRequestDTO.setNic(nic);
+        configEmpresaRequestDTO.setNit(nit);
 
-        ConfigEmpresaResponseDTO response = configEmpresaService.buscarEmpresaNic(configEmpresaRequestDTO);
+        ConfigEmpresaResponseDTO response = configEmpresaService.buscarEmpresaNit(configEmpresaRequestDTO);
 
-        log.info("📤 [RESPUESTA] Empresa encontrada: {} con nic: {}", response.getNombreEmpresa(), response.getNic());
+        log.info("📤 [RESPUESTA] Empresa encontrada: {} con nit: {}", response.getNombreEmpresa(), response.getNit());
 
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<ConfigEmpresaResponseDTO> registrarDatosEmpresa(@RequestBody ConfigEmpresaRequestDTO configEmpresaRequestDTO) {
+    @PostMapping(value = "/register", consumes = {"multipart/form-data"})
+    public ResponseEntity<ConfigEmpresaResponseDTO> registrarDatosEmpresa(
+            @RequestPart("empresa") ConfigEmpresaRequestDTO configEmpresaRequestDTO,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
         log.info("📥 [SOLICITUD] Crear empresa: {}", configEmpresaRequestDTO.getNombreEmpresa());
 
-        ConfigEmpresaResponseDTO configEmpresaResponseDTO = configEmpresaService.registrarDatosEmpresa(configEmpresaRequestDTO);
+        ConfigEmpresaResponseDTO configEmpresaResponseDTO = configEmpresaService.registrarDatosEmpresa(configEmpresaRequestDTO, file);
 
-        log.info("📤 [RESPUESTA] Empresa creada: {} con nic: {}", configEmpresaResponseDTO.getNombreEmpresa(), configEmpresaResponseDTO.getNic());
+        log.info("📤 [RESPUESTA] Empresa creada: {} con nit: {}", configEmpresaResponseDTO.getNombreEmpresa(), configEmpresaResponseDTO.getNit());
 
         return ResponseEntity.ok(configEmpresaResponseDTO);
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<ConfigEmpresaResponseDTO> actualizarEmpresa(@RequestBody ConfigEmpresaRequestDTO configEmpresaRequestDTO) {
+    @PutMapping(value = "/update", consumes = {"multipart/form-data"})
+    public ResponseEntity<ConfigEmpresaResponseDTO> actualizarEmpresa(
+            @RequestPart("empresa") ConfigEmpresaRequestDTO configEmpresaRequestDTO,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
+
         log.info("📥 [SOLICITUD] Actualizar empresa: {}", configEmpresaRequestDTO.getNombreEmpresa());
 
-        ConfigEmpresaResponseDTO configEmpresaResponseDTO = configEmpresaService.actualizarEmpresa(configEmpresaRequestDTO);
+        ConfigEmpresaResponseDTO configEmpresaResponseDTO = configEmpresaService.actualizarEmpresa(configEmpresaRequestDTO, file);
 
         log.info("📤 [RESPUESTA] Empresa actualizada correctamente: {}", configEmpresaRequestDTO.getNombreEmpresa());
 
@@ -70,15 +76,15 @@ public class ConfigEmpresaController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<Void> eliminarEmpresa(@RequestParam("nic") Long nic) {
-        log.info("📥 [SOLICITUD] Eliminar empresa con nic: {}", nic);
+    public ResponseEntity<Void> eliminarEmpresa(@RequestParam("nit") Long nit) {
+        log.info("📥 [SOLICITUD] Eliminar empresa con nit: {}", nit);
 
         ConfigEmpresaRequestDTO configEmpresaRequestDTO = new ConfigEmpresaRequestDTO();
-        configEmpresaRequestDTO.setNic(nic);
+        configEmpresaRequestDTO.setNit(nit);
 
         configEmpresaService.eliminarEmpresa(configEmpresaRequestDTO);
 
-        log.info("📤 [RESPUESTA] Empresa eliminada correctamente con nic: {}", nic);
+        log.info("📤 [RESPUESTA] Empresa eliminada correctamente con nit: {}", nit);
 
         return ResponseEntity.ok().build();
     }

@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface ConfigEmpresaRepository extends JpaRepository<ConfigEmpresaEntity, Long> {
-    Optional<ConfigEmpresaEntity> findByNic(Long nic);
+    Optional<ConfigEmpresaEntity> findByNit(Long nit);
 
     Optional<ConfigEmpresaEntity> findByNombreEmpresa(String nombreEmpresa);
 }
