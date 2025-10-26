@@ -26,7 +26,7 @@ public class ConfigEmpresaEntity {
     private String telefono;
     private String mensaje;
 
-    @Column(name = "logo", columnDefinition = "TEXT")
+    @Column(name = "logo", columnDefinition = "LONGTEXT")
     private String logo;
 
     @Column(name = "fecha_creacion", nullable = false, updatable = false)

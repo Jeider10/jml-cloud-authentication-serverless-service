@@ -2,6 +2,7 @@ package com.cloud.jml.utils.empresa;
 
 import com.cloud.jml.config.logo.S3Properties;
 import com.cloud.jml.dto.empresa.ConfigEmpresaRequestDTO;
+import com.cloud.jml.exception.empresa.ConfigEmpresaLogoUploadException;
 import com.cloud.jml.exception.empresa.ConfigEmpresaNotFoundException;
 import com.cloud.jml.exception.empresa.ConfigEmpresaPersistenceException;
 import com.cloud.jml.model.ConfigEmpresaEntity;
@@ -22,6 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.Optional;
 
 @Slf4j
@@ -116,33 +118,6 @@ public class ConfigEmpresaUtils {
         log.info("✅ Datos de la empresa actualizados correctamente: {}", configEmpresaEntity.getNombreEmpresa());
     }
 
-    public String subirLogo(MultipartFile file) {
-        log.info("📂 [UPLOAD] Iniciando proceso de carga del logo: {}", file.getOriginalFilename());
-        try {
-            // Carpeta donde se guardarán los logos
-            String uploadDir = "uploads/logos/";
-            File directorio = new File(uploadDir);
-            if (!directorio.exists()) {
-                directorio.mkdirs();
-                log.info("📁 Carpeta creada: {}", directorio.getAbsolutePath());
-            }
-
-            // Renombrar archivo para evitar colisiones
-            String nombreArchivo = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-            Path destino = Paths.get(uploadDir, nombreArchivo);
-            Files.copy(file.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
-
-            String rutaRelativa = "/uploads/logos/" + nombreArchivo;
-            log.info("✅ [UPLOAD] Logo guardado correctamente en: {}", rutaRelativa);
-
-            return rutaRelativa;
-
-        } catch (IOException e) {
-            log.error("❌ [UPLOAD ERROR] Error al guardar el logo", e);
-            throw new RuntimeException("❌ Error al guardar el logo", e);
-        }
-    }
-
     public String subirLogoAS3(MultipartFile file) {
         log.info("📤 [S3 UPLOAD] Subiendo logo a bucket {}", s3Properties.getBucket());
 
@@ -173,9 +148,76 @@ public class ConfigEmpresaUtils {
 
             return logoUrl;
 
+        } catch (ConfigEmpresaLogoUploadException e) {
+            log.error("❌ Error controlado al subir logo a S3", e);
+            throw e;
         } catch (Exception e) {
             log.error("❌ Error al subir logo a S3", e);
-            throw new RuntimeException("Error al subir logo a S3", e);
+            throw ConfigEmpresaLogoUploadException.s3UploadError(e);
+        }
+    }
+
+    public String guardarLogoEnBase64(MultipartFile file) {
+        log.info("📂 [UPLOAD] Iniciando proceso de carga del logo: {} en la base", file.getOriginalFilename());
+
+        try {
+            // 🔹 Límite máximo permitido (10 MB)
+            final long MAX_SIZE_BYTES = 10L * 1024 * 1024;
+
+            long fileSize = file.getSize();
+            if (fileSize > MAX_SIZE_BYTES) {
+                log.warn("⚠️ El archivo excede el tamaño máximo permitido: {} bytes (límite: {})", fileSize, MAX_SIZE_BYTES);
+                throw ConfigEmpresaLogoUploadException.fileTooLarge(fileSize);
+            }
+
+            // 🔹 Leer el contenido del archivo directamente en memoria
+            byte[] contenido = file.getBytes();
+            log.info("✅ [UPLOAD] Archivo '{}' cargado correctamente (tamaño: {} bytes)",
+                    file.getOriginalFilename(), contenido.length);
+
+            // 🔹 Codificar en Base64
+            String encodedToStringLogo = Base64.getEncoder().encodeToString(contenido);
+            log.info("✅ [UPLOAD] Logo codificado en Base64 ({} caracteres Base64)", encodedToStringLogo.length());
+
+            return encodedToStringLogo;
+
+        } catch (ConfigEmpresaLogoUploadException e) {
+            // ⚠️ Excepciones personalizadas controladas
+            log.error("❌ [UPLOAD ERROR] Error controlado al procesar el archivo", e);
+            throw e;
+        } catch (Exception e) {
+            log.error("💥 [UPLOAD ERROR] Error inesperado al cargar el logo", e);
+            throw ConfigEmpresaLogoUploadException.unexpected(e);
+        }
+    }
+
+    /**
+     * Crea carpeta local y guarda el logo en la carpeta correspondiente
+     */
+    public String subirLogo(MultipartFile file) {
+        log.info("📂 [UPLOAD] Iniciando proceso de carga del logo: {}", file.getOriginalFilename());
+        try {
+            // Carpeta donde se guardarán los logos
+            String uploadDir = "uploads/logos/";
+            File directorio = new File(uploadDir);
+            if (!directorio.exists()) {
+                directorio.mkdirs();
+                log.info("📁 Carpeta creada: {}", directorio.getAbsolutePath());
+            }
+
+            // Renombrar archivo para evitar colisiones
+            String nombreArchivo = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+            Path destino = Paths.get(uploadDir, nombreArchivo);
+            Files.copy(file.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
+
+            String rutaRelativa = "/uploads/logos/" + nombreArchivo;
+            log.info("✅ [UPLOAD] Logo guardado correctamente en: {}", rutaRelativa);
+
+            return rutaRelativa;
+
+        } catch (IOException e) {
+            log.error("❌ [UPLOAD ERROR] Error al guardar el logo", e);
+            throw new RuntimeException("❌ Error al guardar el logo", e);
         }
     }
 }

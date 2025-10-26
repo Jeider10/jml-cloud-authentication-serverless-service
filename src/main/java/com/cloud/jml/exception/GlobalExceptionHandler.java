@@ -1,6 +1,7 @@
 package com.cloud.jml.exception;
 
 import com.cloud.jml.exception.authentication.AuthenticationRuntimeException;
+import com.cloud.jml.exception.empresa.ConfigEmpresaLogoUploadException;
 import com.cloud.jml.exception.empresa.ConfigEmpresaRuntimeException;
 import com.cloud.jml.exception.role.RoleRuntimeException;
 import com.cloud.jml.exception.user.UserRuntimeException;
@@ -49,6 +50,15 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(
                 ex.getStatus(),
                 "🔑 Error en empresa",
+                ex.getMessage());
+    }
+
+    // 🖼️ Errores en carga o guardado de logo
+    @ExceptionHandler(ConfigEmpresaLogoUploadException.class)
+    public ResponseEntity<Map<String, Object>> handleLogoErrors(ConfigEmpresaLogoUploadException ex) {
+        return buildErrorResponse(
+                ex.getStatus(),
+                "🖼️ Error en carga de logo",
                 ex.getMessage());
     }
 
