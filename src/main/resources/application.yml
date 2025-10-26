@@ -33,6 +33,16 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
 
+cloud:
+  aws:
+    region:
+      static: ${AWS_REGION:us-east-1}   # usa variable o fallback
+    s3:
+      bucket: ${AWS_S3_BUCKET_NAME}     # <-- 🔹 aquí el nombre del bucket
+    credentials:
+      access-key: ${AWS_ACCESS_KEY_ID}
+      secret-key: ${AWS_SECRET_ACCESS_KEY}
+
 jwt:
   secret: gOOKoiLpQ/XDAAo9I85L/2Bh3Y9KWvDFyRf7vqqGP38=
   expiration: 3600000  # 1 hora en milisegundos

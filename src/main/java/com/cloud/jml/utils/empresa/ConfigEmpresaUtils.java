@@ -1,5 +1,6 @@
 package com.cloud.jml.utils.empresa;
 
+import com.cloud.jml.config.logo.S3Properties;
 import com.cloud.jml.dto.empresa.ConfigEmpresaRequestDTO;
 import com.cloud.jml.exception.empresa.ConfigEmpresaNotFoundException;
 import com.cloud.jml.exception.empresa.ConfigEmpresaPersistenceException;
@@ -9,8 +10,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,9 +29,13 @@ import java.util.Optional;
 public class ConfigEmpresaUtils {
 
     private final ConfigEmpresaRepository configEmpresaRepository;
+    private final S3Client s3Client;
+    private final S3Properties s3Properties;
 
-    public ConfigEmpresaUtils(ConfigEmpresaRepository configEmpresaRepository) {
+    public ConfigEmpresaUtils(ConfigEmpresaRepository configEmpresaRepository, S3Client s3Client, S3Properties s3Properties) {
         this.configEmpresaRepository = configEmpresaRepository;
+        this.s3Client = s3Client;
+        this.s3Properties = s3Properties;
         log.info("🔥 UserUtils inicializado correctamente.");
     }
 
@@ -109,7 +116,6 @@ public class ConfigEmpresaUtils {
         log.info("✅ Datos de la empresa actualizados correctamente: {}", configEmpresaEntity.getNombreEmpresa());
     }
 
-    @Transactional
     public String subirLogo(MultipartFile file) {
         log.info("📂 [UPLOAD] Iniciando proceso de carga del logo: {}", file.getOriginalFilename());
         try {
@@ -134,6 +140,33 @@ public class ConfigEmpresaUtils {
         } catch (IOException e) {
             log.error("❌ [UPLOAD ERROR] Error al guardar el logo", e);
             throw new RuntimeException("❌ Error al guardar el logo", e);
+        }
+    }
+
+    public String subirLogoAS3(MultipartFile file) {
+        log.info("📤 [S3 UPLOAD] Subiendo logo a bucket {}", s3Properties.getBucket());
+
+        try {
+            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+            String objectKey = "logos/" + fileName;
+
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .bucket(s3Properties.getBucket())
+                    .key(objectKey)
+                    .contentType(file.getContentType())
+//                    .acl(ObjectCannedACL.PUBLIC_READ)
+                    .build();
+
+            s3Client.putObject(putObjectRequest, RequestBody.fromBytes(file.getBytes()));
+
+            String logoUrl = String.format("https://%s.s3.amazonaws.com/%s", s3Properties.getBucket(), objectKey);
+            log.info("✅ Logo subido correctamente a: {}", logoUrl);
+
+            return logoUrl;
+
+        } catch (Exception e) {
+            log.error("❌ Error al subir logo a S3", e);
+            throw new RuntimeException("Error al subir logo a S3", e);
         }
     }
 }

@@ -95,7 +95,7 @@ public class ConfigEmpresaService {
         }
 
         if (file != null && !file.isEmpty()) {
-            String rutaLogo = configEmpresaUtils.subirLogo(file);
+            String rutaLogo = configEmpresaUtils.subirLogoAS3(file);
             configEmpresaRequestDTO.setLogo(rutaLogo);
             log.info("🖼️ Logo cargado: {}", rutaLogo);
         }
@@ -126,7 +126,7 @@ public class ConfigEmpresaService {
 
         // Paso 2: Si viene un archivo, subirlo y actualizar el campo logo
         if (file != null && !file.isEmpty()) {
-            String rutaLogo = configEmpresaUtils.subirLogo(file);
+            String rutaLogo = configEmpresaUtils.subirLogoAS3(file);
             configEmpresaRequestDTO.setLogo(rutaLogo);
             log.info("🖼️ Logo actualizado: {}", rutaLogo);
         }
