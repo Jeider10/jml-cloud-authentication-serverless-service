@@ -8,9 +8,9 @@ import org.springframework.stereotype.Component;
 @Getter
 @Setter
 @Component
-@ConfigurationProperties(prefix = "cloud.aws.s3")
+@ConfigurationProperties(prefix = "cloud.aws")
 public class S3Properties {
 
     private String bucket;
-    private String region = "us-east-1";
+    private String region;
 }

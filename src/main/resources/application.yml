@@ -35,10 +35,8 @@ spring:
 
 cloud:
   aws:
-    region:
-      static: ${AWS_REGION:us-east-1}   # usa variable o fallback
-    s3:
-      bucket: ${AWS_S3_BUCKET_NAME}     # <-- 🔹 aquí el nombre del bucket
+    region: ${AWS_REGION:us-east-1}   # usa variable o fallback
+    bucket: ${AWS_S3_BUCKET_NAME}     # <-- 🔹 aquí el nombre del bucket
     credentials:
       access-key: ${AWS_ACCESS_KEY_ID}
       secret-key: ${AWS_SECRET_ACCESS_KEY}

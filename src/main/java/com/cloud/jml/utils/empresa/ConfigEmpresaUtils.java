@@ -147,20 +147,29 @@ public class ConfigEmpresaUtils {
         log.info("📤 [S3 UPLOAD] Subiendo logo a bucket {}", s3Properties.getBucket());
 
         try {
+            // 🔹 Nombre único para el archivo
             String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
             String objectKey = "logos/" + fileName;
 
+            // 🔹 Crear solicitud para subir a S3
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(s3Properties.getBucket())
                     .key(objectKey)
                     .contentType(file.getContentType())
-//                    .acl(ObjectCannedACL.PUBLIC_READ)
                     .build();
 
+            // 🔹 Subir el archivo
             s3Client.putObject(putObjectRequest, RequestBody.fromBytes(file.getBytes()));
 
-            String logoUrl = String.format("https://%s.s3.amazonaws.com/%s", s3Properties.getBucket(), objectKey);
-            log.info("✅ Logo subido correctamente a: {}", logoUrl);
+            // 🔹 Construir la URL pública
+            String logoUrl = String.format(
+                    "https://%s.s3.%s.amazonaws.com/%s",
+                    s3Properties.getBucket(),
+                    s3Properties.getRegion(),
+                    objectKey
+            );
+
+            log.info("✅ [S3 UPLOAD] Logo subido correctamente a: {}", logoUrl);
 
             return logoUrl;
 
