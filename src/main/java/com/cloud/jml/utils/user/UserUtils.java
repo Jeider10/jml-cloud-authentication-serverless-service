@@ -1,8 +1,9 @@
 package com.cloud.jml.utils.user;
 
 import com.cloud.jml.dto.user.UserRequestDTO;
+import com.cloud.jml.exception.role.RoleDuplicationException;
 import com.cloud.jml.exception.role.RoleNotFoundException;
-import com.cloud.jml.exception.user.UserCredencialesIncorrectasException;
+import com.cloud.jml.exception.user.UserAlreadyExistsException;
 import com.cloud.jml.exception.user.UserNotFoundException;
 import com.cloud.jml.exception.user.UserPersistenceException;
 import com.cloud.jml.model.RoleEntity;
@@ -15,6 +16,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Slf4j
 @Component // 🔹 Anotación para indicar que es un componente de Spring
@@ -72,7 +74,7 @@ public class UserUtils {
     }
 
     public RoleEntity obtenerRolePorCodigo(int roleCode) {
-        log.info("📌 Inicia consulta de role con código: {}", roleCode);
+        log.info("✅ Inicia consulta de role con código: {}", roleCode);
 
         Optional<RoleEntity> optionalRole = roleRepository.findByRoleCode(roleCode);
 
@@ -87,48 +89,73 @@ public class UserUtils {
     }
 
     public UserEntity validarExistenciaUsuario(UserRequestDTO userRequestDTO) {
-        log.info("📌 Inicia validación de existencia del usuario: {}", userRequestDTO.getUserName());
+        log.info("✅ Inicia validación de existencia del usuario para actualización: {}", userRequestDTO.getUserName());
 
-        // Buscar el usuario
-        Optional<UserEntity> userEntityOptional = userRepository.findByUserName(userRequestDTO.getUserName());
+        // 🔹 Paso 1: Buscar el usuario actual por identificación (el que debe existir)
+        Optional<UserEntity> usuarioActualOptional = userRepository.findByIdentificacion(userRequestDTO.getIdentificacion());
 
-        if (userEntityOptional.isEmpty()) {
-            log.warn("⚠️ Usuario no encontrado: {}", userRequestDTO.getUserName());
+        if (usuarioActualOptional.isEmpty()) {
+            log.error("❌ No se encontró el usuario: {} con identificación: {}", userRequestDTO.getUserName(), userRequestDTO.getIdentificacion());
             throw new UserNotFoundException(userRequestDTO.getUserName());
         }
 
-        UserEntity userEntity = userEntityOptional.get();
+        UserEntity usuarioActual = usuarioActualOptional.get();
 
-        // Comparación segura de contraseñas
-        if (!userRequestDTO.getPassword().equals(userEntity.getPassword())) {
-            log.warn("⚠️ Contraseña incorrecta para usuario: {}", userEntity.getUserName());
-            throw new UserCredencialesIncorrectasException(userEntity.getUserName());
+        // 🔹 Paso 2: Buscar si existe otro usuario con el nuevo userName
+        Optional<UserEntity> usuarioConNuevoUserNameOpt = userRepository.findByUserName(userRequestDTO.getUserName());
+
+        if (usuarioConNuevoUserNameOpt.isPresent()) {
+            UserEntity usuarioConNuevoUserName = usuarioConNuevoUserNameOpt.get();
+
+            // Si el usuario con ese userName tiene otra identificación, no se puede usar ese nombre
+            long usuarioActualIdentificacion = usuarioActual.getIdentificacion();
+            if (usuarioConNuevoUserName.getIdentificacion() != usuarioActualIdentificacion) {
+                log.warn("⚠️ El userName '{}' ya pertenece a otro usuario con identificación diferente: {}",
+                        userRequestDTO.getUserName(), usuarioConNuevoUserName.getIdentificacion());
+                throw new UserAlreadyExistsException(userRequestDTO.getUserName());
+            }
+        } else {
+            log.info("ℹ️ El nuevo userName '{}' está disponible para uso.", userRequestDTO.getUserName());
         }
 
-//        if (!passwordEncoder.matches(password, user.getPassword())) {
-//            log.warn("⚠️ Contraseña incorrecta para usuario: {}", userName);
-//            throw new UserCredencialesIncorrectasException(userEntity.getUserName());
-//        }
+        log.info("✅ [FINALIZADO] Usuario existente validado correctamente para actualización: {}", usuarioActual.getUserName());
 
-        log.info("✅ [FINALIZADO] Usuario verificado correctamente para actualización: {}", userEntity.getUserName());
-
-        return userEntity;
+        return usuarioActual;
     }
 
-    public void actualizarDatosUsuario(UserRequestDTO userRequestDTO, UserEntity userEntity) {
-        log.info("📌 Actualizando datos del usuario: {}", userRequestDTO.getUserName());
+    public void validarUnicoAdministrador(UserEntity userEntity) {
+        log.info("✅ Verificando si el usuario es único administrador: {}", userEntity.getUserName());
+        // 🚫 Validar que no haya más de un administrador
+        if (esRolAdministrador(userEntity)) {
+            boolean existeAdmin = userRepository.existsByRoleNameIgnoreCase(userEntity.getRoleName());
 
-        // Actualizamos solo los campos permitidos
-        userEntity.setUserName(userRequestDTO.getUserName());
-        userEntity.setPassword(userRequestDTO.getPassword());
-        userEntity.setEmail(userRequestDTO.getEmail());
-        userEntity.setTelefono(userRequestDTO.getTelefono());
-        userEntity.setDireccion(userRequestDTO.getDireccion());
-        userEntity.setRoleCode(userRequestDTO.getRoleCode());
+            log.info("✅ Verificando si ya existe un usuario con el rol de administrador: {}", existeAdmin);
 
-        RoleEntity roleEntity = obtenerRolePorCodigo(userRequestDTO.getRoleCode());
-        userEntity.setRoleName(roleEntity.getRoleName());
+            if (existeAdmin) {
+                log.warn("❌ [ERROR] Ya existe un usuario con el rol de administrador ('{}'). "
+                        + "No se permiten múltiples usuarios administradores.", userEntity.getRoleName());
+                throw new RoleDuplicationException(userEntity.getRoleCode());
+            }
+        }
+    }
 
-        log.info("✅ Datos del usuario actualizados correctamente: {}", userEntity.getUserName());
+    public boolean esRolAdministrador(UserEntity userEntity) {
+        log.info("✅ Verificando si el usuario es administrador: {}", userEntity.getUserName());
+
+        String roleName = userEntity.getRoleName();
+        if (roleName == null) {
+            log.warn("⚠️ El rol del usuario es nulo: {}", userEntity.getUserName());
+            return false;
+        }
+
+        boolean roleMatch = Stream.of(
+                        "ADMIN",
+                        "ADMINISTRADOR",
+                        "SUPERADMIN")
+                .anyMatch(admin -> admin.equalsIgnoreCase(roleName.trim()));
+
+        log.info("✅ Verificación de rol completada. Es administrador: {}", roleMatch);
+
+        return roleMatch;
     }
 }

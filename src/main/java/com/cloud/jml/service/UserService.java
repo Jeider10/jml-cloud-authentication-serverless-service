@@ -73,6 +73,8 @@ public class UserService {
         UserEntity userEntity = mapper.mapRequestDtoToEntity(userRequestDTO);
         log.info("📦 [MAPEO] Usuario mapeado a entidad. nombre: {}, identificación: {}", userEntity.getUserName(), userEntity.getIdentificacion());
 
+        userUtils.validarUnicoAdministrador(userEntity);
+
         UserEntity guardarUsuario = userUtils.guardarUsuarioBD(userEntity);
         log.info("💾 [PERSISTENCIA] Usuario guardado exitosamente. nombre: {}, identificación: {}", guardarUsuario.getUserName(), guardarUsuario.getIdentificacion());
 
@@ -86,6 +88,29 @@ public class UserService {
         return userResponseDTO;
     }
 
+    @Transactional(readOnly = true)
+    public UserResponseDTO obtenerUsuarioPorIdentificacion(UserRequestDTO userRequestDTO) {
+        log.info("🔍 [CONSULTA] Inicio de búsqueda de usuario: {} con identificación: {}", userRequestDTO.getUserName(), userRequestDTO.getIdentificacion());
+
+        Optional<UserEntity> userEntity = userRepository.findByIdentificacion(userRequestDTO.getIdentificacion());
+
+        if (userEntity.isEmpty()) {
+            log.warn("❌ [NO ENCONTRADO] Usuario: {} no encontrado con identificación: {}", userRequestDTO.getUserName(), userRequestDTO.getIdentificacion());
+            throw new UserNotFoundException(userRequestDTO.getUserName());
+        }
+
+        log.info("📦 [ENCONTRADO] Usuario encontrado -> {} con identificación: {}", userEntity.get().getUserName(), userEntity.get().getIdentificacion());
+
+        log.info("📦 [MAPEO] Transformando entidad de usuario a DTO. (obtenerUsuarioPorIdentificacion)");
+        UserResponseDTO userResponseDTO = mapper.mapEntityToResponseDto(userEntity.get());
+        log.info("📦 [MAPEO] Usuario mapeado a DTO. nombre: {}, identificación: {}",
+                userResponseDTO.getUserName(), userResponseDTO.getIdentificacion());
+
+        log.info("✅ [FINALIZADO] Usuario obtenido correctamente: {} con identificación: {}", userResponseDTO.getUserName(), userResponseDTO.getIdentificacion());
+
+        return userResponseDTO;
+    }
+
     @Transactional
     public UserResponseDTO actualizarUsuario(UserRequestDTO userRequestDTO) {
         log.info("🔍 [CONSULTA] Inicio de actualización de usuario: {}", userRequestDTO.getUserName());
@@ -94,7 +119,7 @@ public class UserService {
         UserEntity userEntity = userUtils.validarExistenciaUsuario(userRequestDTO);
 
         // Paso 2: Actualizar datos
-        userUtils.actualizarDatosUsuario(userRequestDTO, userEntity);
+        mapper.actualizarDatosUsuario(userRequestDTO, userEntity);
 
         // Paso 3: Guardar cambios en la BD
         UserEntity actualizado = userUtils.guardarUsuarioBD(userEntity);

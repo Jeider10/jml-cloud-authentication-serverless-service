@@ -44,6 +44,20 @@ public class UserController {
         return ResponseEntity.ok(userResponseDTO);
     }
 
+    @GetMapping("/identificacion")
+    public ResponseEntity<UserResponseDTO> obtenerUsuarioPorIdentificacion(@RequestParam("identificacion") Long identificacion) {
+        log.info("📥 [SOLICITUD] Obtener usuario con identificación: {}", identificacion);
+
+        UserRequestDTO userRequestDTO = new UserRequestDTO();
+        userRequestDTO.setIdentificacion(identificacion);
+
+        UserResponseDTO userResponseDTO = userService.obtenerUsuarioPorIdentificacion(userRequestDTO);
+
+        log.info("📤 [RESPUESTA] Usuario obtenido: {} con identificación: {}", userResponseDTO.getUserName(), userResponseDTO.getIdentificacion());
+
+        return ResponseEntity.ok(userResponseDTO);
+    }
+
     @PutMapping("/update")
     public ResponseEntity<UserResponseDTO> actualizarUsuario(@RequestBody UserRequestDTO userRequestDTO) {
         log.info("📥 [SOLICITUD] Actualizar usuario: {}", userRequestDTO.getUserName());

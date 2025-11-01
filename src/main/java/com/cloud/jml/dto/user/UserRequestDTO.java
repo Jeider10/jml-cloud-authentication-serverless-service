@@ -15,6 +15,8 @@ public class UserRequestDTO {
     private String userName;
     private String password;
     private long identificacion;
+    private String nombres;
+    private String apellidos;
     private int roleCode;
     private String email;
     private String telefono;

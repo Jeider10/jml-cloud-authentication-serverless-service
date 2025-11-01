@@ -33,9 +33,8 @@ public class UserMapper {
 
         UserEntity userEntity = new UserEntity();
 
-        // ✅ Encriptar la contraseña antes de guardarla
-//        String passwordEncriptada = passwordEncoder.encode(userRequestDTO.getPassword());
-
+        userEntity.setNombres(userRequestDTO.getNombres());
+        userEntity.setApellidos(userRequestDTO.getApellidos());
         userEntity.setUserName(userRequestDTO.getUserName());
         userEntity.setPassword(userRequestDTO.getPassword());
         userEntity.setIdentificacion(userRequestDTO.getIdentificacion());
@@ -74,6 +73,8 @@ public class UserMapper {
 
         UserResponseDTO userResponseDTO = new UserResponseDTO();
 
+        userResponseDTO.setNombres(userEntity.getNombres());
+        userResponseDTO.setApellidos(userEntity.getApellidos());
         userResponseDTO.setUserName(userEntity.getUserName());
         userResponseDTO.setIdentificacion(userEntity.getIdentificacion());
         userResponseDTO.setRoleCode(userEntity.getRoleCode());
@@ -85,5 +86,27 @@ public class UserMapper {
         log.info("✅ [MAPEO] Mapeo completado de DTO de respuesta para usuario: {}", userResponseDTO.getUserName());
 
         return userResponseDTO;
+    }
+
+    public void actualizarDatosUsuario(UserRequestDTO userRequestDTO, UserEntity userEntity) {
+        log.info("✅ Actualizando datos del usuario: {}", userRequestDTO.getUserName());
+
+        // Actualizamos solo los campos permitidos
+        userEntity.setIdentificacion(userRequestDTO.getIdentificacion());
+        userEntity.setUserName(userRequestDTO.getUserName());
+        userEntity.setNombres(userRequestDTO.getNombres());
+        userEntity.setApellidos(userRequestDTO.getApellidos());
+        userEntity.setEmail(userRequestDTO.getEmail());
+        userEntity.setTelefono(userRequestDTO.getTelefono());
+        userEntity.setDireccion(userRequestDTO.getDireccion());
+
+        // Actualizamos la fecha de actualización
+        userEntity.setFechaActualizacion(LocalDateTime.now());
+
+        RoleEntity roleEntity = userUtils.obtenerRolePorCodigo(userRequestDTO.getRoleCode());
+        userEntity.setRoleCode(userRequestDTO.getRoleCode());
+        userEntity.setRoleName(roleEntity.getRoleName());
+
+        log.info("✅ Datos del usuario actualizados correctamente: {}", userEntity.getUserName());
     }
 }
