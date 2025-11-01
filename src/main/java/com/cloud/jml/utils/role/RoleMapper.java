@@ -19,6 +19,20 @@ public class RoleMapper {
         log.info("🔥 RoleMapper inicializado correctamente.");
     }
 
+    public void actualizarDatosRole(RoleRequestDTO roleRequestDTO, RoleEntity roleEntity) {
+        log.info("📌 Inicia actualización de datos del role con código: {}", roleRequestDTO.getRoleCode());
+
+        // Actualizamos solo los campos permitidos
+        roleEntity.setRoleCode(roleRequestDTO.getRoleCode());
+        roleEntity.setRoleName(roleRequestDTO.getRoleName());
+        roleEntity.setDescripcion(roleRequestDTO.getDescripcion());
+
+        // Actualizamos la fecha de actualización
+        roleEntity.setFechaActualizacion(LocalDateTime.now());
+
+        log.info("📌 Finaliza actualización de datos del role con código: {}", roleRequestDTO.getRoleCode());
+    }
+
     /**
      * 📦 Convierte un DTO de solicitud de rol en una entidad lista para persistir.
      */
@@ -29,6 +43,7 @@ public class RoleMapper {
 
         roleEntity.setRoleCode(roleRequestDTO.getRoleCode());
         roleEntity.setRoleName(roleRequestDTO.getRoleName());
+        roleEntity.setDescripcion(roleRequestDTO.getDescripcion());
         roleEntity.setFechaCreacion(LocalDateTime.now());
 
         log.info("✅ [MAPEO] Mapeo completado DTO → Entity para role: nombre={}", roleEntity.getRoleName());
@@ -46,6 +61,7 @@ public class RoleMapper {
 
         roleResponseDTO.setRoleCode(roleEntity.getRoleCode());
         roleResponseDTO.setRoleName(roleEntity.getRoleName());
+        roleResponseDTO.setDescripcion(roleEntity.getDescripcion());
 
         // 🕓 Formateo de fechas
         roleFormatearFecha.asignarFechasFormateadas(roleEntity, roleResponseDTO);

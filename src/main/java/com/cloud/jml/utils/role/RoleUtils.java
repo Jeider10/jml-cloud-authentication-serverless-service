@@ -10,7 +10,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Slf4j
@@ -78,16 +77,5 @@ public class RoleUtils {
             log.warn("⚠️ Role no encontrado con código: {}", roleRequestDTO.getRoleCode());
             throw new RoleNotFoundException(roleRequestDTO.getRoleCode());
         }
-    }
-
-    public void actualizarDatosRole(RoleRequestDTO roleRequestDTO, RoleEntity roleEntity) {
-        log.info("📌 Inicia actualización de datos del role con código: {}", roleRequestDTO.getRoleCode());
-
-        // Actualizamos solo los campos permitidos
-        roleEntity.setRoleCode(roleRequestDTO.getRoleCode());
-        roleEntity.setRoleName(roleRequestDTO.getRoleName());
-        roleEntity.setFechaActualizacion(LocalDateTime.now());
-
-        log.info("📌 Finaliza actualización de datos del role con código: {}", roleRequestDTO.getRoleCode());
     }
 }

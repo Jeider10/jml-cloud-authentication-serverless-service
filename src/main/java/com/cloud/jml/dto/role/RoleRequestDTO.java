@@ -14,4 +14,5 @@ public class RoleRequestDTO {
     // Getters y Setters
     private int roleCode;
     private String roleName;
+    private String descripcion;
 }

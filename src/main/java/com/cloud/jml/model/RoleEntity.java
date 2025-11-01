@@ -13,9 +13,6 @@ import java.time.LocalDateTime;
 public class RoleEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @Column(unique = true, nullable = false)
     private Integer roleCode;
 
@@ -27,4 +24,6 @@ public class RoleEntity {
 
     @Column(name = "fecha_actualizacion")
     private LocalDateTime fechaActualizacion;
+
+    private String descripcion;
 }

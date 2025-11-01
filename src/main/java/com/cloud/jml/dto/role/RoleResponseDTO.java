@@ -14,6 +14,7 @@ public class RoleResponseDTO {
     // Getters y Setters
     private int roleCode;
     private String roleName;
+    private String descripcion;
     private String fechaCreacion;
     private String fechaActualizacion;
 }

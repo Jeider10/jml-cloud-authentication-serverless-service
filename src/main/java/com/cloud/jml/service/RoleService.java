@@ -86,6 +86,29 @@ public class RoleService {
         return roleResponseDTO;
     }
 
+    @Transactional(readOnly = true)
+    public RoleResponseDTO buscarRolePorCodigo(RoleRequestDTO roleRequestDTO) {
+        log.info("🔍 [CONSULTA] Inicio de búsqueda de role por código: {}", roleRequestDTO.getRoleCode());
+
+        Optional<RoleEntity> roleEntity = roleRepository.findByRoleCode(roleRequestDTO.getRoleCode());
+
+        if (roleEntity.isEmpty()) {
+            log.warn("❌ [NO ENCONTRADO] Role: {} no encontrado con código: {}", roleRequestDTO.getRoleName(), roleRequestDTO.getRoleCode());
+            throw new RoleNotFoundException(roleRequestDTO.getRoleCode());
+        }
+
+        log.info("📦 [ENCONTRADO] Role encontrado -> {} con código: {}", roleEntity.get().getRoleName(), roleEntity.get().getRoleCode());
+
+        log.info("📦 [MAPEO] Transformando entidad de role a DTO. (buscarRolePorCodigo)");
+        RoleResponseDTO roleResponseDTO = mapper.mapEntityToResponseDto(roleEntity.get());
+        log.info("📦 [MAPEO] Role mapeado a DTO. nombre: {} con código: {} descripción: {}",
+                roleResponseDTO.getRoleName(), roleResponseDTO.getRoleCode(), roleResponseDTO.getDescripcion());
+
+        log.info("✅ [FINALIZADO] Búsqueda de role por código completada: {} con código: {}", roleResponseDTO.getRoleName(), roleResponseDTO.getRoleCode());
+
+        return roleResponseDTO;
+    }
+
     @Transactional
     public RoleResponseDTO actualizarRole(RoleRequestDTO roleRequestDTO) {
         log.info("🔍 [CONSULTA] Inicio de actualización de role: {} con código: {}", roleRequestDTO.getRoleName(), roleRequestDTO.getRoleCode());
@@ -94,7 +117,7 @@ public class RoleService {
         RoleEntity roleEntity = roleUtils.validarExistenciaRole(roleRequestDTO);
 
         // Paso 2: Actualizar datos
-        roleUtils.actualizarDatosRole(roleRequestDTO, roleEntity);
+        mapper.actualizarDatosRole(roleRequestDTO, roleEntity);
 
         // Paso 3: Guardar cambios en la BD
         RoleEntity actualizado = roleUtils.guardarRoleBD(roleEntity);
