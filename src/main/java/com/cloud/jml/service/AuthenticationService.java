@@ -47,4 +47,19 @@ public class AuthenticationService {
 
         return authenticationResponseDTO;
     }
+
+    @Transactional
+    public AuthenticationResponseDTO obtenerUsuarioActual(String authorizationHeader) {
+        log.info("🔐 [CONSULTA] Obteniendo usuario actual.");
+
+        // 1️⃣ Obtener usuario actual
+        AuthenticationOptionsDTO options = authenticationUtils.obtenerUsuarioActual(authorizationHeader);
+
+        // 2️⃣ Devolver respuesta final
+        AuthenticationResponseDTO authenticationResponseDTO = mapper.mapAuthenticationResponseDTO(options, authorizationHeader);
+
+        log.info("✅ [FINALIZADO] Usuario actual obtenido correctamente.");
+
+        return authenticationResponseDTO;
+    }
 }

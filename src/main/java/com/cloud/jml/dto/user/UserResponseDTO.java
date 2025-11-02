@@ -23,4 +23,5 @@ public class UserResponseDTO {
     private String direccion;
     private String fechaCreacion;
     private String fechaActualizacion;
+    private String historialUltimoActualizado;
 }

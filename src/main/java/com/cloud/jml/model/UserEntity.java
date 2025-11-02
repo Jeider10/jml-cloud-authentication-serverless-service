@@ -1,6 +1,9 @@
 package com.cloud.jml.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -43,4 +46,5 @@ public class UserEntity {
     private String email;
     private String telefono;
     private String direccion;
+    private String historialUltimoActualizado;
 }

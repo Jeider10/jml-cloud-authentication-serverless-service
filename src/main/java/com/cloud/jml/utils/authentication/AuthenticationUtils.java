@@ -1,5 +1,7 @@
 package com.cloud.jml.utils.authentication;
 
+import com.cloud.jml.config.jwt.JwtUtil;
+import com.cloud.jml.dto.authentication.AuthenticationOptionsDTO;
 import com.cloud.jml.dto.authentication.AuthenticationRequestDTO;
 import com.cloud.jml.exception.authentication.AuthenticationInvalidCredentialsException;
 import com.cloud.jml.exception.authentication.AuthenticationPersistenceException;
@@ -20,10 +22,12 @@ public class AuthenticationUtils {
 
     private final AuthenticationRepository authenticationRepository;
     private final UserRepository userRepository;
+    private final JwtUtil jwtUtil;
 
-    public AuthenticationUtils(AuthenticationRepository authenticationRepository, UserRepository userRepository) {
+    public AuthenticationUtils(AuthenticationRepository authenticationRepository, UserRepository userRepository, JwtUtil jwtUtil) {
         this.authenticationRepository = authenticationRepository;
         this.userRepository = userRepository;
+        this.jwtUtil = jwtUtil;
         log.info("🔥 AuthenticationUtils inicializado correctamente.");
     }
 
@@ -74,5 +78,38 @@ public class AuthenticationUtils {
         log.info("✅ [FINALIZADO] Usuario verificado correctamente para autenticación: {}", authenticationRequestDTO.getUsuario());
 
         return user;
+    }
+
+    public AuthenticationOptionsDTO obtenerUsuarioActual(String authorizationHeader) {
+        log.info("👤 [CONSULTA] Intentando obtener usuario actual: {}", authorizationHeader);
+
+        // 1️⃣ Extraer el token JWT del header
+        String token = authorizationHeader.replace("Bearer ", "");
+        log.info("🔑 Token extraído: {}", token);
+
+        // 2️⃣ Obtener el userName (o email) del token
+        String userName = jwtUtil.extractUserName(token);
+        log.info("👤 Usuario extraído del token: {}", userName);
+
+        // 3️⃣ Buscar el usuario en la base de datos
+        Optional<UserEntity> usuario = userRepository.findByUserName(userName);
+
+        if (usuario.isEmpty()) {
+            log.warn("⚠️ Usuario: {} no encontrado.", userName);
+            throw new AuthenticationInvalidCredentialsException(userName);
+        }
+
+        log.info("✅ Usuario: {} encontrado.", userName);
+
+        // 4️⃣ Crear el DTO de respuesta
+        AuthenticationOptionsDTO options = new AuthenticationOptionsDTO();
+
+        options.setLogin(usuario.get().getUserName());
+        options.setRoleCode(usuario.get().getRoleCode());
+        options.setRoleName(usuario.get().getRoleName());
+
+        log.info("🔑 Usuario actual obtenido correctamente: {}", options.getLogin());
+
+        return options;
     }
 }

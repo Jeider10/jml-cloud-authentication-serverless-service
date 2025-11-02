@@ -75,7 +75,7 @@ public class JwtUtil {
     }
 
     public String extractUserName(String token) {
-        return getClaims(token).get("userName", String.class);
+        return getClaims(token).get("usuario", String.class);
     }
 
     public Integer extractRoleCode(String token) {

@@ -82,6 +82,7 @@ public class UserMapper {
         userResponseDTO.setEmail(userEntity.getEmail());
         userResponseDTO.setTelefono(userEntity.getTelefono());
         userResponseDTO.setDireccion(userEntity.getDireccion());
+        userResponseDTO.setHistorialUltimoActualizado(userEntity.getHistorialUltimoActualizado());
 
         log.info("✅ [MAPEO] Mapeo completado de DTO de respuesta para usuario: {}", userResponseDTO.getUserName());
 
@@ -99,6 +100,7 @@ public class UserMapper {
         userEntity.setEmail(userRequestDTO.getEmail());
         userEntity.setTelefono(userRequestDTO.getTelefono());
         userEntity.setDireccion(userRequestDTO.getDireccion());
+        userEntity.setHistorialUltimoActualizado(userRequestDTO.getNombres());
 
         // Actualizamos la fecha de actualización
         userEntity.setFechaActualizacion(LocalDateTime.now());

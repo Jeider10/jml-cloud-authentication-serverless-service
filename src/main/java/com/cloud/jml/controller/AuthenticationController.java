@@ -31,4 +31,15 @@ public class AuthenticationController {
 
         return ResponseEntity.ok(authenticationResponseDTO);
     }
+
+    @GetMapping("/obtener-usuario-actual")
+    public ResponseEntity<AuthenticationResponseDTO> obtenerUsuarioActual(@RequestHeader("Authorization") String authorizationHeader) {
+        log.info("📥 [SOLICITUD] Iniciando obtener usuario actual.");
+
+        AuthenticationResponseDTO authenticationResponseDTO = authenticationService.obtenerUsuarioActual(authorizationHeader);
+
+        log.info("📤 [RESPUESTA] Usuario actual obtenido correctamente.");
+
+        return ResponseEntity.ok(authenticationResponseDTO);
+    }
 }
