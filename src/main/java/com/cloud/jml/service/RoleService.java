@@ -64,7 +64,7 @@ public class RoleService {
     public RoleResponseDTO registrarRole(RoleRequestDTO roleRequestDTO) {
         log.info("🔍 [CONSULTA] Inicio de creación de role: {} con código: {}", roleRequestDTO.getRoleName(), roleRequestDTO.getRoleCode());
 
-        Optional<RoleEntity> roleExistente = roleRepository.findByRoleCodeOrRoleName(roleRequestDTO.getRoleCode(), roleRequestDTO.getRoleName());
+        Optional<RoleEntity> roleExistente = roleRepository.findByRoleCode(roleRequestDTO.getRoleCode());
 
         if (roleExistente.isPresent()) {
             log.warn("❌ [ERROR] Role duplicado detectado: {}", roleRequestDTO.getRoleCode());
@@ -110,32 +110,32 @@ public class RoleService {
         return roleResponseDTO;
     }
 
-//    @Transactional(readOnly = true)
-//    public List<RoleResponseDTO> buscarRolePorNombre(RoleRequestDTO roleRequestDTO) {
-//        log.info("🔍 [CONSULTA] Inicio de búsqueda de role por nombre: {}", roleRequestDTO.getRoleName());
-//
-//        List<RoleEntity> roleEntity = roleRepository.findByRoleNameContainingIgnoreCase(roleRequestDTO.getRoleName());
-//
-//        if (roleEntity.isEmpty()) {
-//            log.warn("❌ [NO ENCONTRADO] Role con nombre: {} no encontrado.", roleRequestDTO.getRoleName());
-//            return List.of();
-//        }
-//
-//        log.info("📦 [MAPEO] Transformando {} entidades de usuarios a DTOs (roleName: {})", roleEntity.size(), roleRequestDTO.getRoleName());
-//
-//        // convertir a stream
-//        Stream<RoleEntity> streamRoles = roleEntity.stream();
-//
-//        // mapear entidades a DTOs
-//        Stream<RoleResponseDTO> streamDto = streamRoles.map(mapper::mapEntityToResponseDto);
-//
-//        // recolectar en lista
-//        List<RoleResponseDTO> rolesResponse = streamDto.toList();
-//
-//        log.info("✅ [FINALIZADO] Roles encontrados con roleName: {}. Total encontrados: {}", roleRequestDTO.getRoleName(), rolesResponse.size());
-//
-//        return rolesResponse;
-//    }
+    @Transactional(readOnly = true)
+    public List<RoleResponseDTO> buscarRolePorNombre(RoleRequestDTO roleRequestDTO) {
+        log.info("🔍 [CONSULTA] Inicio de búsqueda de role por nombre: {}", roleRequestDTO.getRoleName());
+
+        List<RoleEntity> roleEntity = roleRepository.findByRoleNameContainingIgnoreCase(roleRequestDTO.getRoleName());
+
+        if (roleEntity.isEmpty()) {
+            log.warn("❌ [NO ENCONTRADO] Role con nombre: {} no encontrado.", roleRequestDTO.getRoleName());
+            return List.of();
+        }
+
+        log.info("📦 [MAPEO] Transformando {} entidades de usuarios a DTOs (roleName: {})", roleEntity.size(), roleRequestDTO.getRoleName());
+
+        // convertir a stream
+        Stream<RoleEntity> streamRoles = roleEntity.stream();
+
+        // mapear entidades a DTOs
+        Stream<RoleResponseDTO> streamDto = streamRoles.map(mapper::mapEntityToResponseDto);
+
+        // recolectar en lista
+        List<RoleResponseDTO> rolesResponse = streamDto.toList();
+
+        log.info("✅ [FINALIZADO] Roles encontrados con roleName: {}. Total encontrados: {}", roleRequestDTO.getRoleName(), rolesResponse.size());
+
+        return rolesResponse;
+    }
 
     @Transactional
     public RoleResponseDTO actualizarRole(RoleRequestDTO roleRequestDTO) {

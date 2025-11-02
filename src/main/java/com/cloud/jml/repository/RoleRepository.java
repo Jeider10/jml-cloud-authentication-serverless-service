@@ -11,5 +11,5 @@ public interface RoleRepository extends JpaRepository<RoleEntity, Long> {
 
     Optional<RoleEntity> findByRoleCodeOrRoleName(int roleCode, String roleName);
 
-//    List<RoleEntity> findByRoleNameContainingIgnoreCase(String roleName);
+    List<RoleEntity> findByRoleNameContainingIgnoreCase(String roleName);
 }
