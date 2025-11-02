@@ -14,7 +14,7 @@ public class UserEntity {
 
     @Id
     @Column(nullable = false)
-    private long identificacion;
+    private Long identificacion;
 
     @Column(unique = true, nullable = false)
     private String userName;

@@ -12,7 +12,7 @@ import lombok.Setter;
 public class ConfigEmpresaResponseDTO {
 
     // Getters y Setters
-    private long nit;
+    private Long nit;
     private String nombreEmpresa;
     private String direccion;
     private String telefono;

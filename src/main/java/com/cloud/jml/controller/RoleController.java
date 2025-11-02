@@ -53,10 +53,26 @@ public class RoleController {
 
         RoleResponseDTO roleResponseDTO = roleService.buscarRolePorCodigo(roleRequestDTO);
 
-        log.info("📤 [RESPUESTA] Role encontrado: {} con código: {}", roleResponseDTO.getRoleName(), roleResponseDTO.getRoleCode());
+        if (roleResponseDTO != null) {
+            log.info("📤 [RESPUESTA] Role encontrado con código: {}", roleResponseDTO.getRoleCode());
+        }
 
         return ResponseEntity.ok(roleResponseDTO);
     }
+
+//    @GetMapping("/roleName")
+//    public ResponseEntity<List<RoleResponseDTO>> buscarRolePorNombre(@RequestParam("roleName") String roleName) {
+//        log.info("📥 [SOLICITUD] Buscar role con nombre: {}", roleName);
+//
+//        RoleRequestDTO roleRequestDTO = new RoleRequestDTO();
+//        roleRequestDTO.setRoleName(roleName);
+//
+//        List<RoleResponseDTO> roleResponseDTO = roleService.buscarRolePorNombre(roleRequestDTO);
+//
+//        log.info("📤 [RESPUESTA] Roles obtenidos: {} con nombre: {}", roleResponseDTO.size(), roleName);
+//
+//        return ResponseEntity.ok(roleResponseDTO);
+//    }
 
     @PutMapping("/update")
     public ResponseEntity<RoleResponseDTO> actualizarRole(@RequestBody RoleRequestDTO roleRequestDTO) {

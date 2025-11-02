@@ -162,9 +162,9 @@ public class ConfigEmpresaUtils {
 
         try {
             // 🔹 Límite máximo permitido (10 MB)
-            final long MAX_SIZE_BYTES = 10L * 1024 * 1024;
+            final Long MAX_SIZE_BYTES = 10L * 1024 * 1024;
 
-            long fileSize = file.getSize();
+            Long fileSize = file.getSize();
             if (fileSize > MAX_SIZE_BYTES) {
                 log.warn("⚠️ El archivo excede el tamaño máximo permitido: {} bytes (límite: {})", fileSize, MAX_SIZE_BYTES);
                 throw ConfigEmpresaLogoUploadException.fileTooLarge(fileSize);

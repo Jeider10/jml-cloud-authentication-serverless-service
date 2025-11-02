@@ -2,9 +2,11 @@ package com.cloud.jml.service;
 
 import com.cloud.jml.dto.role.RoleRequestDTO;
 import com.cloud.jml.dto.role.RoleResponseDTO;
+import com.cloud.jml.dto.user.UserResponseDTO;
 import com.cloud.jml.exception.role.RoleDuplicationException;
 import com.cloud.jml.exception.role.RoleNotFoundException;
 import com.cloud.jml.model.RoleEntity;
+import com.cloud.jml.model.UserEntity;
 import com.cloud.jml.repository.RoleRepository;
 import com.cloud.jml.utils.role.RoleMapper;
 import com.cloud.jml.utils.role.RoleUtils;
@@ -78,8 +80,8 @@ public class RoleService {
 
         log.info("📦 [MAPEO] Transformando entidad de role a DTO. (registrarRole)");
         RoleResponseDTO roleResponseDTO = mapper.mapEntityToResponseDto(guardarRole);
-        log.info("📦 [MAPEO] Role mapeado a DTO. nombre: {} con código: {}",
-                roleResponseDTO.getRoleName(), roleResponseDTO.getRoleCode());
+        log.info("📦 [MAPEO] Role mapeado a DTO. nombre: {} con código: {} y descripción: {}",
+                roleResponseDTO.getRoleName(), roleResponseDTO.getRoleCode(), roleResponseDTO.getDescripcion());
 
         log.info("✅ [FINALIZADO] Role creado correctamente: {} con código {}", roleResponseDTO.getRoleName(), roleResponseDTO.getRoleCode());
 
@@ -93,21 +95,47 @@ public class RoleService {
         Optional<RoleEntity> roleEntity = roleRepository.findByRoleCode(roleRequestDTO.getRoleCode());
 
         if (roleEntity.isEmpty()) {
-            log.warn("❌ [NO ENCONTRADO] Role: {} no encontrado con código: {}", roleRequestDTO.getRoleName(), roleRequestDTO.getRoleCode());
-            throw new RoleNotFoundException(roleRequestDTO.getRoleCode());
+            log.warn("❌ [NO ENCONTRADO] Role con código: {} no encontrado.", roleRequestDTO.getRoleCode());
+            return null;
         }
 
-        log.info("📦 [ENCONTRADO] Role encontrado -> {} con código: {}", roleEntity.get().getRoleName(), roleEntity.get().getRoleCode());
+        log.info("📦 [ENCONTRADO] Role encontrado -> con código: {}", roleEntity.get().getRoleCode());
 
         log.info("📦 [MAPEO] Transformando entidad de role a DTO. (buscarRolePorCodigo)");
         RoleResponseDTO roleResponseDTO = mapper.mapEntityToResponseDto(roleEntity.get());
-        log.info("📦 [MAPEO] Role mapeado a DTO. nombre: {} con código: {} descripción: {}",
-                roleResponseDTO.getRoleName(), roleResponseDTO.getRoleCode(), roleResponseDTO.getDescripcion());
+        log.info("📦 [MAPEO] Role mapeado a DTO. código: {}", roleResponseDTO.getRoleCode());
 
-        log.info("✅ [FINALIZADO] Búsqueda de role por código completada: {} con código: {}", roleResponseDTO.getRoleName(), roleResponseDTO.getRoleCode());
+        log.info("✅ [FINALIZADO] Búsqueda de role por código completada con código: {}", roleResponseDTO.getRoleCode());
 
         return roleResponseDTO;
     }
+
+//    @Transactional(readOnly = true)
+//    public List<RoleResponseDTO> buscarRolePorNombre(RoleRequestDTO roleRequestDTO) {
+//        log.info("🔍 [CONSULTA] Inicio de búsqueda de role por nombre: {}", roleRequestDTO.getRoleName());
+//
+//        List<RoleEntity> roleEntity = roleRepository.findByRoleNameContainingIgnoreCase(roleRequestDTO.getRoleName());
+//
+//        if (roleEntity.isEmpty()) {
+//            log.warn("❌ [NO ENCONTRADO] Role con nombre: {} no encontrado.", roleRequestDTO.getRoleName());
+//            return List.of();
+//        }
+//
+//        log.info("📦 [MAPEO] Transformando {} entidades de usuarios a DTOs (roleName: {})", roleEntity.size(), roleRequestDTO.getRoleName());
+//
+//        // convertir a stream
+//        Stream<RoleEntity> streamRoles = roleEntity.stream();
+//
+//        // mapear entidades a DTOs
+//        Stream<RoleResponseDTO> streamDto = streamRoles.map(mapper::mapEntityToResponseDto);
+//
+//        // recolectar en lista
+//        List<RoleResponseDTO> rolesResponse = streamDto.toList();
+//
+//        log.info("✅ [FINALIZADO] Roles encontrados con roleName: {}. Total encontrados: {}", roleRequestDTO.getRoleName(), rolesResponse.size());
+//
+//        return rolesResponse;
+//    }
 
     @Transactional
     public RoleResponseDTO actualizarRole(RoleRequestDTO roleRequestDTO) {

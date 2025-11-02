@@ -9,4 +9,10 @@ public class RoleNotFoundException extends RoleRuntimeException {
                 HttpStatus.NOT_FOUND,
                 "❌ [CONSULTA] Role no encontrado con código: " + roleCode);
     }
+
+    public RoleNotFoundException(String roleName) {
+        super(
+                HttpStatus.NOT_FOUND,
+                "❌ [CONSULTA] Role no encontrado con nombre: " + roleName);
+    }
 }

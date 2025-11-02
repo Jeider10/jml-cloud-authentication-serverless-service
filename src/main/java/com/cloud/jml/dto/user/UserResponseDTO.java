@@ -13,7 +13,7 @@ public class UserResponseDTO {
 
     // Getters y Setters
     private String userName;
-    private long identificacion;
+    private Long identificacion;
     private String nombres;
     private String apellidos;
     private int roleCode;

@@ -9,4 +9,10 @@ public class UserNotFoundException extends UserRuntimeException {
                 HttpStatus.NOT_FOUND,
                 "❌ [CONSULTA] Usuario no encontrado: " + userName);
     }
+
+    public UserNotFoundException(Long identificacion) {
+        super(
+                HttpStatus.NOT_FOUND,
+                "❌ [CONSULTA] Usuario no encontrado: " + identificacion);
+    }
 }

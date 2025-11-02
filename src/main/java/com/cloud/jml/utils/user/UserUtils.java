@@ -108,7 +108,7 @@ public class UserUtils {
             UserEntity usuarioConNuevoUserName = usuarioConNuevoUserNameOpt.get();
 
             // Si el usuario con ese userName tiene otra identificación, no se puede usar ese nombre
-            long usuarioActualIdentificacion = usuarioActual.getIdentificacion();
+            Long usuarioActualIdentificacion = usuarioActual.getIdentificacion();
             if (usuarioConNuevoUserName.getIdentificacion() != usuarioActualIdentificacion) {
                 log.warn("⚠️ El userName '{}' ya pertenece a otro usuario con identificación diferente: {}",
                         userRequestDTO.getUserName(), usuarioConNuevoUserName.getIdentificacion());
@@ -132,9 +132,16 @@ public class UserUtils {
             log.info("✅ Verificando si ya existe un usuario con el rol de administrador: {}", existeAdmin);
 
             if (existeAdmin) {
-                log.warn("❌ [ERROR] Ya existe un usuario con el rol de administrador ('{}'). "
-                        + "No se permiten múltiples usuarios administradores.", userEntity.getRoleName());
-                throw new RoleDuplicationException(userEntity.getRoleCode());
+                // 1. Define el mensaje base
+                String baseMessage = "❌ [ERROR] Ya existe un usuario con el rol de administrador ('%s'). "
+                        + "No se permiten múltiples usuarios administradores.";
+
+                // 2. Formatea el mensaje, reemplazando '%s' por el valor real
+                String formattedMessage = String.format(baseMessage, userEntity.getRoleName());
+
+                // 3. Usa el mensaje formateado para el log y la excepción
+                log.warn(formattedMessage);
+                throw new RoleDuplicationException(formattedMessage);
             }
         }
     }

@@ -90,25 +90,153 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public UserResponseDTO obtenerUsuarioPorIdentificacion(UserRequestDTO userRequestDTO) {
-        log.info("🔍 [CONSULTA] Inicio de búsqueda de usuario: {} con identificación: {}", userRequestDTO.getUserName(), userRequestDTO.getIdentificacion());
+        log.info("🔍 [CONSULTA] Inicio de búsqueda de usuario con identificación: {}", userRequestDTO.getIdentificacion());
 
         Optional<UserEntity> userEntity = userRepository.findByIdentificacion(userRequestDTO.getIdentificacion());
 
         if (userEntity.isEmpty()) {
-            log.warn("❌ [NO ENCONTRADO] Usuario: {} no encontrado con identificación: {}", userRequestDTO.getUserName(), userRequestDTO.getIdentificacion());
-            throw new UserNotFoundException(userRequestDTO.getUserName());
+            log.warn("❌ [NO ENCONTRADO] Usuario con identificación: {} no encontrado.", userRequestDTO.getIdentificacion());
+            return null;
         }
 
-        log.info("📦 [ENCONTRADO] Usuario encontrado -> {} con identificación: {}", userEntity.get().getUserName(), userEntity.get().getIdentificacion());
+        log.info("📦 [ENCONTRADO] Usuario encontrado -> con identificación: {}", userEntity.get().getIdentificacion());
 
         log.info("📦 [MAPEO] Transformando entidad de usuario a DTO. (obtenerUsuarioPorIdentificacion)");
         UserResponseDTO userResponseDTO = mapper.mapEntityToResponseDto(userEntity.get());
-        log.info("📦 [MAPEO] Usuario mapeado a DTO. nombre: {}, identificación: {}",
-                userResponseDTO.getUserName(), userResponseDTO.getIdentificacion());
+        log.info("📦 [MAPEO] Usuario mapeado a DTO. identificación: {}", userResponseDTO.getIdentificacion());
 
-        log.info("✅ [FINALIZADO] Usuario obtenido correctamente: {} con identificación: {}", userResponseDTO.getUserName(), userResponseDTO.getIdentificacion());
+        log.info("✅ [FINALIZADO] Usuario obtenido correctamente con identificación: {}", userResponseDTO.getIdentificacion());
 
         return userResponseDTO;
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserResponseDTO> obtenerUsuarioPorUserName(UserRequestDTO userRequestDTO) {
+        log.info("🔍 [CONSULTA] Inicio de búsqueda de usuario con userName: {}", userRequestDTO.getUserName());
+
+        List<UserEntity> userEntity = userRepository.findByUserNameContainingIgnoreCase(userRequestDTO.getUserName());
+
+        if (userEntity.isEmpty()) {
+            log.warn("❌ [NO ENCONTRADO] Usuario con userName: {} no encontrado.", userRequestDTO.getUserName());
+            return List.of();
+        }
+
+        log.info("📦 [MAPEO] Transformando {} entidades de usuarios a DTOs (userName: {})", userEntity.size(), userRequestDTO.getUserName());
+
+        // convertir a stream
+        Stream<UserEntity> streamUsuarios = userEntity.stream();
+
+        // mapear entidades a DTOs
+        Stream<UserResponseDTO> streamDto = streamUsuarios.map(mapper::mapEntityToResponseDto);
+
+        // recolectar en lista
+        List<UserResponseDTO> usuariosResponse = streamDto.toList();
+
+        log.info("✅ [FINALIZADO] Usuarios encontrados con userName: {}. Total encontrados: {}", userRequestDTO.getUserName(), usuariosResponse.size());
+
+        return usuariosResponse;
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserResponseDTO> obtenerUsuarioPorNombres(UserRequestDTO userRequestDTO) {
+        log.info("🔍 [CONSULTA] Inicio de búsqueda de usuario con nombres: {}", userRequestDTO.getNombres());
+
+        List<UserEntity> userEntity = userRepository.findByNombresContainingIgnoreCase(userRequestDTO.getNombres());
+
+        if (userEntity.isEmpty()) {
+            log.warn("❌ [NO ENCONTRADO] Usuario con nombres: {} no encontrado.", userRequestDTO.getNombres());
+            return List.of();
+        }
+
+        log.info("📦 [MAPEO] Transformando {} entidades de usuarios a DTOs (nombres: {})", userEntity.size(), userRequestDTO.getNombres());
+
+        // convertir a stream
+        Stream<UserEntity> streamUsuarios = userEntity.stream();
+
+        // mapear entidades a DTOs
+        Stream<UserResponseDTO> streamDto = streamUsuarios.map(mapper::mapEntityToResponseDto);
+
+        // recolectar en lista
+        List<UserResponseDTO> usuariosResponse = streamDto.toList();
+
+        log.info("✅ [FINALIZADO] Usuarios encontrados con nombres: {}. Total encontrados: {}", userRequestDTO.getNombres(), usuariosResponse.size());
+
+        return usuariosResponse;
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserResponseDTO> obtenerUsuarioPorApellidos(UserRequestDTO userRequestDTO) {
+        log.info("🔍 [CONSULTA] Inicio de búsqueda de usuario con apellidos: {}", userRequestDTO.getApellidos());
+
+        List<UserEntity> userEntity = userRepository.findByApellidosContainingIgnoreCase(userRequestDTO.getApellidos());
+
+        if (userEntity.isEmpty()) {
+            log.warn("❌ [NO ENCONTRADO] Usuario con apellidos: {} no encontrado.", userRequestDTO.getApellidos());
+            return List.of();
+        }
+
+        log.info("📦 [MAPEO] Transformando {} entidades de usuarios a DTOs (apellidos: {})", userEntity.size(), userRequestDTO.getApellidos());
+
+        // convertir a stream
+        Stream<UserEntity> streamUsuarios = userEntity.stream();
+
+        // mapear entidades a DTOs
+        Stream<UserResponseDTO> streamDto = streamUsuarios.map(mapper::mapEntityToResponseDto);
+
+        // recolectar en lista
+        List<UserResponseDTO> usuariosResponse = streamDto.toList();
+
+        log.info("✅ [FINALIZADO] Usuarios encontrados con apellidos: {}. Total encontrados: {}", userRequestDTO.getApellidos(), usuariosResponse.size());
+
+        return usuariosResponse;
+    }
+
+    @Transactional(readOnly = true)
+    public UserResponseDTO obtenerUsuarioPorRoleCode(UserRequestDTO userRequestDTO) {
+        log.info("🔍 [CONSULTA] Inicio de búsqueda de usuario con roleCode: {}", userRequestDTO.getRoleCode());
+
+        Optional<UserEntity> userEntity = userRepository.findByRoleCode(userRequestDTO.getRoleCode());
+
+        if (userEntity.isEmpty()) {
+            log.warn("❌ [NO ENCONTRADO] Usuario con roleCode: {} no encontrado.", userRequestDTO.getRoleCode());
+            return null;
+        }
+
+        log.info("📦 [ENCONTRADO] Usuario encontrado -> con roleCode: {}", userEntity.get().getRoleCode());
+
+        log.info("📦 [MAPEO] Transformando entidad de usuario a DTO. (obtenerUsuarioPorRoleCode)");
+        UserResponseDTO userResponseDTO = mapper.mapEntityToResponseDto(userEntity.get());
+        log.info("📦 [MAPEO] Usuario mapeado a DTO. roleCode: {}", userResponseDTO.getRoleCode());
+
+        log.info("✅ [FINALIZADO] Usuario obtenido correctamente: con roleCode: {}", userResponseDTO.getRoleCode());
+
+        return userResponseDTO;
+    }
+
+    public List<UserResponseDTO> obtenerUsuarioPorRoleName(String roleName) {
+        log.info("🔍 [CONSULTA] Inicio de búsqueda de usuario con roleName: {}", roleName);
+
+        List<UserEntity> userEntity = userRepository.findByRoleNameContainingIgnoreCase(roleName);
+
+        if (userEntity.isEmpty()) {
+            log.warn("❌ [NO ENCONTRADO] Usuario con roleName: {} no encontrado.", roleName);
+            return List.of();
+        }
+
+        log.info("📦 [MAPEO] Transformando {} entidades de usuarios a DTOs (roleName: {})", userEntity.size(), roleName);
+
+        // convertir a stream
+        Stream<UserEntity> streamUsuarios = userEntity.stream();
+
+        // mapear entidades a DTOs
+        Stream<UserResponseDTO> streamDto = streamUsuarios.map(mapper::mapEntityToResponseDto);
+
+        // recolectar en lista
+        List<UserResponseDTO> usuariosResponse = streamDto.toList();
+
+        log.info("✅ [FINALIZADO] Usuarios encontrados con roleName: {}. Total encontrados: {}", roleName, usuariosResponse.size());
+
+        return usuariosResponse;
     }
 
     @Transactional

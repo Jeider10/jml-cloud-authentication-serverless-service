@@ -17,7 +17,7 @@ public class ConfigEmpresaEntity {
 
     @Id
     @Column(nullable = false)
-    private long nit;
+    private Long nit;
 
     @Column(nullable = false)
     private String nombreEmpresa;

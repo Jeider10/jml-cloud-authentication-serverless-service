@@ -17,7 +17,7 @@ public class ConfigEmpresaLogoUploadException extends ConfigEmpresaRuntimeExcept
     }
 
     // 📦 Archivo excede tamaño
-    public static ConfigEmpresaLogoUploadException fileTooLarge(long size) {
+    public static ConfigEmpresaLogoUploadException fileTooLarge(Long size) {
         return new ConfigEmpresaLogoUploadException(
                 "⚠️ El archivo excede el tamaño máximo permitido (10 MB). Tamaño recibido: " + size + " bytes"
         );
