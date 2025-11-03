@@ -89,7 +89,7 @@ public class UserMapper {
         return userResponseDTO;
     }
 
-    public void actualizarDatosUsuario(UserRequestDTO userRequestDTO, UserEntity userEntity) {
+    public void actualizarDatosUsuario(UserRequestDTO userRequestDTO, UserEntity userEntity, String userLogin) {
         log.info("✅ Actualizando datos del usuario: {}", userRequestDTO.getUserName());
 
         // Actualizamos solo los campos permitidos
@@ -100,7 +100,7 @@ public class UserMapper {
         userEntity.setEmail(userRequestDTO.getEmail());
         userEntity.setTelefono(userRequestDTO.getTelefono());
         userEntity.setDireccion(userRequestDTO.getDireccion());
-        userEntity.setHistorialUltimoActualizado(userRequestDTO.getNombres());
+        userEntity.setHistorialUltimoActualizado(userLogin);
 
         // Actualizamos la fecha de actualización
         userEntity.setFechaActualizacion(LocalDateTime.now());

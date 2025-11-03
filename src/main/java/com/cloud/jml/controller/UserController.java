@@ -130,10 +130,12 @@ public class UserController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<UserResponseDTO> actualizarUsuario(@RequestBody UserRequestDTO userRequestDTO) {
+    public ResponseEntity<UserResponseDTO> actualizarUsuario(
+            @RequestBody UserRequestDTO userRequestDTO,
+            @RequestParam("userLogin") String userLogin) {
         log.info("📥 [SOLICITUD] Actualizar usuario: {}", userRequestDTO.getUserName());
 
-        UserResponseDTO userResponseDTO = userService.actualizarUsuario(userRequestDTO);
+        UserResponseDTO userResponseDTO = userService.actualizarUsuario(userRequestDTO, userLogin);
 
         log.info("📤 [RESPUESTA] Usuario actualizado correctamente: {}", userRequestDTO.getUserName());
 

@@ -240,14 +240,14 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponseDTO actualizarUsuario(UserRequestDTO userRequestDTO) {
+    public UserResponseDTO actualizarUsuario(UserRequestDTO userRequestDTO, String userLogin) {
         log.info("🔍 [CONSULTA] Inicio de actualización de usuario: {}", userRequestDTO.getUserName());
 
         // Paso 1: Validar existencia
         UserEntity userEntity = userUtils.validarExistenciaUsuario(userRequestDTO);
 
         // Paso 2: Actualizar datos
-        mapper.actualizarDatosUsuario(userRequestDTO, userEntity);
+        mapper.actualizarDatosUsuario(userRequestDTO, userEntity, userLogin);
 
         // Paso 3: Guardar cambios en la BD
         UserEntity actualizado = userUtils.guardarUsuarioBD(userEntity);
