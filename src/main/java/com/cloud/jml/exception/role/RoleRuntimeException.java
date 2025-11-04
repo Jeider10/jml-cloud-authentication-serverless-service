@@ -12,4 +12,9 @@ public abstract class RoleRuntimeException extends RuntimeException {
         super(message);
         this.status = status;
     }
+
+    protected RoleRuntimeException(HttpStatus status, String message, Throwable cause) {
+        super(message, cause);
+        this.status = status;
+    }
 }

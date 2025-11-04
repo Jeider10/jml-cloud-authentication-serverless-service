@@ -12,4 +12,9 @@ public abstract class UserRuntimeException extends RuntimeException {
         super(message);
         this.status = status;
     }
+
+    protected UserRuntimeException(HttpStatus status, String message, Throwable cause) {
+        super(message, cause);
+        this.status = status;
+    }
 }

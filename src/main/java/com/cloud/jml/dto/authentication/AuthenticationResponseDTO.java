@@ -13,5 +13,6 @@ public class AuthenticationResponseDTO {
 
     // Getters y Setters
     private AuthenticationOptionsDTO options;
-    private String authorization;
+    private String authorization; // access token
+    private String refreshToken;  // refresh token
 }

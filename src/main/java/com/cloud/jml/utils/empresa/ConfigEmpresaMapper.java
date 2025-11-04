@@ -2,7 +2,7 @@ package com.cloud.jml.utils.empresa;
 
 import com.cloud.jml.dto.empresa.ConfigEmpresaRequestDTO;
 import com.cloud.jml.dto.empresa.ConfigEmpresaResponseDTO;
-import com.cloud.jml.model.ConfigEmpresaEntity;
+import com.cloud.jml.model.empresa.ConfigEmpresaEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

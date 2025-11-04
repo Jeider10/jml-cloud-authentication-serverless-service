@@ -2,11 +2,12 @@ package com.cloud.jml.utils.empresa;
 
 import com.cloud.jml.config.logo.S3Properties;
 import com.cloud.jml.dto.empresa.ConfigEmpresaRequestDTO;
+import com.cloud.jml.exception.empresa.ConfigEmpresaDeletionException;
 import com.cloud.jml.exception.empresa.ConfigEmpresaLogoUploadException;
 import com.cloud.jml.exception.empresa.ConfigEmpresaNotFoundException;
 import com.cloud.jml.exception.empresa.ConfigEmpresaPersistenceException;
-import com.cloud.jml.model.ConfigEmpresaEntity;
-import com.cloud.jml.repository.ConfigEmpresaRepository;
+import com.cloud.jml.model.empresa.ConfigEmpresaEntity;
+import com.cloud.jml.repository.empresa.ConfigEmpresaRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -39,48 +40,6 @@ public class ConfigEmpresaUtils {
         this.s3Client = s3Client;
         this.s3Properties = s3Properties;
         log.info("🔥 UserUtils inicializado correctamente.");
-    }
-
-    /**
-     * 💾 Guarda la orden en BD con manejo de excepciones.
-     */
-    public ConfigEmpresaEntity guardarEmpresaBD(ConfigEmpresaEntity configEmpresaEntity) {
-        try {
-            return configEmpresaRepository.save(configEmpresaEntity);
-
-        } catch (DataIntegrityViolationException e) {
-            log.error("🚨 Violación de integridad al guardar la empresa: {}", e.getMessage(), e);
-            throw new ConfigEmpresaPersistenceException("Error de integridad en base de datos al guardar la empresa", e);
-
-        } catch (DataAccessException e) {
-            log.error("🚨 Error de acceso a datos al guardar la empresa: {}", e.getMessage(), e);
-            throw new ConfigEmpresaPersistenceException("Error al guardar la empresa en la base de datos", e);
-
-        } catch (Exception e) {
-            log.error("🚨 Error inesperado al guardar la empresa: {}", e.getMessage(), e);
-            throw new ConfigEmpresaPersistenceException("Error inesperado al registrar la empresa", e);
-        }
-    }
-
-    /**
-     * 🗑️ Elimina la orden de BD con manejo de excepciones.
-     */
-    public void eliminarUsuarioBD(ConfigEmpresaEntity configEmpresaEntity) {
-        try {
-            configEmpresaRepository.delete(configEmpresaEntity);
-
-        } catch (DataIntegrityViolationException e) {
-            log.error("🚨 Violación de integridad al eliminar la empresa: {}", e.getMessage(), e);
-            throw new ConfigEmpresaPersistenceException("Error de integridad en base de datos al eliminar la empresa", e);
-
-        } catch (DataAccessException e) {
-            log.error("🚨 Error de acceso a datos al eliminar la empresa: {}", e.getMessage(), e);
-            throw new ConfigEmpresaPersistenceException("Error al eliminar la empresa en la base de datos", e);
-
-        } catch (Exception e) {
-            log.error("🚨 Error inesperado al eliminar la empresa: {}", e.getMessage(), e);
-            throw new ConfigEmpresaPersistenceException("Error inesperado al eliminar la empresa", e);
-        }
     }
 
     public ConfigEmpresaEntity validarExistenciaEmpresa(ConfigEmpresaRequestDTO configEmpresaRequestDTO) {
@@ -218,6 +177,48 @@ public class ConfigEmpresaUtils {
         } catch (IOException e) {
             log.error("❌ [UPLOAD ERROR] Error al guardar el logo", e);
             throw new RuntimeException("❌ Error al guardar el logo", e);
+        }
+    }
+
+    /**
+     * 💾 Guarda la orden en BD con manejo de excepciones.
+     */
+    public ConfigEmpresaEntity guardarEmpresaBD(ConfigEmpresaEntity configEmpresaEntity) {
+        try {
+            return configEmpresaRepository.save(configEmpresaEntity);
+
+        } catch (DataIntegrityViolationException e) {
+            log.error("🚨 Violación de integridad al guardar la empresa: {}", e.getMessage(), e);
+            throw new ConfigEmpresaPersistenceException("Error de integridad en base de datos al guardar la empresa", e);
+
+        } catch (DataAccessException e) {
+            log.error("🚨 Error de acceso a datos al guardar la empresa: {}", e.getMessage(), e);
+            throw new ConfigEmpresaPersistenceException("Error al guardar la empresa en la base de datos", e);
+
+        } catch (Exception e) {
+            log.error("🚨 Error inesperado al guardar la empresa: {}", e.getMessage(), e);
+            throw new ConfigEmpresaPersistenceException("Error inesperado al registrar la empresa", e);
+        }
+    }
+
+    /**
+     * 🗑️ Elimina la orden de BD con manejo de excepciones.
+     */
+    public void eliminarEmpresaBD(ConfigEmpresaEntity configEmpresaEntity) {
+        try {
+            configEmpresaRepository.delete(configEmpresaEntity);
+
+        } catch (DataIntegrityViolationException e) {
+            log.error("🚨 Violación de integridad al eliminar la empresa: {}", e.getMessage(), e);
+            throw new ConfigEmpresaDeletionException("Error de integridad en base de datos al eliminar la empresa", e);
+
+        } catch (DataAccessException e) {
+            log.error("🚨 Error de acceso a datos al eliminar la empresa: {}", e.getMessage(), e);
+            throw new ConfigEmpresaDeletionException("Error al eliminar la empresa en la base de datos", e);
+
+        } catch (Exception e) {
+            log.error("🚨 Error inesperado al eliminar la empresa: {}", e.getMessage(), e);
+            throw new ConfigEmpresaDeletionException("Error inesperado al eliminar la empresa", e);
         }
     }
 }

@@ -2,8 +2,8 @@ package com.cloud.jml.utils.user;
 
 import com.cloud.jml.dto.user.UserRequestDTO;
 import com.cloud.jml.dto.user.UserResponseDTO;
-import com.cloud.jml.model.RoleEntity;
-import com.cloud.jml.model.UserEntity;
+import com.cloud.jml.model.role.RoleEntity;
+import com.cloud.jml.model.user.UserEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;

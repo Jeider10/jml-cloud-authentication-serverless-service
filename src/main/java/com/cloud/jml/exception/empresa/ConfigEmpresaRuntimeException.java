@@ -12,4 +12,9 @@ public abstract class ConfigEmpresaRuntimeException extends RuntimeException {
         super(message);
         this.status = status;
     }
+
+    protected ConfigEmpresaRuntimeException(HttpStatus status, String message, Throwable cause) {
+        super(message, cause);
+        this.status = status;
+    }
 }

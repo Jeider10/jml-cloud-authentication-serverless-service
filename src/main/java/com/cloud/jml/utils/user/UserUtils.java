@@ -4,12 +4,13 @@ import com.cloud.jml.dto.user.UserRequestDTO;
 import com.cloud.jml.exception.role.RoleDuplicationException;
 import com.cloud.jml.exception.role.RoleNotFoundException;
 import com.cloud.jml.exception.user.UserAlreadyExistsException;
+import com.cloud.jml.exception.user.UserDeletionException;
 import com.cloud.jml.exception.user.UserNotFoundException;
 import com.cloud.jml.exception.user.UserPersistenceException;
-import com.cloud.jml.model.RoleEntity;
-import com.cloud.jml.model.UserEntity;
-import com.cloud.jml.repository.RoleRepository;
-import com.cloud.jml.repository.UserRepository;
+import com.cloud.jml.model.role.RoleEntity;
+import com.cloud.jml.model.user.UserEntity;
+import com.cloud.jml.repository.role.RoleRepository;
+import com.cloud.jml.repository.user.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -29,63 +30,6 @@ public class UserUtils {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         log.info("🔥 UserUtils inicializado correctamente.");
-    }
-
-    /**
-     * 💾 Guarda la orden en BD con manejo de excepciones.
-     */
-    public UserEntity guardarUsuarioBD(UserEntity userEntity) {
-        try {
-            return userRepository.save(userEntity);
-
-        } catch (DataIntegrityViolationException e) {
-            log.error("🚨 Violación de integridad al guardar el usuario: {}", e.getMessage(), e);
-            throw new UserPersistenceException("Error de integridad en base de datos al guardar el usuario", e);
-
-        } catch (DataAccessException e) {
-            log.error("🚨 Error de acceso a datos al guardar el usuario: {}", e.getMessage(), e);
-            throw new UserPersistenceException("Error al guardar el usuario en la base de datos", e);
-
-        } catch (Exception e) {
-            log.error("🚨 Error inesperado al guardar el usuario: {}", e.getMessage(), e);
-            throw new UserPersistenceException("Error inesperado al registrar el usuario", e);
-        }
-    }
-
-    /**
-     * 🗑️ Elimina la orden de BD con manejo de excepciones.
-     */
-    public void eliminarUsuarioBD(UserEntity userEntity) {
-        try {
-            userRepository.delete(userEntity);
-
-        } catch (DataIntegrityViolationException e) {
-            log.error("🚨 Violación de integridad al eliminar el usuario: {}", e.getMessage(), e);
-            throw new UserPersistenceException("Error de integridad en base de datos al eliminar el usuario", e);
-
-        } catch (DataAccessException e) {
-            log.error("🚨 Error de acceso a datos al eliminar el usuario: {}", e.getMessage(), e);
-            throw new UserPersistenceException("Error al eliminar el usuario en la base de datos", e);
-
-        } catch (Exception e) {
-            log.error("🚨 Error inesperado al eliminar el usuario: {}", e.getMessage(), e);
-            throw new UserPersistenceException("Error inesperado al eliminar el usuario", e);
-        }
-    }
-
-    public RoleEntity obtenerRolePorCodigo(int roleCode) {
-        log.info("✅ Inicia consulta de role con código: {}", roleCode);
-
-        Optional<RoleEntity> optionalRole = roleRepository.findByRoleCode(roleCode);
-
-        if (optionalRole.isPresent()) {
-            RoleEntity roleEntity = optionalRole.get();
-            log.info("✅ Role encontrado: Código = {}, Nombre = {}", roleCode, roleEntity.getRoleName());
-            return roleEntity;
-        } else {
-            log.warn("⚠️ Role no encontrado con código: {}", roleCode);
-            throw new RoleNotFoundException(roleCode);
-        }
     }
 
     public UserEntity validarExistenciaUsuario(UserRequestDTO userRequestDTO) {
@@ -121,6 +65,21 @@ public class UserUtils {
         log.info("✅ [FINALIZADO] Usuario existente validado correctamente para actualización: {}", usuarioActual.getUserName());
 
         return usuarioActual;
+    }
+
+    public RoleEntity obtenerRolePorCodigo(int roleCode) {
+        log.info("✅ Inicia consulta de role con código: {}", roleCode);
+
+        Optional<RoleEntity> optionalRole = roleRepository.findByRoleCode(roleCode);
+
+        if (optionalRole.isPresent()) {
+            RoleEntity roleEntity = optionalRole.get();
+            log.info("✅ Role encontrado: Código = {}, Nombre = {}", roleCode, roleEntity.getRoleName());
+            return roleEntity;
+        } else {
+            log.warn("⚠️ Role no encontrado con código: {}", roleCode);
+            throw new RoleNotFoundException(roleCode);
+        }
     }
 
     public void validarUnicoAdministrador(UserEntity userEntity) {
@@ -164,5 +123,47 @@ public class UserUtils {
         log.info("✅ Verificación de rol completada. Es administrador: {}", roleMatch);
 
         return roleMatch;
+    }
+
+    /**
+     * 💾 Guarda la orden en BD con manejo de excepciones.
+     */
+    public UserEntity guardarUsuarioBD(UserEntity userEntity) {
+        try {
+            return userRepository.save(userEntity);
+
+        } catch (DataIntegrityViolationException e) {
+            log.error("🚨 Violación de integridad al guardar el usuario: {}", e.getMessage(), e);
+            throw new UserPersistenceException("Error de integridad en base de datos al guardar el usuario", e);
+
+        } catch (DataAccessException e) {
+            log.error("🚨 Error de acceso a datos al guardar el usuario: {}", e.getMessage(), e);
+            throw new UserPersistenceException("Error al guardar el usuario en la base de datos", e);
+
+        } catch (Exception e) {
+            log.error("🚨 Error inesperado al guardar el usuario: {}", e.getMessage(), e);
+            throw new UserPersistenceException("Error inesperado al registrar el usuario", e);
+        }
+    }
+
+    /**
+     * 🗑️ Elimina la orden de BD con manejo de excepciones.
+     */
+    public void eliminarUsuarioBD(UserEntity userEntity) {
+        try {
+            userRepository.delete(userEntity);
+
+        } catch (DataIntegrityViolationException e) {
+            log.error("🚨 Violación de integridad al eliminar el usuario: {}", e.getMessage(), e);
+            throw new UserDeletionException("Error de integridad en base de datos al eliminar el usuario", e);
+
+        } catch (DataAccessException e) {
+            log.error("🚨 Error de acceso a datos al eliminar el usuario: {}", e.getMessage(), e);
+            throw new UserDeletionException("Error al eliminar el usuario en la base de datos", e);
+
+        } catch (Exception e) {
+            log.error("🚨 Error inesperado al eliminar el usuario: {}", e.getMessage(), e);
+            throw new UserDeletionException("Error inesperado al eliminar el usuario", e);
+        }
     }
 }

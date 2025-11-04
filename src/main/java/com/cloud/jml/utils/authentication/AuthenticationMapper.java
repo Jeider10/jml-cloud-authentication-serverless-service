@@ -3,8 +3,8 @@ package com.cloud.jml.utils.authentication;
 import com.cloud.jml.dto.authentication.AuthenticationOptionsDTO;
 import com.cloud.jml.dto.authentication.AuthenticationRequestDTO;
 import com.cloud.jml.dto.authentication.AuthenticationResponseDTO;
-import com.cloud.jml.model.AuthenticationEntity;
-import com.cloud.jml.model.UserEntity;
+import com.cloud.jml.model.authentication.AuthenticationEntity;
+import com.cloud.jml.model.user.UserEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +13,10 @@ import java.time.LocalDateTime;
 @Slf4j
 @Component // 🔹 Anotación para indicar que es un componente de Spring
 public class AuthenticationMapper {
+
+    public AuthenticationMapper() {
+        log.info("🔥 AuthenticationMapper inicializado correctamente.");
+    }
 
     /**
      * 📦 Convierte un DTO de solicitud de autenticación en una entidad lista para persistir.
@@ -62,6 +66,23 @@ public class AuthenticationMapper {
         authenticationResponseDTO.setAuthorization(token);
 
         log.info("✅ [MAPEO] Mapeo completado DTO → Entity para autenticación: login={}", authenticationResponseDTO.getOptions().getLogin());
+
+        return authenticationResponseDTO;
+    }
+
+    /**
+     * 📦 Convierte una entidad en un DTO de respuesta con access token y refresh token.
+     */
+    public AuthenticationResponseDTO mapAuthenticationResponseDTO(AuthenticationOptionsDTO options, String token, String refreshToken) {
+        log.info("📦 [MAPEO] Iniciando mapeo Entity → DTO para autenticación con refresh token: login={}", options.getLogin());
+
+        AuthenticationResponseDTO authenticationResponseDTO = new AuthenticationResponseDTO();
+
+        authenticationResponseDTO.setOptions(options);
+        authenticationResponseDTO.setAuthorization(token);
+        authenticationResponseDTO.setRefreshToken(refreshToken);
+
+        log.info("✅ [MAPEO] Mapeo completado para usuario: {}", options.getLogin());
 
         return authenticationResponseDTO;
     }

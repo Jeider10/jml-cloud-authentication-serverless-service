@@ -1,5 +1,7 @@
 package com.cloud.jml.config.jwt;
 
+import com.cloud.jml.utils.jwt.JwtUtil;
+import com.cloud.jml.utils.token.GeneratorTokenUtils;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -20,9 +22,11 @@ import java.util.List;
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
+    private final GeneratorTokenUtils generatorTokenUtils;
     private final JwtUtil jwtUtil;
 
-    public JwtRequestFilter(JwtUtil jwtUtil) {
+    public JwtRequestFilter(GeneratorTokenUtils generatorTokenUtils, JwtUtil jwtUtil) {
+        this.generatorTokenUtils = generatorTokenUtils;
         this.jwtUtil = jwtUtil;
         log.info("🔥 JwtRequestFilter inicializado correctamente.");
     }
@@ -45,7 +49,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
             String token = authHeader.substring(7);
 
-            if (jwtUtil.validateToken(token)) {
+            if (generatorTokenUtils.validateToken(token)) {
 
                 String userName = jwtUtil.extractClaim(token, "userName");
                 String roleCode = mapRole(token);
