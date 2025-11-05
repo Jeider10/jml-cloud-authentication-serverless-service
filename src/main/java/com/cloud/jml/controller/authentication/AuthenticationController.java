@@ -38,10 +38,10 @@ public class AuthenticationController {
     }
 
     @GetMapping("/obtener-usuario-actual")
-    public ResponseEntity<AuthenticationResponseDTO> obtenerUsuarioActual(@RequestHeader("Authorization") String authorizationHeader) {
+    public ResponseEntity<AuthenticationResponseDTO> obtenerUsuarioActual(@RequestHeader("refreshToken") String refreshTokenHeader) {
         log.info("📥 [SOLICITUD] Iniciando obtener usuario actual.");
 
-        AuthenticationResponseDTO authenticationResponseDTO = authenticationService.obtenerUsuarioActual(authorizationHeader);
+        AuthenticationResponseDTO authenticationResponseDTO = authenticationService.obtenerUsuarioActual(refreshTokenHeader);
 
         log.info("📤 [RESPUESTA] Usuario actual obtenido correctamente.");
 

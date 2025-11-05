@@ -5,9 +5,9 @@ import com.cloud.jml.dto.authentication.AuthenticationRequestDTO;
 import com.cloud.jml.dto.authentication.AuthenticationResponseDTO;
 import com.cloud.jml.model.user.UserEntity;
 import com.cloud.jml.service.token.GeneratorTokenService;
-import com.cloud.jml.service.token.RefreshTokenService;
 import com.cloud.jml.utils.authentication.AuthenticationMapper;
 import com.cloud.jml.utils.authentication.AuthenticationUtils;
+import com.cloud.jml.utils.token.RefreshTokenUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,13 +19,13 @@ public class AuthenticationService {
     private final AuthenticationUtils authenticationUtils;
     private final AuthenticationMapper mapper;
     private final GeneratorTokenService generatorTokenService;
-    private final RefreshTokenService refreshTokenService;
+    private final RefreshTokenUtils refreshTokenUtils;
 
-    public AuthenticationService(AuthenticationUtils authenticationUtils, AuthenticationMapper mapper, GeneratorTokenService generatorTokenService, RefreshTokenService refreshTokenService) {
+    public AuthenticationService(AuthenticationUtils authenticationUtils, AuthenticationMapper mapper, GeneratorTokenService generatorTokenService, RefreshTokenUtils refreshTokenUtils) {
         this.authenticationUtils = authenticationUtils;
         this.mapper = mapper;
         this.generatorTokenService = generatorTokenService;
-        this.refreshTokenService = refreshTokenService;
+        this.refreshTokenUtils = refreshTokenUtils;
         log.info("🔥 AuthenticationService inicializado correctamente.");
     }
 
@@ -36,17 +36,39 @@ public class AuthenticationService {
         // 1️⃣ Validar usuario y contraseña
         UserEntity userEntity = authenticationUtils.validarUsuario(authenticationRequestDTO);
 
-        // 2️⃣ Generar access token y persistir en auth_login
-        String accessToken = generatorTokenService.generarToken(authenticationRequestDTO, userEntity.getRoleCode(), userEntity.getRoleName());
+        // 2️⃣ Generar access token (token_use = "accessToken")
+        String accessToken = generatorTokenService.generarToken(
+                authenticationRequestDTO,
+                userEntity.getRoleCode(),
+                userEntity.getRoleName(),
+                "accessToken"
+        );
 
-        // 3️⃣ Generar refresh token persistente
-        String refreshToken = refreshTokenService.generarRefreshToken(authenticationRequestDTO, userEntity.getRoleCode(), userEntity.getRoleName());
+        // 3️⃣ Generar ID token (authorization) (token_use = "authorization")
+        String tokenAuthorization = generatorTokenService.generarToken(
+                authenticationRequestDTO,
+                userEntity.getRoleCode(),
+                userEntity.getRoleName(),
+                "authorization"
+        );
 
-        // 4️⃣ Construir DTO de options
+        // 4️⃣ Generar refresh token persistente
+        String refreshToken = refreshTokenUtils.generarRefreshToken(
+                authenticationRequestDTO,
+                userEntity.getRoleCode(),
+                userEntity.getRoleName());
+
+        // 5️⃣ Construir DTO de options
         AuthenticationOptionsDTO options = mapper.mapEntityToAuthenticationOptionsDTO(userEntity);
 
-        // 5️⃣ Mapear respuesta completa con ambos tokens
-        AuthenticationResponseDTO authenticationResponseDTO = mapper.mapAuthenticationResponseDTO(options, accessToken, refreshToken);
+        // 6️⃣ Mapear respuesta completa con ambos tokens
+//        boolean isRefreshToken = false;
+        AuthenticationResponseDTO authenticationResponseDTO = mapper.mapAuthenticationResponseDTO(
+                options,
+                accessToken,
+                refreshToken,
+                tokenAuthorization,
+                false);
 
         log.info("✅ [FINALIZADO] Usuario {} autenticado correctamente con roleCode: {} y roleName: {}",
                 userEntity.getUserName(), userEntity.getRoleCode(), userEntity.getRoleName());
@@ -55,14 +77,14 @@ public class AuthenticationService {
     }
 
     @Transactional
-    public AuthenticationResponseDTO obtenerUsuarioActual(String authorizationHeader) {
+    public AuthenticationResponseDTO obtenerUsuarioActual(String refreshTokenHeader) {
         log.info("🔐 [CONSULTA] Obteniendo usuario actual.");
 
         // 1️⃣ Obtener usuario actual
-        AuthenticationOptionsDTO options = authenticationUtils.obtenerUsuarioActual(authorizationHeader);
+        AuthenticationOptionsDTO options = authenticationUtils.obtenerUsuarioActual(refreshTokenHeader);
 
         // 2️⃣ Devolver respuesta final
-        AuthenticationResponseDTO authenticationResponseDTO = mapper.mapAuthenticationResponseDTO(options, authorizationHeader);
+        AuthenticationResponseDTO authenticationResponseDTO = mapper.mapAuthenticationResponseDTO(options, refreshTokenHeader);
 
         log.info("✅ [FINALIZADO] Usuario actual obtenido correctamente.");
 

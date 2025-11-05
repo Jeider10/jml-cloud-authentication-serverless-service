@@ -35,6 +35,9 @@ public class RefreshTokenEntity {
     private String roleName;
 
     @Column(nullable = false)
+    private String scope;
+
+    @Column(nullable = false)
     private Instant expiryDate;
 
     @Builder.Default

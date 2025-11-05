@@ -28,24 +28,27 @@ public class GeneratorTokenService {
     }
 
     @Transactional
-    public String generarToken(AuthenticationRequestDTO authenticationRequestDTO, int roleCode, String roleName) {
+    public String generarToken(AuthenticationRequestDTO authenticationRequestDTO, int roleCode, String roleName, String tokenUse) {
         log.info("🔑 [SERVICIO] Generando nuevo token JWT para usuario: {}", authenticationRequestDTO.getUsuario());
 
         // 1️⃣ Generar token
-        String token = generatorTokenUtils.generateToken(authenticationRequestDTO.getUsuario(), roleCode, roleName, false);
+        String token = generatorTokenUtils.generateToken(authenticationRequestDTO.getUsuario(), roleCode, roleName, tokenUse);
+        log.debug("📦 [TOKEN] Token generado: {}", token);
 
-        // 2️⃣ Extraer JTI
-        String jti = jwtUtil.extractJti(token);
-        log.debug("🧩 [TOKEN] JTI extraído: {}", jti);
+        // 2️⃣ Mapeo de DTO a Entity
+        if ("accessToken".equals(tokenUse)) {
+            // 3️⃣ Extraer JTI
+            String jti = jwtUtil.extractJti(token);
+            log.debug("🧩 [TOKEN] JTI extraído: {}", jti);
 
-        // 3️⃣ Mapeo de DTO a Entity
-        log.info("📦 [MAPEO] Transformando DTO a entidad de autenticación...");
-        AuthenticationEntity authenticationEntity = mapper.mapRequestDtoToEntity(authenticationRequestDTO, roleCode, roleName, jti);
-        log.debug("📦 [MAPEO] Entidad creada. Usuario: {}", authenticationEntity.getUsuario());
+            log.info("📦 [MAPEO] Transformando DTO a entidad de autenticación...");
+            AuthenticationEntity authenticationEntity = mapper.mapRequestDtoToEntity(authenticationRequestDTO, roleCode, roleName, jti);
+            log.debug("📦 [MAPEO] Entidad creada. Usuario: {}", authenticationEntity.getUsuario());
 
-        // 4️⃣ Guardar en BD
-        AuthenticationEntity entidadGuardada = authenticationUtils.guardarAuthenticationBD(authenticationEntity);
-        log.info("💾 [PERSISTENCIA] Token guardado exitosamente. Usuario: {}", entidadGuardada.getUsuario());
+            // 4️⃣ Guardar en BD solo si es access token
+            AuthenticationEntity entidadGuardada = authenticationUtils.guardarAuthenticationBD(authenticationEntity);
+            log.info("💾 [PERSISTENCIA] Autenticación guardada exitosamente. Usuario: {}", entidadGuardada.getUsuario());
+        }
 
         // 5️⃣ Retornar token
         log.info("📤 [RESPUESTA] Token JWT generado correctamente para el usuario: {}", authenticationRequestDTO.getUsuario());

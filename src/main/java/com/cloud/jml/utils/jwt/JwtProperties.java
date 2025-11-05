@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "jwt")
 public class JwtProperties {
 
-    private String secret;
-    private long expiration = 3600000; // valor por defecto si no está en el YAML (src/main/resources/application.yml)
-    private long refreshExpirationMs = 86400000; // valor por defecto si no está en el YAML (src/main/resources/application.yml)
+    private String secret = "gOOKoiLpQ/XDAAo9I85L/2Bh3Y9KWvDFyRf7vqqGP38="; // valor por defecto si no está en el YAML (src/main/resources/application.yml)
+    private long expiration = 5000; // valor por defecto si no está en el YAML (src/main/resources/application.yml)
+    private long refreshExpirationMs = 10000000; // valor por defecto si no está en el YAML (src/main/resources/application.yml)
 }

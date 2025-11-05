@@ -19,6 +19,6 @@ public class AuthenticationTokenValidationException extends AuthenticationRuntim
     public AuthenticationTokenValidationException() {
         super(
                 HttpStatus.UNAUTHORIZED,
-                "❌ [TOKEN] Token inválido o no autorizado.");
+                "❌ [TOKEN] Token expirado.");
     }
 }

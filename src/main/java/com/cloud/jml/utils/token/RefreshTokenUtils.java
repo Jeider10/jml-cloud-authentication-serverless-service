@@ -1,5 +1,6 @@
 package com.cloud.jml.utils.token;
 
+import com.cloud.jml.dto.authentication.AuthenticationRequestDTO;
 import com.cloud.jml.utils.jwt.JwtProperties;
 import com.cloud.jml.utils.jwt.JwtUtil;
 import com.cloud.jml.exception.authentication.AuthenticationRefreshTokenDeletionException;
@@ -7,6 +8,7 @@ import com.cloud.jml.exception.authentication.AuthenticationRefreshTokenPersiste
 import com.cloud.jml.exception.authentication.AuthenticationTokenValidationException;
 import com.cloud.jml.model.token.RefreshTokenEntity;
 import com.cloud.jml.repository.token.RefreshTokenRepository;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -33,11 +35,23 @@ public class RefreshTokenUtils {
         log.info("🔥 RefreshTokenUtils inicializado correctamente.");
     }
 
+    public String generarRefreshToken(AuthenticationRequestDTO authenticationRequestDTO, int roleCode, String roleName) {
+        log.info("🔐 [CONSULTA] Generando refresh token para usuario: {}", authenticationRequestDTO.getUsuario());
+
+        RefreshTokenEntity refreshTokenEntity = createRefreshToken(authenticationRequestDTO.getUsuario(), roleCode, roleName);
+        log.info("📦 [PERSISTENCIA] Refresh token generado correctamente para usuario: {}", authenticationRequestDTO.getUsuario());
+
+        String refreshToken = refreshTokenEntity.getToken();
+        log.info("✅ [FINALIZADO] Refresh token generado correctamente para usuario: {}", authenticationRequestDTO.getUsuario());
+
+        return refreshToken;
+    }
+
     public RefreshTokenEntity createRefreshToken(String usuario, int roleCode, String roleName) {
         log.info("🔐 Generando refresh token JWT para el usuario: {}", usuario);
 
         // 🔹 Generar JWT refresh token
-        String token = generatorTokenUtils.generateToken(usuario, roleCode, roleName, true);
+        String token = generatorTokenUtils.generateToken(usuario, roleCode, roleName, "refreshToken");
         String jti = jwtUtil.extractJti(token);
 
         RefreshTokenEntity refreshToken = RefreshTokenEntity.builder()
@@ -46,6 +60,7 @@ public class RefreshTokenUtils {
                 .usuario(usuario)
                 .roleCode(roleCode)
                 .roleName(roleName)
+                .scope("refresh_token")
                 .expiryDate(Instant.now().plusMillis(jwtProperties.getRefreshExpirationMs()))
                 .revoked(false)
                 .fechaCreacion(LocalDateTime.now())

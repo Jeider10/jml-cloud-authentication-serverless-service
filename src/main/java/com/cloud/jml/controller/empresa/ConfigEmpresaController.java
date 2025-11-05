@@ -43,7 +43,9 @@ public class ConfigEmpresaController {
 
         ConfigEmpresaResponseDTO response = configEmpresaService.buscarEmpresaNit(configEmpresaRequestDTO);
 
-        log.info("📤 [RESPUESTA] Empresa encontrada: {} con nit: {}", response.getNombreEmpresa(), response.getNit());
+        if (response != null) {
+            log.info("📤 [RESPUESTA] Empresa encontrada: {} con nit: {}", response.getNombreEmpresa(), response.getNit());
+        }
 
         return ResponseEntity.ok(response);
     }

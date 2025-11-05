@@ -3,6 +3,8 @@ package com.cloud.jml.config.jwt;
 import com.cloud.jml.utils.jwt.JwtUtil;
 import com.cloud.jml.utils.token.GeneratorTokenUtils;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -49,7 +51,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
             String token = authHeader.substring(7);
 
-            if (generatorTokenUtils.validateToken(token)) {
+            try {
+                generatorTokenUtils.validateToken(token);
 
                 String userName = jwtUtil.extractClaim(token, "userName");
                 String roleCode = mapRole(token);
@@ -59,6 +62,14 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                         new UsernamePasswordAuthenticationToken(userName, null, List.of(new SimpleGrantedAuthority(roleCode)));
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+            } catch (ExpiredJwtException e) {
+                log.warn("⏰ Token expirado en filtro JWT.");
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token expirado");
+                return; // 🚫 corta el flujo
+            } catch (JwtException e) {
+                log.warn("❌ Token inválido en filtro JWT.");
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token inválido");
+                return; // 🚫 corta el flujo
             }
         }
 
@@ -76,7 +87,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     }
 
     private String mapRoleCode(String token) {
-        Claims claims = jwtUtil.parseClaims(token);
+        Claims claims = jwtUtil.extractAllClaims(token);
 
         Object roleClaim = claims.get("roleCode");
         int roleCode;

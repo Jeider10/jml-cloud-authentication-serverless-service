@@ -1,5 +1,6 @@
 package com.cloud.jml.utils.authentication;
 
+import com.cloud.jml.model.token.RefreshTokenEntity;
 import com.cloud.jml.utils.jwt.JwtUtil;
 import com.cloud.jml.dto.authentication.AuthenticationOptionsDTO;
 import com.cloud.jml.dto.authentication.AuthenticationRequestDTO;
@@ -9,6 +10,7 @@ import com.cloud.jml.model.authentication.AuthenticationEntity;
 import com.cloud.jml.model.user.UserEntity;
 import com.cloud.jml.repository.authentication.AuthenticationRepository;
 import com.cloud.jml.repository.user.UserRepository;
+import com.cloud.jml.utils.token.RefreshTokenUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -23,11 +25,13 @@ public class AuthenticationUtils {
     private final AuthenticationRepository authenticationRepository;
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
+    private final RefreshTokenUtils refreshTokenUtils;
 
-    public AuthenticationUtils(AuthenticationRepository authenticationRepository, UserRepository userRepository, JwtUtil jwtUtil) {
+    public AuthenticationUtils(AuthenticationRepository authenticationRepository, UserRepository userRepository, JwtUtil jwtUtil, RefreshTokenUtils refreshTokenUtils) {
         this.authenticationRepository = authenticationRepository;
         this.userRepository = userRepository;
         this.jwtUtil = jwtUtil;
+        this.refreshTokenUtils = refreshTokenUtils;
         log.info("🔥 AuthenticationUtils inicializado correctamente.");
     }
 
@@ -59,15 +63,21 @@ public class AuthenticationUtils {
         return user;
     }
 
-    public AuthenticationOptionsDTO obtenerUsuarioActual(String authorizationHeader) {
-        log.info("👤 [CONSULTA] Intentando obtener usuario actual: {}", authorizationHeader);
+    public AuthenticationOptionsDTO obtenerUsuarioActual(String refreshTokenHeader) {
+        log.info("👤 [CONSULTA] Intentando obtener usuario actual: {}", refreshTokenHeader);
 
         // 1️⃣ Extraer el token JWT del header
-        String token = authorizationHeader.replace("Bearer ", "");
-        log.info("🔑 Token extraído: {}", token);
+        String refreshToken = refreshTokenHeader.replace("Bearer ", "");
+        log.info("🔑 refreshToken extraído: {}", refreshToken);
+
+//        String authorizationHeader = refreshTokenUtils.getAuthorizationHeader(refreshToken);
+
+        // 2️⃣ Verificar expiración y validez
+        RefreshTokenEntity refreshTokenEntity = refreshTokenUtils.verifyExpiration(refreshTokenHeader);
+        log.info("🔐 [TOKEN] Token válido detectado. Usuario: {}, jti={}", refreshTokenEntity.getUsuario(), refreshTokenEntity.getJti());
 
         // 2️⃣ Obtener el userName (o email) del token
-        String userName = jwtUtil.extractUserName(token);
+        String userName = jwtUtil.extractUserName(refreshToken);
         log.info("👤 Usuario extraído del token: {}", userName);
 
         // 3️⃣ Buscar el usuario en la base de datos

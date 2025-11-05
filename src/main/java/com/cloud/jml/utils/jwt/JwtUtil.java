@@ -1,7 +1,9 @@
 package com.cloud.jml.utils.jwt;
 
+import com.cloud.jml.exception.authentication.AuthenticationTokenValidationException;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -15,6 +17,7 @@ import javax.crypto.SecretKey;
 @Component
 public class JwtUtil {
 
+    private static final String TOKEN_EXPIRADO = "⚠️ Token expirado: {}";
     private final JwtProperties jwtProperties;
     private SecretKey key;
 
@@ -29,44 +32,57 @@ public class JwtUtil {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // ✅ Extraer claims
-    public Claims getClaims(String token) {
-        return Jwts.parser()
-                .verifyWith(key)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
-    }
-
     public String extractUserName(String token) {
-        return getClaims(token).get("usuario", String.class);
+        try {
+            return extractAllClaims(token).get("usuario", String.class);
+        } catch (ExpiredJwtException e) {
+            log.warn(TOKEN_EXPIRADO, e.getMessage());
+            throw new AuthenticationTokenValidationException("Token expirado", e);
+        }
     }
 
     public Integer extractRoleCode(String token) {
-        return getClaims(token).get("roleCode", Integer.class);
+        try {
+            return extractAllClaims(token).get("roleCode", Integer.class);
+        } catch (ExpiredJwtException e) {
+            log.warn(TOKEN_EXPIRADO, e.getMessage());
+            throw new AuthenticationTokenValidationException("Token expirado", e);
+        }
     }
 
     public String extractRoleName(String token) {
-        return getClaims(token).get("roleName", String.class);
+        try {
+            return extractAllClaims(token).get("roleName", String.class);
+        } catch (ExpiredJwtException e) {
+            log.warn(TOKEN_EXPIRADO, e.getMessage());
+            throw new AuthenticationTokenValidationException("Token expirado", e);
+        }
     }
 
     public String extractJti(String token) {
-        return getClaims(token).get("jti", String.class);
+        try {
+            return extractAllClaims(token).get("jti", String.class);
+        } catch (ExpiredJwtException e) {
+            log.warn(TOKEN_EXPIRADO, e.getMessage());
+            throw new AuthenticationTokenValidationException("Token expirado", e);
+        }
     }
 
-    // ✅ Extraer un claim específico por clave
+    public Claims extractAllClaims(String token) {
+        try {
+            return Jwts.parser()
+                    .verifyWith(key) // la clave con la que firmaste el token
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (JwtException e) {
+            log.error("❌ Error al extraer claims del token: {}", e.getMessage());
+            throw new AuthenticationTokenValidationException("Token inválido", e);
+        }
+    }
+
     public String extractClaim(String token, String claimKey) {
-        Claims claims = parseClaims(token);
+        Claims claims = extractAllClaims(token);
         return claims.get(claimKey, String.class);
-    }
-
-    // ✅ Parsear claims de un token
-    public Claims parseClaims(String token) {
-        Jws<Claims> claimsJws = Jwts.parser()
-                .verifyWith(key)   // Usa la clave HMAC
-                .build()
-                .parseSignedClaims(token);
-
-        return claimsJws.getPayload();
     }
 }

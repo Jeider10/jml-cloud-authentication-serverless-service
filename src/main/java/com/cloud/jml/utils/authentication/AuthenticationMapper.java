@@ -4,7 +4,9 @@ import com.cloud.jml.dto.authentication.AuthenticationOptionsDTO;
 import com.cloud.jml.dto.authentication.AuthenticationRequestDTO;
 import com.cloud.jml.dto.authentication.AuthenticationResponseDTO;
 import com.cloud.jml.model.authentication.AuthenticationEntity;
+import com.cloud.jml.model.token.RefreshTokenEntity;
 import com.cloud.jml.model.user.UserEntity;
+import com.cloud.jml.utils.jwt.JwtProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -14,13 +16,13 @@ import java.time.LocalDateTime;
 @Component // 🔹 Anotación para indicar que es un componente de Spring
 public class AuthenticationMapper {
 
-    public AuthenticationMapper() {
+    private final JwtProperties jwtProperties;
+
+    public AuthenticationMapper(JwtProperties jwtProperties) {
+        this.jwtProperties = jwtProperties;
         log.info("🔥 AuthenticationMapper inicializado correctamente.");
     }
 
-    /**
-     * 📦 Convierte un DTO de solicitud de autenticación en una entidad lista para persistir.
-     */
     public AuthenticationEntity mapRequestDtoToEntity(AuthenticationRequestDTO authenticationRequestDTO, int roleCode, String roleName, String jti) {
         log.info("📦 [MAPEO] Iniciando mapeo DTO → Entity para autenticación: usuario={}", authenticationRequestDTO.getUsuario());
 
@@ -37,9 +39,6 @@ public class AuthenticationMapper {
         return authenticationEntity;
     }
 
-    /**
-     * 📦 Convierte una entidad de cliente en un DTO Option de respuesta.
-     */
     public AuthenticationOptionsDTO mapEntityToAuthenticationOptionsDTO(UserEntity userEntity) {
         log.info("📦 [MAPEO] Iniciando mapeo Entity → DTO para autenticación de usuario: nombre={}", userEntity.getUserName());
 
@@ -54,33 +53,50 @@ public class AuthenticationMapper {
         return authenticationOptionsDTO;
     }
 
-    /**
-     * 📦 Convierte una entidad de cliente en un DTO de respuesta.
-     */
-    public AuthenticationResponseDTO mapAuthenticationResponseDTO(AuthenticationOptionsDTO options, String token) {
+    public AuthenticationOptionsDTO mapEntityToAuthenticationOptionsDTO(RefreshTokenEntity refreshTokenEntity) {
+        log.info("📦 [MAPEO] Iniciando mapeo Entity → DTO para refresh token de usuario: nombre={}", refreshTokenEntity.getUsuario());
+
+        AuthenticationOptionsDTO authenticationOptionsDTO = new AuthenticationOptionsDTO();
+
+        authenticationOptionsDTO.setLogin(refreshTokenEntity.getUsuario());
+        authenticationOptionsDTO.setRoleCode(refreshTokenEntity.getRoleCode());
+        authenticationOptionsDTO.setRoleName(refreshTokenEntity.getRoleName());
+
+        log.info("✅ [MAPEO] Mapeo completado DTO → Entity para refresh token de usuario: nombre={}", authenticationOptionsDTO.getLogin());
+
+        return authenticationOptionsDTO;
+    }
+
+    public AuthenticationResponseDTO mapAuthenticationResponseDTO(AuthenticationOptionsDTO options, String authorization) {
         log.info("📦 [MAPEO] Iniciando mapeo Entity → DTO para autenticación: login={}", options.getLogin());
 
         AuthenticationResponseDTO authenticationResponseDTO = new AuthenticationResponseDTO();
 
         authenticationResponseDTO.setOptions(options);
-        authenticationResponseDTO.setAuthorization(token);
+        authenticationResponseDTO.setAccessToken("");
+        authenticationResponseDTO.setExpiresIn(jwtProperties.getExpiration());
+        authenticationResponseDTO.setTokenType("Bearer");
+        authenticationResponseDTO.setRefreshToken("");
+        authenticationResponseDTO.setAuthorization(authorization.replace("Bearer ", ""));
 
         log.info("✅ [MAPEO] Mapeo completado DTO → Entity para autenticación: login={}", authenticationResponseDTO.getOptions().getLogin());
 
         return authenticationResponseDTO;
     }
 
-    /**
-     * 📦 Convierte una entidad en un DTO de respuesta con access token y refresh token.
-     */
-    public AuthenticationResponseDTO mapAuthenticationResponseDTO(AuthenticationOptionsDTO options, String token, String refreshToken) {
+    public AuthenticationResponseDTO mapAuthenticationResponseDTO(AuthenticationOptionsDTO options, String accessToken, String refreshToken, String tokenAuthorization, boolean isRefreshToken) {
         log.info("📦 [MAPEO] Iniciando mapeo Entity → DTO para autenticación con refresh token: login={}", options.getLogin());
+
+        long expiration = isRefreshToken ? jwtProperties.getRefreshExpirationMs() : jwtProperties.getExpiration();
 
         AuthenticationResponseDTO authenticationResponseDTO = new AuthenticationResponseDTO();
 
         authenticationResponseDTO.setOptions(options);
-        authenticationResponseDTO.setAuthorization(token);
+        authenticationResponseDTO.setAccessToken(accessToken);
+        authenticationResponseDTO.setExpiresIn(expiration);
+        authenticationResponseDTO.setTokenType("Bearer");
         authenticationResponseDTO.setRefreshToken(refreshToken);
+        authenticationResponseDTO.setAuthorization(tokenAuthorization);
 
         log.info("✅ [MAPEO] Mapeo completado para usuario: {}", options.getLogin());
 
