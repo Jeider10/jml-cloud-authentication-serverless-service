@@ -31,12 +31,12 @@ public class RoleFormatearFecha {
         // Fecha de creación
         String fechaCreacion = formatearFecha(roleEntity.getFechaCreacion());
         roleResponseDTO.setFechaCreacion(fechaCreacion);
-        log.debug("🕓 Fecha de creación asignada: {}", fechaCreacion);
+        log.info("🕓 Fecha de creación asignada: {}", fechaCreacion);
 
         // Fecha de actualización
         String fechaActualizacion = formatearFecha(roleEntity.getFechaActualizacion());
         roleResponseDTO.setFechaActualizacion(fechaActualizacion);
-        log.debug("🕓 Fecha de actualización asignada: {}", fechaActualizacion);
+        log.info("🕓 Fecha de actualización asignada: {}", fechaActualizacion);
     }
 
     /**

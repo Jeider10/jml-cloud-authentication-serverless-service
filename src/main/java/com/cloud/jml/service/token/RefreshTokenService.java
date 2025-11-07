@@ -84,7 +84,7 @@ public class RefreshTokenService {
                 nuevoAuthorization,
                 true);
 
-        log.debug("📦 [RESPUESTA] DTO de autenticación preparado correctamente para envío.");
+        log.info("📦 [RESPUESTA] DTO de autenticación preparado correctamente para envío.");
 
         return authenticationResponseDTO;
     }

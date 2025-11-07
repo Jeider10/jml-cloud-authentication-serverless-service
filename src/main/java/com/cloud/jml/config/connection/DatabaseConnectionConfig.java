@@ -8,6 +8,7 @@ import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactor
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 import javax.sql.DataSource;
 
@@ -35,6 +36,7 @@ public class DatabaseConnectionConfig {
      * 2️⃣ Valores por defecto (para desarrollo local)
      */
     @Bean
+    @Primary
     public DataSource dataSource() {
         if (cachedDataSource != null) {
             log.info("♻️ Reutilizando conexión a base de datos previamente inicializada.");

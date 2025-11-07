@@ -82,7 +82,7 @@ public class RefreshTokenUtils {
             throw new AuthenticationTokenValidationException("El token de refresco ha expirado.");
         }
 
-        log.debug("✅ [TOKEN] Token válido y vigente. jti={}", refreshToken.getJti());
+        log.info("✅ [TOKEN] Token válido y vigente. jti={}", refreshToken.getJti());
 
         return refreshToken;
     }

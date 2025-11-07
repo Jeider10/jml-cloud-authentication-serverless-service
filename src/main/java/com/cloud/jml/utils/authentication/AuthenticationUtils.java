@@ -70,12 +70,12 @@ public class AuthenticationUtils {
 
         // 1️⃣ Extraer el token JWT del header
         String jti = jwtUtil.extractJti(accessToken);
-        log.debug("🧩 [TOKEN] Extracted JTI: {}", jti);
+        log.info("🧩 [TOKEN] Extracted JTI: {}", jti);
 
         // 2️⃣ Map DTO to Entity
         log.info("📦 [MAPPING] Transforming DTO to authentication entity...");
         AuthenticationEntity authenticationEntity = mapper.mapRequestDtoToEntity(authenticationRequestDTO, userEntity.getRoleCode(), userEntity.getRoleName(), jti);
-        log.debug("📦 [MAPPING] Entity created. User: {}", authenticationEntity.getUsuario());
+        log.info("📦 [MAPPING] Entity created. User: {}", authenticationEntity.getUsuario());
 
         // 3️⃣ Guardar en BD solo si es accessToken
         AuthenticationEntity savedEntity = guardarAuthenticationBD(authenticationEntity);

@@ -56,7 +56,7 @@ public class GeneratorTokenUtils {
             case "accessToken" -> {
                 builder.add("auth_time", Instant.now().getEpochSecond())
                         .add(TOKEN_USE, tokenUse);
-                log.debug("🧩 Claims añadidos para access token (roles y auth_time).");
+                log.info("🧩 Claims añadidos para access token (roles y auth_time).");
             }
             case "authorization" -> {
                 builder.add("name", usuario)
@@ -65,12 +65,12 @@ public class GeneratorTokenUtils {
                         .add("network_userName", usuario)
                         .add("auth_time", Instant.now().getEpochSecond())
                         .add(TOKEN_USE, tokenUse);
-                log.debug("🧩 Claims añadidos para authorization token (perfil del usuario).");
+                log.info("🧩 Claims añadidos para authorization token (perfil del usuario).");
             }
             case "refreshToken" -> {
                 builder.add("name", usuario)
                         .add(TOKEN_USE, tokenUse);
-                log.debug("🧩 Claims mínimos añadidos para refresh token.");
+                log.info("🧩 Claims mínimos añadidos para refresh token.");
             }
             // 🚨 Default: tipo de token desconocido = error explícito
             default -> {
@@ -108,7 +108,7 @@ public class GeneratorTokenUtils {
                 throw new ExpiredJwtException(null, claims, msg);
             }
 
-            log.debug("✅ Token válido para el usuario: {}", claims.get(USUARIO));
+            log.info("✅ Token válido para el usuario: {}", claims.get(USUARIO));
 
         } catch (ExpiredJwtException e) {
             log.warn("⏰ Token expirado: {}", e.getMessage());
