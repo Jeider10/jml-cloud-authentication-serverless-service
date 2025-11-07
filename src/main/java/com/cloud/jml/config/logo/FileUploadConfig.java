@@ -11,6 +11,9 @@ import org.springframework.util.unit.DataSize;
 @Configuration
 public class FileUploadConfig {
 
+    // ===============================
+    // 🔹 Configurar Multipart programáticamente
+    // ===============================
     @Bean
     public MultipartConfigElement multipartConfigElement() {
         log.info("🔥 Configuración de carga de archivos inicializada.");
