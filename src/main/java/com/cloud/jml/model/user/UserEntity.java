@@ -23,14 +23,14 @@ public class UserEntity {
     @Column(nullable = false)
     private Long identificacion;
 
-    @Column(unique = true, nullable = false)
-    private String userName;
-
     @Column(nullable = false)
     private String nombres;
 
     @Column(nullable = false)
     private String apellidos;
+
+    @Column(unique = true, nullable = false)
+    private String userName;
 
     @Column(nullable = false)
     private String password;
@@ -41,14 +41,14 @@ public class UserEntity {
     @Column(nullable = false)
     private String roleName;
 
-    private String email;
-    private String telefono;
-    private String direccion;
-    private String historialUltimoActualizado;
-
     @Column(name = "fecha_creacion", nullable = false, updatable = false)
     private LocalDateTime fechaCreacion;
 
     @Column(name = "fecha_actualizacion")
     private LocalDateTime fechaActualizacion;
+
+    private String telefono;
+    private String email;
+    private String direccion;
+    private String historialUltimoActualizado;
 }

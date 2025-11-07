@@ -12,7 +12,6 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/roles")
-@CrossOrigin(origins = "http://localhost:8080")
 public class RoleController {
 
     private final RoleService roleService;

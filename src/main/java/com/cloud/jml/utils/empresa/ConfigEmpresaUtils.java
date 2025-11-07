@@ -8,6 +8,7 @@ import com.cloud.jml.exception.empresa.ConfigEmpresaNotFoundException;
 import com.cloud.jml.exception.empresa.ConfigEmpresaPersistenceException;
 import com.cloud.jml.model.empresa.ConfigEmpresaEntity;
 import com.cloud.jml.repository.empresa.ConfigEmpresaRepository;
+import com.cloud.jml.utils.general.GeneralUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -23,7 +24,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Optional;
 
@@ -34,11 +34,13 @@ public class ConfigEmpresaUtils {
     private final ConfigEmpresaRepository configEmpresaRepository;
     private final S3Client s3Client;
     private final S3Properties s3Properties;
+    private final GeneralUtils generalUtils;
 
-    public ConfigEmpresaUtils(ConfigEmpresaRepository configEmpresaRepository, S3Client s3Client, S3Properties s3Properties) {
+    public ConfigEmpresaUtils(ConfigEmpresaRepository configEmpresaRepository, S3Client s3Client, S3Properties s3Properties, GeneralUtils generalUtils) {
         this.configEmpresaRepository = configEmpresaRepository;
         this.s3Client = s3Client;
         this.s3Properties = s3Properties;
+        this.generalUtils = generalUtils;
         log.info("🔥 UserUtils inicializado correctamente.");
     }
 
@@ -60,34 +62,21 @@ public class ConfigEmpresaUtils {
         return configEmpresaEntity;
     }
 
-    public void actualizarDatosEmpresa(ConfigEmpresaRequestDTO configEmpresaRequestDTO, ConfigEmpresaEntity configEmpresaEntity) {
-        log.info("📌 Actualizando datos de la empresa: {}", configEmpresaRequestDTO.getNombreEmpresa());
-
-        // Actualizamos solo los campos permitidos
-        configEmpresaEntity.setNit(configEmpresaRequestDTO.getNit());
-        configEmpresaEntity.setNombreEmpresa(configEmpresaRequestDTO.getNombreEmpresa());
-        configEmpresaEntity.setDireccion(configEmpresaRequestDTO.getDireccion());
-        configEmpresaEntity.setTelefono(configEmpresaRequestDTO.getTelefono());
-        configEmpresaEntity.setMensaje(configEmpresaRequestDTO.getMensaje());
-        configEmpresaEntity.setLogo(configEmpresaRequestDTO.getLogo());
-
-        // Actualiza fecha
-        configEmpresaEntity.setFechaActualizacion(LocalDateTime.now());
-
-        log.info("✅ Datos de la empresa actualizados correctamente: {}", configEmpresaEntity.getNombreEmpresa());
-    }
-
     public String subirLogoAS3(MultipartFile file) {
-        log.info("📤 [S3 UPLOAD] Subiendo logo a bucket {}", s3Properties.getBucket());
+        log.info("📤 [S3 UPLOAD] Iniciando subida de logo a S3: {}", file.getOriginalFilename());
+
+        String bucketName = generalUtils.getEnvOrDefault("BUCKET_NAME", s3Properties.getBucket());
+        String region = generalUtils.getEnvOrDefault("REGION", s3Properties.getRegion());
 
         try {
+            log.info("📤 [S3 UPLOAD] Subiendo logo a bucket {}", bucketName);
             // 🔹 Nombre único para el archivo
             String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
             String objectKey = "logos/" + fileName;
 
             // 🔹 Crear solicitud para subir a S3
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                    .bucket(s3Properties.getBucket())
+                    .bucket(bucketName)
                     .key(objectKey)
                     .contentType(file.getContentType())
                     .build();
@@ -96,10 +85,11 @@ public class ConfigEmpresaUtils {
             s3Client.putObject(putObjectRequest, RequestBody.fromBytes(file.getBytes()));
 
             // 🔹 Construir la URL pública
+            String formatUrl = "https://%s.s3.%s.amazonaws.com/%s";
             String logoUrl = String.format(
-                    "https://%s.s3.%s.amazonaws.com/%s",
-                    s3Properties.getBucket(),
-                    s3Properties.getRegion(),
+                    formatUrl,
+                    bucketName,
+                    region,
                     objectKey
             );
 
@@ -180,9 +170,6 @@ public class ConfigEmpresaUtils {
         }
     }
 
-    /**
-     * 💾 Guarda la orden en BD con manejo de excepciones.
-     */
     public ConfigEmpresaEntity guardarEmpresaBD(ConfigEmpresaEntity configEmpresaEntity) {
         try {
             return configEmpresaRepository.save(configEmpresaEntity);
@@ -201,9 +188,6 @@ public class ConfigEmpresaUtils {
         }
     }
 
-    /**
-     * 🗑️ Elimina la orden de BD con manejo de excepciones.
-     */
     public void eliminarEmpresaBD(ConfigEmpresaEntity configEmpresaEntity) {
         try {
             configEmpresaRepository.delete(configEmpresaEntity);

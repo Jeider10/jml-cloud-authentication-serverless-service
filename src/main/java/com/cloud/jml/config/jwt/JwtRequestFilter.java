@@ -24,6 +24,12 @@ import java.util.List;
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
+    private static final List<String> PUBLIC_ENDPOINTS = List.of(
+            "/role/",
+            "/usuario/",
+            "/authentication/"
+    );
+
     private final GeneratorTokenUtils generatorTokenUtils;
     private final JwtUtil jwtUtil;
 
@@ -39,9 +45,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String requestURI = request.getRequestURI();
 
         // ✅ Excluir rutas rutas públicas que no requieren autenticación
-        if (requestURI.startsWith("/role/")
-                || requestURI.startsWith("/usuario/")
-                || requestURI.startsWith("/authentication/")) {
+        if (PUBLIC_ENDPOINTS.stream().anyMatch(requestURI::startsWith)) {
             chain.doFilter(request, response);
             return;
         }

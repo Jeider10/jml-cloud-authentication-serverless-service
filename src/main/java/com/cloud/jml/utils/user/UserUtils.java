@@ -84,6 +84,7 @@ public class UserUtils {
 
     public void validarUnicoAdministrador(UserEntity userEntity) {
         log.info("✅ Verificando si el usuario es único administrador: {}", userEntity.getUserName());
+
         // 🚫 Validar que no haya más de un administrador
         if (esRolAdministrador(userEntity)) {
             boolean existeAdmin = userRepository.existsByRoleNameIgnoreCase(userEntity.getRoleName());
@@ -125,9 +126,6 @@ public class UserUtils {
         return roleMatch;
     }
 
-    /**
-     * 💾 Guarda la orden en BD con manejo de excepciones.
-     */
     public UserEntity guardarUsuarioBD(UserEntity userEntity) {
         try {
             return userRepository.save(userEntity);
@@ -146,9 +144,6 @@ public class UserUtils {
         }
     }
 
-    /**
-     * 🗑️ Elimina la orden de BD con manejo de excepciones.
-     */
     public void eliminarUsuarioBD(UserEntity userEntity) {
         try {
             userRepository.delete(userEntity);

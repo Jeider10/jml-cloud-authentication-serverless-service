@@ -14,7 +14,6 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("/authentication")
-@CrossOrigin(origins = "http://localhost:8080")
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;

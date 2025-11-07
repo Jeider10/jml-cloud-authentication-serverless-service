@@ -19,12 +19,6 @@ public class RefreshTokenEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, name = "token", columnDefinition = "LONGTEXT")
-    private String token;
-
-    @Column(nullable = false, unique = true, updatable = false)
-    private String jti;
-
     @Column(nullable = false)
     private String usuario;
 
@@ -34,8 +28,11 @@ public class RefreshTokenEntity {
     @Column(nullable = false)
     private String roleName;
 
-    @Column(nullable = false)
-    private String scope;
+    @Column(nullable = false, unique = true, name = "token", columnDefinition = "LONGTEXT")
+    private String token;
+
+    @Column(nullable = false, unique = true, updatable = false)
+    private String jti;
 
     @Column(nullable = false)
     private Instant expiryDate;

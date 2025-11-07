@@ -17,7 +17,6 @@ import javax.crypto.SecretKey;
 @Component
 public class JwtUtil {
 
-    private static final String TOKEN_EXPIRADO = "⚠️ Token expirado: {}";
     private final JwtProperties jwtProperties;
     private SecretKey key;
 
@@ -32,40 +31,32 @@ public class JwtUtil {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String extractUserName(String token) {
+    public <T> T extractClaimValue(String token, String claimKey, Class<T> type) {
         try {
-            return extractAllClaims(token).get("usuario", String.class);
+            return extractAllClaims(token).get(claimKey, type);
         } catch (ExpiredJwtException e) {
-            log.warn(TOKEN_EXPIRADO, e.getMessage());
+            log.warn("⚠️ Token expirado: {}", e.getMessage());
             throw new AuthenticationTokenValidationException("Token expirado", e);
+        } catch (JwtException e) {
+            log.error("❌ Error al extraer claim '{}': {}", claimKey, e.getMessage());
+            throw new AuthenticationTokenValidationException("Token inválido", e);
         }
+    }
+
+    public String extractUserName(String token) {
+        return extractClaimValue(token, "usuario", String.class);
     }
 
     public Integer extractRoleCode(String token) {
-        try {
-            return extractAllClaims(token).get("roleCode", Integer.class);
-        } catch (ExpiredJwtException e) {
-            log.warn(TOKEN_EXPIRADO, e.getMessage());
-            throw new AuthenticationTokenValidationException("Token expirado", e);
-        }
+        return extractClaimValue(token, "roleCode", Integer.class);
     }
 
     public String extractRoleName(String token) {
-        try {
-            return extractAllClaims(token).get("roleName", String.class);
-        } catch (ExpiredJwtException e) {
-            log.warn(TOKEN_EXPIRADO, e.getMessage());
-            throw new AuthenticationTokenValidationException("Token expirado", e);
-        }
+        return extractClaimValue(token, "roleName", String.class);
     }
 
     public String extractJti(String token) {
-        try {
-            return extractAllClaims(token).get("jti", String.class);
-        } catch (ExpiredJwtException e) {
-            log.warn(TOKEN_EXPIRADO, e.getMessage());
-            throw new AuthenticationTokenValidationException("Token expirado", e);
-        }
+        return extractClaimValue(token, "jti", String.class);
     }
 
     public Claims extractAllClaims(String token) {

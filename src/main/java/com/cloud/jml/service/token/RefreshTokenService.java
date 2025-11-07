@@ -36,19 +36,17 @@ public class RefreshTokenService {
         String refreshToken = body.get("refreshToken");
         log.info("🔑 [TOKEN] Refresh token recibido: {}", refreshToken);
 
-//        String authorizationHeader = body.get("authorization");
-//        log.info("🔑 [TOKEN] Authorization header recibido: {}", authorizationHeader);
-
+        // 2️⃣ Verificar que exista el refresh token
         if (refreshToken == null || refreshToken.isBlank()) {
             log.warn("⚠️ [VALIDACIÓN] Refresh token ausente o vacío en la solicitud.");
             throw new AuthenticationRefreshTokenValidationException("Debe proporcionar un refresh token.");
         }
 
-        // 2️⃣ Verificar expiración y validez
+        // 3️⃣ Verificar expiración y validez
         RefreshTokenEntity refreshTokenEntity = refreshTokenUtils.verifyExpiration(refreshToken);
         log.info("🔐 [TOKEN] Token válido detectado. Usuario: {}, jti={}", refreshTokenEntity.getUsuario(), refreshTokenEntity.getJti());
 
-        // 3️⃣ Generar nuevo access token
+        // 4️⃣ Generar nuevo access token
         AuthenticationRequestDTO authenticationRequestDTO = new AuthenticationRequestDTO();
         authenticationRequestDTO.setUsuario(refreshTokenEntity.getUsuario());
 
@@ -59,18 +57,13 @@ public class RefreshTokenService {
                 "accessToken"
         );
 
-//        String nuevoRefreshToken = generatorTokenService.generarToken(
-//                authenticationRequestDTO,
-//                refreshTokenEntity.getRoleCode(),
-//                refreshTokenEntity.getRoleName(),
-//                "refreshToken"
-//        );
-
+        // 5️⃣ Generar nuevo access token
         String nuevoRefreshToken = refreshTokenUtils.generarRefreshToken(
-                authenticationRequestDTO,
+                refreshTokenEntity.getUsuario(),
                 refreshTokenEntity.getRoleCode(),
                 refreshTokenEntity.getRoleName());
 
+        // 6️⃣ Generar nuevo authorization token
         String nuevoAuthorization = generatorTokenService.generarToken(
                 authenticationRequestDTO,
                 refreshTokenEntity.getRoleCode(),
@@ -80,13 +73,10 @@ public class RefreshTokenService {
 
         log.info("✅ [TOKEN] Nuevo access token generado para el usuario: {}", refreshTokenEntity.getUsuario());
 
-        // 4️⃣ Construir respuesta
+        // 7️⃣ Construir respuesta option
         AuthenticationOptionsDTO authenticationOptionsDTO = mapper.mapEntityToAuthenticationOptionsDTO(refreshTokenEntity);
-//        AuthenticationOptionsDTO authenticationOptionsDTO = new AuthenticationOptionsDTO();
-//        authenticationOptionsDTO.setLogin(refreshTokenEntity.getUsuario());
-//        authenticationOptionsDTO.setRoleCode(refreshTokenEntity.getRoleCode());
-//        authenticationOptionsDTO.setRoleName(refreshTokenEntity.getRoleName());
 
+        // 8️⃣ Construir respuesta de refresh token
         AuthenticationResponseDTO authenticationResponseDTO = mapper.mapAuthenticationResponseDTO(
                 authenticationOptionsDTO,
                 nuevoAccessToken,

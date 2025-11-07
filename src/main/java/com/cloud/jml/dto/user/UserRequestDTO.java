@@ -12,13 +12,13 @@ import lombok.Setter;
 public class UserRequestDTO {
 
     // Getters y Setters
-    private String userName;
-    private String password;
     private Long identificacion;
     private String nombres;
     private String apellidos;
+    private String userName;
+    private String password;
     private int roleCode;
-    private String email;
     private String telefono;
+    private String email;
     private String direccion;
 }

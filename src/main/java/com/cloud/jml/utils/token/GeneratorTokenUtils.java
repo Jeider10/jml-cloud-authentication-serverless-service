@@ -17,6 +17,8 @@ import java.util.UUID;
 @Component // 🔹 Anotación para indicar que es un componente de Spring
 public class GeneratorTokenUtils {
 
+    private static final String USUARIO = "usuario";
+    private static final String TOKEN_USE = "token_use";
     private final JwtProperties jwtProperties;
     private SecretKey key;
 
@@ -39,13 +41,12 @@ public class GeneratorTokenUtils {
                 ? jwtProperties.getRefreshExpirationMs()
                 : jwtProperties.getExpiration();
 
-
         var builder = Jwts.builder()
                 .claims()
                 .add("sub", usuario)
-                .add("usuario", usuario)
-                .add("token_use", tokenUse)
-                .add("type", tokenUse)
+                .add(USUARIO, usuario)
+                .add("roleCode", roleCode)
+                .add("roleName", roleName)
                 .id(jti)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expiration));
@@ -53,24 +54,29 @@ public class GeneratorTokenUtils {
         // 🔸 Claims específicos por tipo de token
         switch (tokenUse) {
             case "accessToken" -> {
-                builder.add("roleCode", roleCode)
-                        .add("roleName", roleName)
-                        .add("auth_time", Instant.now().getEpochSecond());
+                builder.add("auth_time", Instant.now().getEpochSecond())
+                        .add(TOKEN_USE, tokenUse);
                 log.debug("🧩 Claims añadidos para access token (roles y auth_time).");
             }
             case "authorization" -> {
-                builder.add("roleCode", roleCode)
-                        .add("roleName", roleName)
-                        .add("name", usuario)
+                builder.add("name", usuario)
                         .add("email_verified", true)
                         .add("phone_number_verified", false)
                         .add("network_userName", usuario)
-                        .add("auth_time", Instant.now().getEpochSecond());
+                        .add("auth_time", Instant.now().getEpochSecond())
+                        .add(TOKEN_USE, tokenUse);
                 log.debug("🧩 Claims añadidos para authorization token (perfil del usuario).");
             }
             case "refreshToken" -> {
-                builder.add("scope", "refresh_token");
+                builder.add("name", usuario)
+                        .add(TOKEN_USE, tokenUse);
                 log.debug("🧩 Claims mínimos añadidos para refresh token.");
+            }
+            // 🚨 Default: tipo de token desconocido = error explícito
+            default -> {
+                String errorMsg = "Tipo de token desconocido: '" + tokenUse + "'";
+                log.error("❌ {}", errorMsg);
+                throw new IllegalArgumentException(errorMsg);
             }
         }
 
@@ -81,32 +87,13 @@ public class GeneratorTokenUtils {
                 .compact();
 
         log.info("✅ Token '{}' generado exitosamente. jti={}", tokenUse, jti);
+
         return token;
-    }
-
-    public String generateToken(String usuario, int roleCode, String roleName, boolean isRefreshToken, String tokenUse) {
-        log.info("🔐 Generando {} token para el usuario: {}", isRefreshToken ? "refresh" : "access", usuario);
-
-        String jti = UUID.randomUUID().toString();
-        long expiration = isRefreshToken ? jwtProperties.getRefreshExpirationMs() : jwtProperties.getExpiration();
-
-        return Jwts.builder()
-                .claims()
-                .add("usuario", usuario)
-                .add("roleCode", roleCode)
-                .add("roleName", roleName)
-                .add("token_use", tokenUse)
-                .add("type", isRefreshToken ? "refresh" : "access")
-                .id(jti)
-                .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + expiration))
-                .and()
-                .signWith(key, Jwts.SIG.HS256)
-                .compact();
     }
 
     public void validateToken(String token) {
         try {
+            // 🧩 Parsear y validar firma del token
             Jws<Claims> claimsJws = Jwts.parser()
                     .verifyWith(key)
                     .build()
@@ -114,16 +101,20 @@ public class GeneratorTokenUtils {
 
             Claims claims = claimsJws.getPayload();
 
+            // ⏰ Verificar expiración manualmente (aunque JJWT ya lo valida)
             if (claims.getExpiration().before(new Date())) {
-                log.warn("⏰ Token expirado: {}", token);
-                throw new ExpiredJwtException(null, claims, "Token expirado");
+                String msg = "Token expirado para el usuario: " + claims.get(USUARIO);
+                log.warn("⏰ {}", msg);
+                throw new ExpiredJwtException(null, claims, msg);
             }
+
+            log.debug("✅ Token válido para el usuario: {}", claims.get(USUARIO));
 
         } catch (ExpiredJwtException e) {
             log.warn("⏰ Token expirado: {}", e.getMessage());
-            throw e;  // ⚠️ lanza la excepción real para que suba como 401
+            throw e; // ⚠️ Propaga la excepción real (será manejada como 401)
         } catch (JwtException | IllegalArgumentException e) {
-            log.warn("❌ Token inválido o corrupto: {}", e.getMessage());
+            log.error("❌ Token inválido o corrupto: {}", e.getMessage());
             throw new JwtException("Token inválido o corrupto", e);
         }
     }

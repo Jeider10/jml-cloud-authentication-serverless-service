@@ -16,21 +16,21 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // 👤 Errores de usuario
-    @ExceptionHandler(UserRuntimeException.class)
-    public ResponseEntity<Map<String, Object>> handleUserErrors(UserRuntimeException ex) {
-        return buildErrorResponse(
-                ex.getStatus(),
-                "👤 Error en usuario",
-                ex.getMessage());
-    }
-
     // 🛡️ Errores de roles
     @ExceptionHandler(RoleRuntimeException.class)
     public ResponseEntity<Map<String, Object>> handleRoleErrors(RoleRuntimeException ex) {
         return buildErrorResponse(
                 ex.getStatus(),
                 "🛡️ Error en roles",
+                ex.getMessage());
+    }
+
+    // 👤 Errores de usuario
+    @ExceptionHandler(UserRuntimeException.class)
+    public ResponseEntity<Map<String, Object>> handleUserErrors(UserRuntimeException ex) {
+        return buildErrorResponse(
+                ex.getStatus(),
+                "👤 Error en usuario",
                 ex.getMessage());
     }
 

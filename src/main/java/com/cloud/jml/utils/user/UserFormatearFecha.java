@@ -20,10 +20,6 @@ public class UserFormatearFecha {
         log.info("🔥 UserFormatearFecha inicializado correctamente.");
     }
 
-    /**
-     * 🧩 Asigna las fechas formateadas (creación y actualización)
-     * desde la entidad a la respuesta DTO.
-     */
     public void asignarFechasFormateadas(UserEntity userEntity, UserResponseDTO userResponseDTO) {
         if (userEntity == null || userResponseDTO == null) {
             log.warn("⚠️ Entidad o DTO nulos al intentar asignar fechas formateadas.");

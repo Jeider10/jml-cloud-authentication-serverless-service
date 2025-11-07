@@ -13,7 +13,7 @@ public abstract class AuthenticationRuntimeException extends RuntimeException {
         this.status = status;
     }
 
-    public AuthenticationRuntimeException(HttpStatus status, String message, Throwable cause) {
+    protected AuthenticationRuntimeException(HttpStatus status, String message, Throwable cause) {
         super(message, cause);
         this.status = status;
     }

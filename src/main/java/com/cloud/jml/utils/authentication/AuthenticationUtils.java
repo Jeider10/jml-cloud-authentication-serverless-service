@@ -1,15 +1,15 @@
 package com.cloud.jml.utils.authentication;
 
-import com.cloud.jml.model.token.RefreshTokenEntity;
-import com.cloud.jml.utils.jwt.JwtUtil;
 import com.cloud.jml.dto.authentication.AuthenticationOptionsDTO;
 import com.cloud.jml.dto.authentication.AuthenticationRequestDTO;
 import com.cloud.jml.exception.authentication.AuthenticationInvalidCredentialsException;
 import com.cloud.jml.exception.authentication.AuthenticationPersistenceException;
 import com.cloud.jml.model.authentication.AuthenticationEntity;
+import com.cloud.jml.model.token.RefreshTokenEntity;
 import com.cloud.jml.model.user.UserEntity;
 import com.cloud.jml.repository.authentication.AuthenticationRepository;
 import com.cloud.jml.repository.user.UserRepository;
+import com.cloud.jml.utils.jwt.JwtUtil;
 import com.cloud.jml.utils.token.RefreshTokenUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
@@ -26,12 +26,14 @@ public class AuthenticationUtils {
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
     private final RefreshTokenUtils refreshTokenUtils;
+    private final AuthenticationMapper mapper;
 
-    public AuthenticationUtils(AuthenticationRepository authenticationRepository, UserRepository userRepository, JwtUtil jwtUtil, RefreshTokenUtils refreshTokenUtils) {
+    public AuthenticationUtils(AuthenticationRepository authenticationRepository, UserRepository userRepository, JwtUtil jwtUtil, RefreshTokenUtils refreshTokenUtils, AuthenticationMapper mapper) {
         this.authenticationRepository = authenticationRepository;
         this.userRepository = userRepository;
         this.jwtUtil = jwtUtil;
         this.refreshTokenUtils = refreshTokenUtils;
+        this.mapper = mapper;
         log.info("🔥 AuthenticationUtils inicializado correctamente.");
     }
 
@@ -63,6 +65,23 @@ public class AuthenticationUtils {
         return user;
     }
 
+    public void processAndSaveAuthentication(String accessToken, AuthenticationRequestDTO authenticationRequestDTO, UserEntity userEntity) {
+        log.info("📝 [PROCESO] Procesando y guardando autenticación para usuario: {}", userEntity.getUserName());
+
+        // 1️⃣ Extraer el token JWT del header
+        String jti = jwtUtil.extractJti(accessToken);
+        log.debug("🧩 [TOKEN] Extracted JTI: {}", jti);
+
+        // 2️⃣ Map DTO to Entity
+        log.info("📦 [MAPPING] Transforming DTO to authentication entity...");
+        AuthenticationEntity authenticationEntity = mapper.mapRequestDtoToEntity(authenticationRequestDTO, userEntity.getRoleCode(), userEntity.getRoleName(), jti);
+        log.debug("📦 [MAPPING] Entity created. User: {}", authenticationEntity.getUsuario());
+
+        // 3️⃣ Guardar en BD solo si es accessToken
+        AuthenticationEntity savedEntity = guardarAuthenticationBD(authenticationEntity);
+        log.info("💾 [PERSISTENCE] Authentication saved successfully. User: {}", savedEntity.getUsuario());
+    }
+
     public AuthenticationOptionsDTO obtenerUsuarioActual(String refreshTokenHeader) {
         log.info("👤 [CONSULTA] Intentando obtener usuario actual: {}", refreshTokenHeader);
 
@@ -70,17 +89,15 @@ public class AuthenticationUtils {
         String refreshToken = refreshTokenHeader.replace("Bearer ", "");
         log.info("🔑 refreshToken extraído: {}", refreshToken);
 
-//        String authorizationHeader = refreshTokenUtils.getAuthorizationHeader(refreshToken);
-
         // 2️⃣ Verificar expiración y validez
         RefreshTokenEntity refreshTokenEntity = refreshTokenUtils.verifyExpiration(refreshTokenHeader);
         log.info("🔐 [TOKEN] Token válido detectado. Usuario: {}, jti={}", refreshTokenEntity.getUsuario(), refreshTokenEntity.getJti());
 
-        // 2️⃣ Obtener el userName (o email) del token
+        // 3️⃣ Obtener el userName (o email) del token
         String userName = jwtUtil.extractUserName(refreshToken);
         log.info("👤 Usuario extraído del token: {}", userName);
 
-        // 3️⃣ Buscar el usuario en la base de datos
+        // 4️⃣ Buscar el usuario en la base de datos
         Optional<UserEntity> usuario = userRepository.findByUserName(userName);
 
         if (usuario.isEmpty()) {
@@ -88,23 +105,17 @@ public class AuthenticationUtils {
             throw new AuthenticationInvalidCredentialsException(userName);
         }
 
-        log.info("✅ Usuario: {} encontrado.", userName);
+        UserEntity userEntity = usuario.get();
+        log.info("✅ Usuario: {} encontrado.", userEntity);
 
-        // 4️⃣ Crear el DTO de respuesta
-        AuthenticationOptionsDTO options = new AuthenticationOptionsDTO();
+        // 5️⃣ Crear el DTO de respuesta
+        AuthenticationOptionsDTO authenticationOptionsDTO = mapper.mapEntityToAuthenticationOptionsDTO(userEntity);
 
-        options.setLogin(usuario.get().getUserName());
-        options.setRoleCode(usuario.get().getRoleCode());
-        options.setRoleName(usuario.get().getRoleName());
+        log.info("🔑 Usuario actual obtenido correctamente: {}", authenticationOptionsDTO.getLogin());
 
-        log.info("🔑 Usuario actual obtenido correctamente: {}", options.getLogin());
-
-        return options;
+        return authenticationOptionsDTO;
     }
 
-    /**
-     * 💾 Guarda la orden en BD con manejo de excepciones.
-     */
     public AuthenticationEntity guardarAuthenticationBD(AuthenticationEntity authenticationEntity) {
         try {
             return authenticationRepository.save(authenticationEntity);

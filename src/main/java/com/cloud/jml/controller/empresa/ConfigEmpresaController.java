@@ -13,7 +13,6 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/empresa")
-@CrossOrigin(origins = "http://localhost:8080")
 public class ConfigEmpresaController {
 
     private final ConfigEmpresaService configEmpresaService;
@@ -54,6 +53,7 @@ public class ConfigEmpresaController {
     public ResponseEntity<ConfigEmpresaResponseDTO> registrarDatosEmpresa(
             @RequestPart("empresa") ConfigEmpresaRequestDTO configEmpresaRequestDTO,
             @RequestPart(value = "file", required = false) MultipartFile file) {
+
         log.info("📥 [SOLICITUD] Crear empresa: {}", configEmpresaRequestDTO.getNombreEmpresa());
 
         ConfigEmpresaResponseDTO configEmpresaResponseDTO = configEmpresaService.registrarDatosEmpresa(configEmpresaRequestDTO, file);

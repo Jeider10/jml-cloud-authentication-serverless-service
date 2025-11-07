@@ -20,10 +20,6 @@ public class RoleFormatearFecha {
         log.info("🔥 RoleFormatearFecha inicializado correctamente.");
     }
 
-    /**
-     * 🧩 Asigna las fechas formateadas (creación y actualización)
-     * desde la entidad a la respuesta DTO.
-     */
     public void asignarFechasFormateadas(RoleEntity roleEntity, RoleResponseDTO roleResponseDTO) {
         if (roleEntity == null || roleResponseDTO == null) {
             log.warn("⚠️ Entidad o DTO nulos al intentar asignar fechas formateadas.");

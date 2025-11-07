@@ -67,7 +67,7 @@ public class AuthenticationMapper {
         return authenticationOptionsDTO;
     }
 
-    public AuthenticationResponseDTO mapAuthenticationResponseDTO(AuthenticationOptionsDTO options, String authorization) {
+    public AuthenticationResponseDTO mapAuthenticationResponseDTO(AuthenticationOptionsDTO options, String refreshToken) {
         log.info("📦 [MAPEO] Iniciando mapeo Entity → DTO para autenticación: login={}", options.getLogin());
 
         AuthenticationResponseDTO authenticationResponseDTO = new AuthenticationResponseDTO();
@@ -76,8 +76,8 @@ public class AuthenticationMapper {
         authenticationResponseDTO.setAccessToken("");
         authenticationResponseDTO.setExpiresIn(jwtProperties.getExpiration());
         authenticationResponseDTO.setTokenType("Bearer");
-        authenticationResponseDTO.setRefreshToken("");
-        authenticationResponseDTO.setAuthorization(authorization.replace("Bearer ", ""));
+        authenticationResponseDTO.setRefreshToken(refreshToken.replace("Bearer ", ""));
+        authenticationResponseDTO.setAuthorization("");
 
         log.info("✅ [MAPEO] Mapeo completado DTO → Entity para autenticación: login={}", authenticationResponseDTO.getOptions().getLogin());
 

@@ -20,10 +20,6 @@ public class ConfigEmpresaFormatearFecha {
         log.info("🔥 ConfigEmpresaFormatearFecha inicializado correctamente.");
     }
 
-    /**
-     * 🧩 Asigna las fechas formateadas (creación y actualización)
-     * desde la entidad a la respuesta DTO.
-     */
     public void asignarFechasFormateadas(ConfigEmpresaEntity configEmpresaEntity, ConfigEmpresaResponseDTO configEmpresaResponseDTO) {
         if (configEmpresaEntity == null || configEmpresaResponseDTO == null) {
             log.warn("⚠️ Entidad o DTO nulos al intentar asignar fechas formateadas.");

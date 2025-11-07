@@ -1,18 +1,11 @@
 server:
   port: 1081
-#  port: ${PORT:8080}
 
 spring:
   datasource:
-    # Local
     url: jdbc:mysql://localhost:3306/application_table_db
     username: root
     password:
-
-    # AWS RDS
-#    url: ${DB_URL}
-#    username: ${DB_USERNAME}
-#    password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   application:
@@ -35,13 +28,13 @@ spring:
 
 cloud:
   aws:
-    region: ${AWS_REGION:us-east-1}   # usa variable o fallback
-    bucket: ${AWS_S3_BUCKET_NAME}     # <-- 🔹 aquí el nombre del bucket
+    region: ${AWS_REGION:us-east-1}
+    bucket: ${AWS_S3_BUCKET_NAME}
     credentials:
       access-key: ${AWS_ACCESS_KEY_ID}
       secret-key: ${AWS_SECRET_ACCESS_KEY}
 
 jwt:
-#  secret: gOOKoiLpQ/XDAAo9I85L/2Bh3Y9KWvDFyRf7vqqGP38=
-#  expiration: 3600000  # 1 hora en milisegundos
-#  refreshExpirationMs: 86400000  # 24 horas en milisegundos
+  secret: gOOKoiLpQ/XDAAo9I85L/2Bh3Y9KWvDFyRf7vqqGP38=
+  expiration: 3600000  # 1 hora en milisegundos
+  refreshExpirationMs: 86400000  # 24 horas en milisegundos

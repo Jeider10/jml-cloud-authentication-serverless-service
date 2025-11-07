@@ -132,7 +132,7 @@ public class ConfigEmpresaService {
         }
 
         // Paso 3: Actualizar datos
-        configEmpresaUtils.actualizarDatosEmpresa(configEmpresaRequestDTO, configEmpresaEntity);
+        mapper.actualizarDatosEmpresa(configEmpresaRequestDTO, configEmpresaEntity);
 
         // Paso 4: Guardar cambios en la BD
         ConfigEmpresaEntity actualizado = configEmpresaUtils.guardarEmpresaBD(configEmpresaEntity);

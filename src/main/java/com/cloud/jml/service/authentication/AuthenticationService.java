@@ -37,41 +37,24 @@ public class AuthenticationService {
         UserEntity userEntity = authenticationUtils.validarUsuario(authenticationRequestDTO);
 
         // 2️⃣ Generar access token (token_use = "accessToken")
-        String accessToken = generatorTokenService.generarToken(
-                authenticationRequestDTO,
-                userEntity.getRoleCode(),
-                userEntity.getRoleName(),
-                "accessToken"
-        );
+        String accessToken = generatorTokenService.generarToken(authenticationRequestDTO, userEntity.getRoleCode(), userEntity.getRoleName(), "accessToken");
 
-        // 3️⃣ Generar ID token (authorization) (token_use = "authorization")
-        String tokenAuthorization = generatorTokenService.generarToken(
-                authenticationRequestDTO,
-                userEntity.getRoleCode(),
-                userEntity.getRoleName(),
-                "authorization"
-        );
+        // 3️⃣ Procesa y guarda la autenticación
+        authenticationUtils.processAndSaveAuthentication(accessToken, authenticationRequestDTO, userEntity);
 
-        // 4️⃣ Generar refresh token persistente
-        String refreshToken = refreshTokenUtils.generarRefreshToken(
-                authenticationRequestDTO,
-                userEntity.getRoleCode(),
-                userEntity.getRoleName());
+        // 4️⃣ Generar refresh token (token_use = "refreshToken")
+        String refreshToken = refreshTokenUtils.generarRefreshToken(authenticationRequestDTO.getUsuario(), userEntity.getRoleCode(), userEntity.getRoleName());
 
-        // 5️⃣ Construir DTO de options
+        // 5️⃣ Generar authorization token (token_use = "authorization")
+        String tokenAuthorization = generatorTokenService.generarToken(authenticationRequestDTO, userEntity.getRoleCode(), userEntity.getRoleName(), "authorization");
+
+        // 6️⃣ Construir DTO de options
         AuthenticationOptionsDTO options = mapper.mapEntityToAuthenticationOptionsDTO(userEntity);
 
-        // 6️⃣ Mapear respuesta completa con ambos tokens
-//        boolean isRefreshToken = false;
-        AuthenticationResponseDTO authenticationResponseDTO = mapper.mapAuthenticationResponseDTO(
-                options,
-                accessToken,
-                refreshToken,
-                tokenAuthorization,
-                false);
+        // 7️⃣ Mapear respuesta completa con ambos tokens
+        AuthenticationResponseDTO authenticationResponseDTO = mapper.mapAuthenticationResponseDTO(options, accessToken, refreshToken, tokenAuthorization, false);
 
-        log.info("✅ [FINALIZADO] Usuario {} autenticado correctamente con roleCode: {} y roleName: {}",
-                userEntity.getUserName(), userEntity.getRoleCode(), userEntity.getRoleName());
+        log.info("✅ [FINALIZADO] Usuario {} autenticado correctamente con roleCode: {} y roleName: {}", userEntity.getUserName(), userEntity.getRoleCode(), userEntity.getRoleName());
 
         return authenticationResponseDTO;
     }

@@ -19,9 +19,6 @@ public class RoleMapper {
         log.info("🔥 RoleMapper inicializado correctamente.");
     }
 
-    /**
-     * 📦 Convierte un DTO de solicitud de rol en una entidad lista para persistir.
-     */
     public RoleEntity mapRequestDtoToEntity(RoleRequestDTO roleRequestDTO) {
         log.info("📦 [MAPEO] Iniciando mapeo DTO → Entity para role: nombre={}", roleRequestDTO.getRoleName());
 
@@ -37,9 +34,6 @@ public class RoleMapper {
         return roleEntity;
     }
 
-    /**
-     * 📦 Convierte una entidad de cliente en un DTO de respuesta.
-     */
     public RoleResponseDTO mapEntityToResponseDto(RoleEntity roleEntity) {
         log.info("📦 [MAPEO] Iniciando mapeo Entity → DTO para role: nombre={}", roleEntity.getRoleName());
 

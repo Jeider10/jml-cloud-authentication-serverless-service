@@ -12,14 +12,14 @@ import lombok.Setter;
 public class UserResponseDTO {
 
     // Getters y Setters
-    private String userName;
     private Long identificacion;
     private String nombres;
     private String apellidos;
+    private String userName;
     private int roleCode;
     private String roleName;
-    private String email;
     private String telefono;
+    private String email;
     private String direccion;
     private String fechaCreacion;
     private String fechaActualizacion;

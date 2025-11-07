@@ -38,9 +38,6 @@ public class RoleUtils {
         }
     }
 
-    /**
-     * 💾 Guarda la orden en BD con manejo de excepciones.
-     */
     public RoleEntity guardarRoleBD(RoleEntity roleEntity) {
         try {
             return roleRepository.save(roleEntity);
@@ -59,9 +56,6 @@ public class RoleUtils {
         }
     }
 
-    /**
-     * 🗑️ Elimina la orden de BD con manejo de excepciones.
-     */
     public void eliminarRoleBD(RoleEntity roleEntity) {
         try {
             roleRepository.delete(roleEntity);

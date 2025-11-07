@@ -1,9 +1,8 @@
 package com.cloud.jml.exception.authentication;
 
-import com.cloud.jml.exception.empresa.ConfigEmpresaRuntimeException;
 import org.springframework.http.HttpStatus;
 
-public class AuthenticationRefreshTokenDeletionException extends ConfigEmpresaRuntimeException {
+public class AuthenticationRefreshTokenDeletionException extends AuthenticationRuntimeException {
 
     public AuthenticationRefreshTokenDeletionException(String message) {
         super(HttpStatus.INTERNAL_SERVER_ERROR, "🗑️ [ELIMINACIÓN] " + message);

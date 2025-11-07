@@ -1,14 +1,12 @@
 package com.cloud.jml.utils.token;
 
-import com.cloud.jml.dto.authentication.AuthenticationRequestDTO;
-import com.cloud.jml.utils.jwt.JwtProperties;
-import com.cloud.jml.utils.jwt.JwtUtil;
 import com.cloud.jml.exception.authentication.AuthenticationRefreshTokenDeletionException;
 import com.cloud.jml.exception.authentication.AuthenticationRefreshTokenPersistenceException;
 import com.cloud.jml.exception.authentication.AuthenticationTokenValidationException;
 import com.cloud.jml.model.token.RefreshTokenEntity;
 import com.cloud.jml.repository.token.RefreshTokenRepository;
-import jakarta.transaction.Transactional;
+import com.cloud.jml.utils.jwt.JwtProperties;
+import com.cloud.jml.utils.jwt.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -35,41 +33,30 @@ public class RefreshTokenUtils {
         log.info("🔥 RefreshTokenUtils inicializado correctamente.");
     }
 
-    public String generarRefreshToken(AuthenticationRequestDTO authenticationRequestDTO, int roleCode, String roleName) {
-        log.info("🔐 [CONSULTA] Generando refresh token para usuario: {}", authenticationRequestDTO.getUsuario());
-
-        RefreshTokenEntity refreshTokenEntity = createRefreshToken(authenticationRequestDTO.getUsuario(), roleCode, roleName);
-        log.info("📦 [PERSISTENCIA] Refresh token generado correctamente para usuario: {}", authenticationRequestDTO.getUsuario());
-
-        String refreshToken = refreshTokenEntity.getToken();
-        log.info("✅ [FINALIZADO] Refresh token generado correctamente para usuario: {}", authenticationRequestDTO.getUsuario());
-
-        return refreshToken;
-    }
-
-    public RefreshTokenEntity createRefreshToken(String usuario, int roleCode, String roleName) {
+    public String generarRefreshToken(String usuario, int roleCode, String roleName) {
         log.info("🔐 Generando refresh token JWT para el usuario: {}", usuario);
 
-        // 🔹 Generar JWT refresh token
         String token = generatorTokenUtils.generateToken(usuario, roleCode, roleName, "refreshToken");
         String jti = jwtUtil.extractJti(token);
 
-        RefreshTokenEntity refreshToken = RefreshTokenEntity.builder()
+        RefreshTokenEntity refreshTokenEntity = RefreshTokenEntity.builder()
                 .token(token)
                 .jti(jti)
                 .usuario(usuario)
                 .roleCode(roleCode)
                 .roleName(roleName)
-                .scope("refresh_token")
                 .expiryDate(Instant.now().plusMillis(jwtProperties.getRefreshExpirationMs()))
                 .revoked(false)
                 .fechaCreacion(LocalDateTime.now())
                 .build();
 
-        RefreshTokenEntity guardadoRefreshToken = guardarRefreshTokenBD(refreshToken);
-        log.info("🔐 Token de refresco generado correctamente para el usuario: {}", usuario);
+        RefreshTokenEntity guardadoRefreshToken = guardarRefreshTokenBD(refreshTokenEntity);
+        log.info("📦 [PERSISTENCIA] Refresh token generado y guardado correctamente para usuario: {}", guardadoRefreshToken.getUsuario());
 
-        return guardadoRefreshToken;
+        String refreshToken = guardadoRefreshToken.getToken();
+        log.info("✅ [FINALIZADO] Refresh token generado correctamente para usuario: {}", guardadoRefreshToken.getUsuario());
+
+        return refreshToken;
     }
 
     public RefreshTokenEntity verifyExpiration(String token) {
@@ -119,9 +106,6 @@ public class RefreshTokenUtils {
         log.info("🚫 [TOKEN] Token de refresco revocado exitosamente. jti={}", refreshToken.getJti());
     }
 
-    /**
-     * 💾 Guarda la orden en BD con manejo de excepciones.
-     */
     public RefreshTokenEntity guardarRefreshTokenBD(RefreshTokenEntity refreshTokenEntity) {
         try {
             return refreshTokenRepository.save(refreshTokenEntity);
@@ -140,9 +124,6 @@ public class RefreshTokenUtils {
         }
     }
 
-    /**
-     * 🗑️ Elimina la orden de BD con manejo de excepciones.
-     */
     public void eliminarRefreshTokenBD(RefreshTokenEntity refreshTokenEntity) {
         try {
             refreshTokenRepository.delete(refreshTokenEntity);

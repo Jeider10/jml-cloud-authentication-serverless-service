@@ -25,9 +25,6 @@ public class UserMapper {
         log.info("🔥 UserMapper inicializado correctamente.");
     }
 
-    /**
-     * 📦 Convierte un DTO de solicitud de usuario en una entidad lista para persistir.
-     */
     public UserEntity mapRequestDtoToEntity(UserRequestDTO userRequestDTO) {
         log.info("📦 [MAPEO] Iniciando mapeo DTO → Entity para usuario: nombre={}", userRequestDTO.getUserName());
 
@@ -52,9 +49,6 @@ public class UserMapper {
         return userEntity;
     }
 
-    /**
-     * 📦 Convierte una entidad de cliente en un DTO de respuesta.
-     */
     public UserResponseDTO mapEntityToResponseDto(UserEntity userEntity) {
         log.info("📦 [MAPEO] Iniciando mapeo Entity → DTO para usuario: nombre={}", userEntity.getUserName());
 

@@ -12,7 +12,6 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/usuario")
-@CrossOrigin(origins = "http://localhost:8080")
 public class UserController {
 
     private final UserService userService;
@@ -133,6 +132,7 @@ public class UserController {
     public ResponseEntity<UserResponseDTO> actualizarUsuario(
             @RequestBody UserRequestDTO userRequestDTO,
             @RequestParam("userLogin") String userLogin) {
+
         log.info("📥 [SOLICITUD] Actualizar usuario: {}", userRequestDTO.getUserName());
 
         UserResponseDTO userResponseDTO = userService.actualizarUsuario(userRequestDTO, userLogin);

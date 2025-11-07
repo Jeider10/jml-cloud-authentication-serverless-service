@@ -19,9 +19,23 @@ public class ConfigEmpresaMapper {
         log.info("🔥 ConfigEmpresaMapper inicializado correctamente.");
     }
 
-    /**
-     * 📦 Convierte un DTO de solicitud de empresa en una entidad lista para persistir.
-     */
+    public void actualizarDatosEmpresa(ConfigEmpresaRequestDTO configEmpresaRequestDTO, ConfigEmpresaEntity configEmpresaEntity) {
+        log.info("📌 Actualizando datos de la empresa: {}", configEmpresaRequestDTO.getNombreEmpresa());
+
+        // Actualizamos solo los campos permitidos
+        configEmpresaEntity.setNit(configEmpresaRequestDTO.getNit());
+        configEmpresaEntity.setNombreEmpresa(configEmpresaRequestDTO.getNombreEmpresa());
+        configEmpresaEntity.setDireccion(configEmpresaRequestDTO.getDireccion());
+        configEmpresaEntity.setTelefono(configEmpresaRequestDTO.getTelefono());
+        configEmpresaEntity.setMensaje(configEmpresaRequestDTO.getMensaje());
+        configEmpresaEntity.setLogo(configEmpresaRequestDTO.getLogo());
+
+        // Actualiza fecha
+        configEmpresaEntity.setFechaActualizacion(LocalDateTime.now());
+
+        log.info("✅ Datos de la empresa actualizados correctamente: {}", configEmpresaEntity.getNombreEmpresa());
+    }
+
     public ConfigEmpresaEntity mapRequestDtoToEntity(ConfigEmpresaRequestDTO configEmpresaRequestDTO) {
         log.info("📦 [MAPEO] Iniciando mapeo DTO → Entity para empresa: nombre={}", configEmpresaRequestDTO.getNombreEmpresa());
 
@@ -40,9 +54,6 @@ public class ConfigEmpresaMapper {
         return configEmpresaEntity;
     }
 
-    /**
-     * 📦 Convierte una entidad de empresa en un DTO de respuesta.
-     */
     public ConfigEmpresaResponseDTO mapEntityToResponseDto(ConfigEmpresaEntity configEmpresaEntity) {
         log.info("📦 [MAPEO] Iniciando mapeo Entity → DTO para empresa: nombre={}", configEmpresaEntity.getNombreEmpresa());
 
