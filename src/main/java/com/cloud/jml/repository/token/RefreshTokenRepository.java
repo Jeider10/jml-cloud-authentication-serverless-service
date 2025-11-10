@@ -9,7 +9,7 @@ import java.time.Instant;
 import java.util.Optional;
 
 public interface RefreshTokenRepository extends JpaRepository<RefreshTokenEntity, Long> {
-    Optional<RefreshTokenEntity> findByToken(String token);
+    Optional<RefreshTokenEntity> findByJti(String jti);
 
     Page<RefreshTokenEntity> findByExpiryDateBefore(Instant now, PageRequest of);
 }

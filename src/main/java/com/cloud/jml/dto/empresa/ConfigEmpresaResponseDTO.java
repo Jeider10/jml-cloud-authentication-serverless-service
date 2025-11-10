@@ -11,7 +11,6 @@ import lombok.Setter;
 @AllArgsConstructor // Constructor con todos los argumentos
 public class ConfigEmpresaResponseDTO {
 
-    // Getters y Setters
     private Long nit;
     private String nombreEmpresa;
     private String direccion;

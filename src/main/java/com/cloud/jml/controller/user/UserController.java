@@ -52,9 +52,12 @@ public class UserController {
 
         UserResponseDTO userResponseDTO = userService.obtenerUsuarioPorIdentificacion(userRequestDTO);
 
-        if (userResponseDTO != null) {
-            log.info("📤 [RESPUESTA] Usuario obtenido con identificación: {}", userResponseDTO.getIdentificacion());
+        if (userResponseDTO == null) {
+            log.info("📤 [RESPUESTA] Usuario no encontrado con identificación: {}", identificacion);
+            return ResponseEntity.ok().body(null);
         }
+
+        log.info("📤 [RESPUESTA] Usuario obtenido con identificación: {}", userResponseDTO.getIdentificacion());
 
         return ResponseEntity.ok(userResponseDTO);
     }
@@ -110,9 +113,12 @@ public class UserController {
 
         UserResponseDTO userResponseDTO = userService.obtenerUsuarioPorRoleCode(userRequestDTO);
 
-        if (userResponseDTO != null) {
-            log.info("📤 [RESPUESTA] Usuario obtenido con roleCode: {}", userResponseDTO.getRoleCode());
+        if (userResponseDTO == null) {
+            log.info("📤 [RESPUESTA] Usuario no encontrado con roleCode: {}", roleCode);
+            return ResponseEntity.ok().body(null);
         }
+
+        log.info("📤 [RESPUESTA] Usuario obtenido con roleCode: {}", userResponseDTO.getRoleCode());
 
         return ResponseEntity.ok(userResponseDTO);
     }

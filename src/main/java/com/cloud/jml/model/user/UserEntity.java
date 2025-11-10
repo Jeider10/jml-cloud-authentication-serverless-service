@@ -41,14 +41,15 @@ public class UserEntity {
     @Column(nullable = false)
     private String roleName;
 
+    private String telefono;
+    private String email;
+    private String direccion;
+
     @Column(name = "fecha_creacion", nullable = false, updatable = false)
     private LocalDateTime fechaCreacion;
 
     @Column(name = "fecha_actualizacion")
     private LocalDateTime fechaActualizacion;
 
-    private String telefono;
-    private String email;
-    private String direccion;
     private String historialUltimoActualizado;
 }

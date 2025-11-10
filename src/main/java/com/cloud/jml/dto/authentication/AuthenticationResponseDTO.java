@@ -11,7 +11,6 @@ import lombok.Setter;
 @AllArgsConstructor // Constructor con todos los argumentos
 public class AuthenticationResponseDTO {
 
-    // Getters y Setters
     private AuthenticationOptionsDTO options;
     private String accessToken; // JWT de acceso (token_use = "accessToken")
     private Long expiresIn; // Tiempo de expiración en segundos

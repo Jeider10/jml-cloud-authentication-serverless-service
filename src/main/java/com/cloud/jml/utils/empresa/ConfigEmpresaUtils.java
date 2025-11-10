@@ -1,6 +1,5 @@
 package com.cloud.jml.utils.empresa;
 
-import com.cloud.jml.config.logo.S3Properties;
 import com.cloud.jml.dto.empresa.ConfigEmpresaRequestDTO;
 import com.cloud.jml.exception.empresa.ConfigEmpresaDeletionException;
 import com.cloud.jml.exception.empresa.ConfigEmpresaLogoUploadException;
@@ -8,6 +7,7 @@ import com.cloud.jml.exception.empresa.ConfigEmpresaNotFoundException;
 import com.cloud.jml.exception.empresa.ConfigEmpresaPersistenceException;
 import com.cloud.jml.model.empresa.ConfigEmpresaEntity;
 import com.cloud.jml.repository.empresa.ConfigEmpresaRepository;
+import com.cloud.jml.utils.aws.S3Properties;
 import com.cloud.jml.utils.general.GeneralUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;

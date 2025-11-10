@@ -11,7 +11,6 @@ import lombok.Setter;
 @AllArgsConstructor // Constructor con todos los argumentos
 public class AuthenticationOptionsDTO {
 
-    // Getters y Setters
     private String login;
     private int roleCode;
     private String roleName;

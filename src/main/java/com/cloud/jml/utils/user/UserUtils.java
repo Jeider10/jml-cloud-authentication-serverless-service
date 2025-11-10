@@ -16,6 +16,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -53,7 +54,7 @@ public class UserUtils {
 
             // Si el usuario con ese userName tiene otra identificación, no se puede usar ese nombre
             Long usuarioActualIdentificacion = usuarioActual.getIdentificacion();
-            if (usuarioConNuevoUserName.getIdentificacion() != usuarioActualIdentificacion) {
+            if (!Objects.equals(usuarioConNuevoUserName.getIdentificacion(), usuarioActualIdentificacion)) {
                 log.warn("⚠️ El userName '{}' ya pertenece a otro usuario con identificación diferente: {}",
                         userRequestDTO.getUserName(), usuarioConNuevoUserName.getIdentificacion());
                 throw new UserAlreadyExistsException(userRequestDTO.getUserName());

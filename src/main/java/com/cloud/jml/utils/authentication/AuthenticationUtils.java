@@ -70,7 +70,7 @@ public class AuthenticationUtils {
 
         // 1️⃣ Extraer el token JWT del header
         String jti = jwtUtil.extractJti(accessToken);
-        log.info("🧩 [TOKEN] Extracted JTI: {}", jti);
+        log.info("🔑 [TOKEN] JTI extraído del accessToken: {}", jti);
 
         // 2️⃣ Map DTO to Entity
         log.info("📦 [MAPPING] Transforming DTO to authentication entity...");
@@ -93,7 +93,7 @@ public class AuthenticationUtils {
         RefreshTokenEntity refreshTokenEntity = refreshTokenUtils.verifyExpiration(refreshTokenHeader);
         log.info("🔐 [TOKEN] Token válido detectado. Usuario: {}, jti={}", refreshTokenEntity.getUsuario(), refreshTokenEntity.getJti());
 
-        // 3️⃣ Obtener el userName (o email) del token
+        // 3️⃣ Obtener el userName del token
         String userName = jwtUtil.extractUserName(refreshToken);
         log.info("👤 Usuario extraído del token: {}", userName);
 

@@ -1,4 +1,4 @@
-package com.cloud.jml.config.logo;
+package com.cloud.jml.config.file;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;

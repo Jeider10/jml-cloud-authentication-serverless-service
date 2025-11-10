@@ -11,7 +11,6 @@ import lombok.Setter;
 @AllArgsConstructor // Constructor con todos los argumentos
 public class UserResponseDTO {
 
-    // Getters y Setters
     private Long identificacion;
     private String nombres;
     private String apellidos;

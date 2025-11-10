@@ -11,7 +11,6 @@ import lombok.Setter;
 @AllArgsConstructor // Constructor con todos los argumentos
 public class RoleResponseDTO {
 
-    // Getters y Setters
     private int roleCode;
     private String roleName;
     private String descripcion;

@@ -58,12 +58,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             try {
                 generatorTokenUtils.validateToken(token);
 
-                String userName = jwtUtil.extractClaim(token, "userName");
-                String roleCode = mapRole(token);
+                String userName = jwtUtil.extractUserName(token);
+                String roleName = jwtUtil.extractRoleName(token);
 
                 // Autenticación con rol
                 UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(userName, null, List.of(new SimpleGrantedAuthority(roleCode)));
+                        new UsernamePasswordAuthenticationToken(userName, null, List.of(new SimpleGrantedAuthority(roleName)));
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (ExpiredJwtException e) {

@@ -23,9 +23,9 @@ public class GeneratorTokenService {
 
         // 1️⃣ Generar token
         String token = generatorTokenUtils.generateToken(authenticationRequestDTO.getUsuario(), roleCode, roleName, tokenUse);
-        log.info("📦 [TOKEN] Token generado: {}", token);
+        log.info("🔑 [TOKEN] Token generado: {}", token);
 
-        // 5️⃣ Retornar token
+        // 2️⃣ Retornar token
         log.info("📤 [RESPUESTA] Token JWT generado correctamente para el usuario: {}", authenticationRequestDTO.getUsuario());
 
         return token;

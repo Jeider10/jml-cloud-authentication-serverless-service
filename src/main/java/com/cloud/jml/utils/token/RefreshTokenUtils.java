@@ -36,11 +36,11 @@ public class RefreshTokenUtils {
     public String generarRefreshToken(String usuario, int roleCode, String roleName) {
         log.info("🔐 Generando refresh token JWT para el usuario: {}", usuario);
 
-        String token = generatorTokenUtils.generateToken(usuario, roleCode, roleName, "refreshToken");
-        String jti = jwtUtil.extractJti(token);
+        String refreshToken = generatorTokenUtils.generateToken(usuario, roleCode, roleName, "refreshToken");
+        String jti = jwtUtil.extractJti(refreshToken);
+        log.info("🔑 [TOKEN] JTI extraído del refreshToken: {}", jti);
 
         RefreshTokenEntity refreshTokenEntity = RefreshTokenEntity.builder()
-                .token(token)
                 .jti(jti)
                 .usuario(usuario)
                 .roleCode(roleCode)
@@ -53,8 +53,7 @@ public class RefreshTokenUtils {
         RefreshTokenEntity guardadoRefreshToken = guardarRefreshTokenBD(refreshTokenEntity);
         log.info("📦 [PERSISTENCIA] Refresh token generado y guardado correctamente para usuario: {}", guardadoRefreshToken.getUsuario());
 
-        String refreshToken = guardadoRefreshToken.getToken();
-        log.info("✅ [FINALIZADO] Refresh token generado correctamente para usuario: {}", guardadoRefreshToken.getUsuario());
+        log.info("✅ [GENERADO] Refresh token generado correctamente para usuario: {}", guardadoRefreshToken.getUsuario());
 
         return refreshToken;
     }
@@ -62,14 +61,17 @@ public class RefreshTokenUtils {
     public RefreshTokenEntity verifyExpiration(String token) {
         log.info("🔍 [UTILS] Verificando validez y expiración del token de refresco...");
 
-        Optional<RefreshTokenEntity> optionalToken = refreshTokenRepository.findByToken(token);
+        String jti = jwtUtil.extractJti(token);
+        log.info("🔑 [TOKEN] JTI extraído del token: {}", jti);
 
-        if (optionalToken.isEmpty()) {
-            log.error("❌ [ERROR] Token de refresco no encontrado en BD. token={}", token);
+        Optional<RefreshTokenEntity> optionalJti = refreshTokenRepository.findByJti(jti);
+
+        if (optionalJti.isEmpty()) {
+            log.error("❌ [ERROR] Token de refresco no encontrado en BD. jti={}", jti);
             throw new AuthenticationTokenValidationException("Token de refresco no encontrado.");
         }
 
-        RefreshTokenEntity refreshToken = optionalToken.get();
+        RefreshTokenEntity refreshToken = optionalJti.get();
 
         if (refreshToken.isRevoked()) {
             log.warn("⚠️ [TOKEN] Token revocado detectado. jti={}", refreshToken.getJti());
@@ -90,7 +92,10 @@ public class RefreshTokenUtils {
     public void revokeToken(String token) {
         log.info("🔍 [UTILS] Iniciando revocación del refresh token...");
 
-        Optional<RefreshTokenEntity> optionalToken = refreshTokenRepository.findByToken(token);
+        String jti = jwtUtil.extractJti(token);
+        log.info("🔑 [TOKEN] JTI extraído del token: {} para revoke.", jti);
+
+        Optional<RefreshTokenEntity> optionalToken = refreshTokenRepository.findByJti(jti);
 
         if (optionalToken.isEmpty()) {
             log.error("❌ [ERROR] No se encontró el refresh token especificado. token={}", token);
@@ -99,6 +104,7 @@ public class RefreshTokenUtils {
 
         RefreshTokenEntity refreshToken = optionalToken.get();
         refreshToken.setRevoked(true);
+        refreshToken.setFechaRevocado(LocalDateTime.now());
         log.info("🔐 Token de refresco con jti={} revocado.", refreshToken.getJti());
 
         guardarRefreshTokenBD(refreshToken);

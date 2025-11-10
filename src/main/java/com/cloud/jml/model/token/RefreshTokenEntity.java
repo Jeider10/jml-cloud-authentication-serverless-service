@@ -28,9 +28,6 @@ public class RefreshTokenEntity {
     @Column(nullable = false)
     private String roleName;
 
-    @Column(nullable = false, unique = true, name = "token", columnDefinition = "LONGTEXT")
-    private String token;
-
     @Column(nullable = false, unique = true, updatable = false)
     private String jti;
 
@@ -43,4 +40,7 @@ public class RefreshTokenEntity {
 
     @Column(name = "fecha_creacion", nullable = false, updatable = false)
     private LocalDateTime fechaCreacion;
+
+    @Column(name = "fecha_revocado")
+    private LocalDateTime fechaRevocado;
 }

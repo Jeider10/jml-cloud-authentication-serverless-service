@@ -1,6 +1,8 @@
 package com.cloud.jml.jobs;
 
+import com.cloud.jml.model.authentication.AuthenticationEntity;
 import com.cloud.jml.model.token.RefreshTokenEntity;
+import com.cloud.jml.repository.authentication.AuthenticationRepository;
 import com.cloud.jml.repository.token.RefreshTokenRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -9,20 +11,47 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Slf4j
 @Component // 🔹 Anotación para indicar que es un componente de Spring
 public class TokenCleanupScheduler {
 
     private final RefreshTokenRepository refreshTokenRepository;
+    private final AuthenticationRepository authenticationRepository;
 
-    public TokenCleanupScheduler(RefreshTokenRepository refreshTokenRepository) {
+    public TokenCleanupScheduler(RefreshTokenRepository refreshTokenRepository, AuthenticationRepository authenticationRepository) {
         this.refreshTokenRepository = refreshTokenRepository;
+        this.authenticationRepository = authenticationRepository;
         log.info("🔥 TokenCleanupScheduler inicializado correctamente.");
     }
 
-    // 🧹 Se ejecuta cada 24 horas (medianoche)
+    // 🧹 Se ejecuta cada 24 horas (🕑 a las 12 AM)
     @Scheduled(cron = "0 0 0 * * *")
+    public void limpiarRegistrosDeAutenticacionAntiguos() {
+        log.info("🧹 Iniciando limpieza incremental de registros de autenticación antiguos...");
+
+        int batchSize = 1000;
+        int totalEliminados = 0;
+        Page<AuthenticationEntity> page;
+
+        LocalDateTime cutoff = LocalDateTime.now().minusHours(48);
+
+        do {
+            page = authenticationRepository.findByFechaCreacionBefore(cutoff, PageRequest.of(0, batchSize));
+            int size = page.getContent().size();
+            if (size > 0) {
+                authenticationRepository.deleteAll(page.getContent());
+                totalEliminados += size;
+                log.info("🧹 Eliminados {} registros en este lote...", size);
+            }
+        } while (!page.isEmpty());
+
+        log.info("✅ Limpieza completada. Total registros eliminados: {}", totalEliminados);
+    }
+
+    // 🧹 Se ejecuta cada 24 horas (🕑 a las 2 AM)
+    @Scheduled(cron = "0 0 2 * * *")
     public void limpiarTokensExpiradosPorLotes() {
         log.info("🧹 Iniciando limpieza incremental de tokens expirados...");
 

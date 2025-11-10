@@ -52,9 +52,12 @@ public class RoleController {
 
         RoleResponseDTO roleResponseDTO = roleService.buscarRolePorCodigo(roleRequestDTO);
 
-        if (roleResponseDTO != null) {
-            log.info("📤 [RESPUESTA] Role encontrado con código: {}", roleResponseDTO.getRoleCode());
+        if (roleResponseDTO == null) {
+            log.warn("📤 [RESPUESTA] Role no encontrado con código: {}", roleCode);
+            return ResponseEntity.ok().body(null);
         }
+
+        log.info("📤 [RESPUESTA] Role encontrado con código: {}", roleResponseDTO.getRoleCode());
 
         return ResponseEntity.ok(roleResponseDTO);
     }

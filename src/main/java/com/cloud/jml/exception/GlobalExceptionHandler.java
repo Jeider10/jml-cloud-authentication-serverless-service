@@ -43,12 +43,12 @@ public class GlobalExceptionHandler {
                 ex.getMessage());
     }
 
-    // 🔑 Errores de empresa
+    // 🏢 Errores de empresa
     @ExceptionHandler(ConfigEmpresaRuntimeException.class)
     public ResponseEntity<Map<String, Object>> handleEmpresaErrors(ConfigEmpresaRuntimeException ex) {
         return buildErrorResponse(
                 ex.getStatus(),
-                "🔑 Error en empresa",
+                " 🏢 Error en empresa",
                 ex.getMessage());
     }
 

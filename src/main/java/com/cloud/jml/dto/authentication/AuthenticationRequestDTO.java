@@ -11,7 +11,6 @@ import lombok.Setter;
 @AllArgsConstructor // Constructor con todos los argumentos
 public class AuthenticationRequestDTO {
 
-    // Getters y Setters
     private String usuario;
     private String password;
 }

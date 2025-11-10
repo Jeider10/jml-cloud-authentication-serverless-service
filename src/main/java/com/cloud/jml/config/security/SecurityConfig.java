@@ -1,5 +1,6 @@
 package com.cloud.jml.config.security;
 
+import com.cloud.jml.config.jwt.JwtAuthenticationEntryPoint;
 import com.cloud.jml.config.jwt.JwtRequestFilter;
 import com.cloud.jml.utils.general.GeneralUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -22,10 +23,12 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtRequestFilter jwtRequestFilter;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final GeneralUtils generalUtils;
 
-    public SecurityConfig(JwtRequestFilter jwtRequestFilter, GeneralUtils generalUtils) {
+    public SecurityConfig(JwtRequestFilter jwtRequestFilter, JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint, GeneralUtils generalUtils) {
         this.jwtRequestFilter = jwtRequestFilter;
+        this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
         this.generalUtils = generalUtils;
         log.info("🔥 SecurityConfig inicializado correctamente.");
     }
@@ -57,6 +60,9 @@ public class SecurityConfig {
                                 "/uploads/**" // permite acceso público a imágenes
                         ).permitAll()
                         .anyRequest().authenticated()
+                )
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 )
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
 

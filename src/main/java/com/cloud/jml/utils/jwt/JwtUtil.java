@@ -31,7 +31,44 @@ public class JwtUtil {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
+    public String extractUserName(String token) {
+        log.info("🔑 Extrayendo nombre de usuario del token JWT.");
+
+        String usuario = extractClaimValue(token, "usuario", String.class);
+        log.info("✅ Nombre de usuario extraído correctamente: {}", usuario);
+
+        return usuario;
+    }
+
+    public Integer extractRoleCode(String token) {
+        log.info("🔑 Extrayendo roleCode del token JWT.");
+
+        Integer roleCode = extractClaimValue(token, "roleCode", Integer.class);
+        log.info("✅ roleCode extraído correctamente: {}", roleCode);
+
+        return roleCode;
+    }
+
+    public String extractRoleName(String token) {
+        log.info("🔑 Extrayendo roleName del token JWT.");
+
+        String roleName = extractClaimValue(token, "roleName", String.class);
+        log.info("✅ roleName extraído correctamente: {}", roleName);
+
+        return roleName;
+    }
+
+    public String extractJti(String token) {
+        log.info("🔑 Extrayendo JTI del token JWT.");
+
+        String jti = extractClaimValue(token, "jti", String.class);
+        log.info("✅ JTI extraído correctamente: {}", jti);
+
+        return jti;
+    }
+
     public <T> T extractClaimValue(String token, String claimKey, Class<T> type) {
+        log.info("🔑 Extrayendo claim '{}' del token JWT.", claimKey);
         try {
             return extractAllClaims(token).get(claimKey, type);
         } catch (ExpiredJwtException e) {
@@ -43,37 +80,17 @@ public class JwtUtil {
         }
     }
 
-    public String extractUserName(String token) {
-        return extractClaimValue(token, "usuario", String.class);
-    }
-
-    public Integer extractRoleCode(String token) {
-        return extractClaimValue(token, "roleCode", Integer.class);
-    }
-
-    public String extractRoleName(String token) {
-        return extractClaimValue(token, "roleName", String.class);
-    }
-
-    public String extractJti(String token) {
-        return extractClaimValue(token, "jti", String.class);
-    }
-
     public Claims extractAllClaims(String token) {
-        try {
-            return Jwts.parser()
-                    .verifyWith(key) // la clave con la que firmaste el token
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload();
-        } catch (JwtException e) {
-            log.error("❌ Error al extraer claims del token: {}", e.getMessage());
-            throw new AuthenticationTokenValidationException("Token inválido", e);
-        }
-    }
+        log.info("🔑 Extrayendo claims del token JWT.");
 
-    public String extractClaim(String token, String claimKey) {
-        Claims claims = extractAllClaims(token);
-        return claims.get(claimKey, String.class);
+        Claims claims = Jwts.parser()
+                .verifyWith(key) // la clave con la que firmaste el token
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+
+        log.info("✅ Claims extraídos correctamente.");
+
+        return claims;
     }
 }
