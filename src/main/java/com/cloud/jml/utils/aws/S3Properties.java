@@ -13,4 +13,6 @@ public class S3Properties {
 
     private String bucket = "elasticbeanstalk-logos-us-east-1-536322508385";
     private String region = "us-east-1";
+    private String accessKey;
+    private String secretKey;
 }

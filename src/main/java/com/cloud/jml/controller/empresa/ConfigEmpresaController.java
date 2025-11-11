@@ -4,6 +4,7 @@ import com.cloud.jml.dto.empresa.ConfigEmpresaRequestDTO;
 import com.cloud.jml.dto.empresa.ConfigEmpresaResponseDTO;
 import com.cloud.jml.service.empresa.ConfigEmpresaService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,9 +25,14 @@ public class ConfigEmpresaController {
 
     @GetMapping
     public ResponseEntity<List<ConfigEmpresaResponseDTO>> obtenerPrimeraEmpresa() {
-        log.info("📥 [SOLICITUD] Obtener empresa registrada (primera encontrada).");
+        log.info("📥 [SOLICITUD] /empresa -> Obtener empresa registrada (primera encontrada).");
 
         List<ConfigEmpresaResponseDTO> primeraEmpresa = configEmpresaService.obtenerPrimeraEmpresa();
+
+        if (primeraEmpresa == null || primeraEmpresa.isEmpty()) {
+            log.warn("⚠️ [RESPUESTA] No se encontró ninguna empresa registrada.");
+            return ResponseEntity.noContent().build();
+        }
 
         log.info("📤 [RESPUESTA] Empresa encontrada: {}", primeraEmpresa.size());
 
@@ -35,19 +41,19 @@ public class ConfigEmpresaController {
 
     @GetMapping("/nit")
     public ResponseEntity<ConfigEmpresaResponseDTO> buscarEmpresaNit(@RequestParam("nit") Long nit) {
-        log.info("📥 [SOLICITUD] Buscar empresa con NIT: {}", nit);
+        log.info("📥 [SOLICITUD] /empresa/nit -> Buscar empresa con NIT: {}", nit);
 
         ConfigEmpresaRequestDTO configEmpresaRequestDTO = new ConfigEmpresaRequestDTO();
         configEmpresaRequestDTO.setNit(nit);
 
         ConfigEmpresaResponseDTO response = configEmpresaService.buscarEmpresaNit(configEmpresaRequestDTO);
 
-        if (response == null) {
-            log.warn("📤 [RESPUESTA] Empresa no encontrada con NIT: {}", nit);
-            return ResponseEntity.ok().body(null);
+        if (response == null || response.getNit() == null) {
+            log.warn("⚠️ [RESPUESTA] No se encontró empresa con NIT: {}", nit);
+            return ResponseEntity.noContent().build();
         }
 
-        log.info("📤 [RESPUESTA] Empresa encontrada: {} con nit: {}", response.getNombreEmpresa(), response.getNit());
+        log.info("📤 [RESPUESTA] Empresa encontrada: {} (NIT: {})", response.getNombreEmpresa(), response.getNit());
 
         return ResponseEntity.ok(response);
     }
@@ -57,13 +63,18 @@ public class ConfigEmpresaController {
             @RequestPart("empresa") ConfigEmpresaRequestDTO configEmpresaRequestDTO,
             @RequestPart(value = "file", required = false) MultipartFile file) {
 
-        log.info("📥 [SOLICITUD] Crear empresa: {}", configEmpresaRequestDTO.getNombreEmpresa());
+        log.info("📥 [SOLICITUD] /empresa/register -> Crear empresa: {}", configEmpresaRequestDTO.getNombreEmpresa());
 
         ConfigEmpresaResponseDTO configEmpresaResponseDTO = configEmpresaService.registrarDatosEmpresa(configEmpresaRequestDTO, file);
 
-        log.info("📤 [RESPUESTA] Empresa creada: {} con nit: {}", configEmpresaResponseDTO.getNombreEmpresa(), configEmpresaResponseDTO.getNit());
+        if (configEmpresaResponseDTO == null || configEmpresaResponseDTO.getNit() == null) {
+            log.warn("⚠️ [RESPUESTA] No se pudo crear la empresa: {}", configEmpresaRequestDTO.getNombreEmpresa());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
 
-        return ResponseEntity.ok(configEmpresaResponseDTO);
+        log.info("📤 [RESPUESTA] Empresa creada exitosamente: {} (NIT: {})", configEmpresaResponseDTO.getNombreEmpresa(), configEmpresaResponseDTO.getNit());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(configEmpresaResponseDTO);
     }
 
     @PutMapping(value = "/update", consumes = {"multipart/form-data"})
@@ -71,25 +82,30 @@ public class ConfigEmpresaController {
             @RequestPart("empresa") ConfigEmpresaRequestDTO configEmpresaRequestDTO,
             @RequestPart(value = "file", required = false) MultipartFile file) {
 
-        log.info("📥 [SOLICITUD] Actualizar empresa: {}", configEmpresaRequestDTO.getNombreEmpresa());
+        log.info("📥 [SOLICITUD] /empresa/update -> Actualizar empresa: {}", configEmpresaRequestDTO.getNombreEmpresa());
 
         ConfigEmpresaResponseDTO configEmpresaResponseDTO = configEmpresaService.actualizarEmpresa(configEmpresaRequestDTO, file);
 
-        log.info("📤 [RESPUESTA] Empresa actualizada correctamente: {}", configEmpresaRequestDTO.getNombreEmpresa());
+        if (configEmpresaResponseDTO == null || configEmpresaResponseDTO.getNit() == null) {
+            log.warn("⚠️ [RESPUESTA] No se pudo actualizar la empresa: {}", configEmpresaRequestDTO.getNombreEmpresa());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        log.info("📤 [RESPUESTA] Empresa actualizada correctamente: {} (NIT: {})", configEmpresaResponseDTO.getNombreEmpresa(), configEmpresaResponseDTO.getNit());
 
         return ResponseEntity.ok(configEmpresaResponseDTO);
     }
 
     @DeleteMapping("/delete")
     public ResponseEntity<Void> eliminarEmpresa(@RequestParam("nit") Long nit) {
-        log.info("📥 [SOLICITUD] Eliminar empresa con nit: {}", nit);
+        log.info("📥 [SOLICITUD] /empresa/delete -> Eliminar empresa con NIT: {}", nit);
 
         ConfigEmpresaRequestDTO configEmpresaRequestDTO = new ConfigEmpresaRequestDTO();
         configEmpresaRequestDTO.setNit(nit);
 
         configEmpresaService.eliminarEmpresa(configEmpresaRequestDTO);
 
-        log.info("📤 [RESPUESTA] Empresa eliminada correctamente con nit: {}", nit);
+        log.info("📤 [RESPUESTA] Empresa eliminada correctamente (NIT: {}).", nit);
 
         return ResponseEntity.ok().build();
     }

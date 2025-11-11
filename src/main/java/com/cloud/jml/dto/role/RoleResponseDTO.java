@@ -11,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor // Constructor con todos los argumentos
 public class RoleResponseDTO {
 
-    private int roleCode;
+    private Integer roleCode;
     private String roleName;
     private String descripcion;
     private String fechaCreacion;

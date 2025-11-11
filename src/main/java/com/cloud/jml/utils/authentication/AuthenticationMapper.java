@@ -3,10 +3,12 @@ package com.cloud.jml.utils.authentication;
 import com.cloud.jml.dto.authentication.AuthenticationOptionsDTO;
 import com.cloud.jml.dto.authentication.AuthenticationRequestDTO;
 import com.cloud.jml.dto.authentication.AuthenticationResponseDTO;
+import com.cloud.jml.dto.user.UserResponseDTO;
 import com.cloud.jml.model.authentication.AuthenticationEntity;
 import com.cloud.jml.model.token.RefreshTokenEntity;
 import com.cloud.jml.model.user.UserEntity;
 import com.cloud.jml.utils.jwt.JwtProperties;
+import com.cloud.jml.utils.user.UserFormatearFecha;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -17,20 +19,25 @@ import java.time.LocalDateTime;
 public class AuthenticationMapper {
 
     private final JwtProperties jwtProperties;
+    private final UserFormatearFecha userFormatearFecha;
 
-    public AuthenticationMapper(JwtProperties jwtProperties) {
+    public AuthenticationMapper(JwtProperties jwtProperties, UserFormatearFecha userFormatearFecha) {
         this.jwtProperties = jwtProperties;
+        this.userFormatearFecha = userFormatearFecha;
         log.info("🔥 AuthenticationMapper inicializado correctamente.");
     }
 
-    public AuthenticationEntity mapRequestDtoToEntity(AuthenticationRequestDTO authenticationRequestDTO, int roleCode, String roleName, String jti) {
+    public AuthenticationEntity mapRequestDtoToEntity(AuthenticationRequestDTO authenticationRequestDTO, UserEntity userEntity, String jti) {
         log.info("📦 [MAPEO] Iniciando mapeo DTO → Entity para autenticación: usuario={}", authenticationRequestDTO.getUsuario());
 
         AuthenticationEntity authenticationEntity = new AuthenticationEntity();
 
         authenticationEntity.setUsuario(authenticationRequestDTO.getUsuario());
-        authenticationEntity.setRoleCode(roleCode);
-        authenticationEntity.setRoleName(roleName);
+        authenticationEntity.setRoleCode(userEntity.getRoleCode());
+        authenticationEntity.setRoleName(userEntity.getRoleName());
+        authenticationEntity.setIdentificacion(userEntity.getIdentificacion());
+        authenticationEntity.setNombres(userEntity.getNombres());
+        authenticationEntity.setApellidos(userEntity.getApellidos());
         authenticationEntity.setJti(jti);
         authenticationEntity.setFechaCreacion(LocalDateTime.now());
 
@@ -51,6 +58,31 @@ public class AuthenticationMapper {
         log.info("✅ [MAPEO] Mapeo completado DTO → Entity para autenticación de usuario: nombre={}", authenticationOptionsDTO.getLogin());
 
         return authenticationOptionsDTO;
+    }
+
+    public UserResponseDTO buildUserResponseDTO(UserEntity userEntity) {
+        log.info("📦 [MAPEO] Iniciando construcción de DTO de respuesta para usuario: {}", userEntity.getUserName());
+
+        // 🔹 Construimos el UserResponseDTO
+        UserResponseDTO userResponseDTO = new UserResponseDTO();
+
+        userResponseDTO.setIdentificacion(userEntity.getIdentificacion());
+        userResponseDTO.setNombres(userEntity.getNombres());
+        userResponseDTO.setApellidos(userEntity.getApellidos());
+        userResponseDTO.setUserName(userEntity.getUserName());
+        userResponseDTO.setRoleCode(userEntity.getRoleCode());
+        userResponseDTO.setRoleName(userEntity.getRoleName());
+        userResponseDTO.setTelefono(userEntity.getTelefono());
+        userResponseDTO.setEmail(userEntity.getEmail());
+        userResponseDTO.setDireccion(userEntity.getDireccion());
+        userResponseDTO.setHistorialUltimoActualizado(userEntity.getHistorialUltimoActualizado());
+
+        // 🕓 Formateo de fechas
+        userFormatearFecha.asignarFechasFormateadas(userEntity, userResponseDTO);
+
+        log.info("✅ [MAPEO] Mapeo completado de DTO de respuesta para usuario: {}", userResponseDTO.getUserName());
+
+        return userResponseDTO;
     }
 
     public AuthenticationOptionsDTO mapEntityToAuthenticationOptionsDTO(RefreshTokenEntity refreshTokenEntity) {

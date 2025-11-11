@@ -27,6 +27,7 @@ public class TokenCleanupScheduler {
     }
 
     // 🧹 Se ejecuta cada 24 horas (🕑 a las 12 AM)
+    // (Minuto: 0 Hora: 0 Día del mes: * (todos) Mes: * (todos) Día de la semana: * (todos))
     @Scheduled(cron = "0 0 0 * * *")
     public void limpiarRegistrosDeAutenticacionAntiguos() {
         log.info("🧹 Iniciando limpieza incremental de registros de autenticación antiguos...");
@@ -35,7 +36,7 @@ public class TokenCleanupScheduler {
         int totalEliminados = 0;
         Page<AuthenticationEntity> page;
 
-        LocalDateTime cutoff = LocalDateTime.now().minusHours(48);
+        LocalDateTime cutoff = LocalDateTime.now().minusHours(8);
 
         do {
             page = authenticationRepository.findByFechaCreacionBefore(cutoff, PageRequest.of(0, batchSize));
@@ -51,6 +52,7 @@ public class TokenCleanupScheduler {
     }
 
     // 🧹 Se ejecuta cada 24 horas (🕑 a las 2 AM)
+    // (Minuto: 0 Hora: 0 Día del mes: * (todos) Mes: * (todos) Día de la semana: * (todos))
     @Scheduled(cron = "0 0 2 * * *")
     public void limpiarTokensExpiradosPorLotes() {
         log.info("🧹 Iniciando limpieza incremental de tokens expirados...");

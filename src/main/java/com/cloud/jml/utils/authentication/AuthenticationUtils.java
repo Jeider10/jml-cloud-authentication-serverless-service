@@ -74,7 +74,7 @@ public class AuthenticationUtils {
 
         // 2️⃣ Map DTO to Entity
         log.info("📦 [MAPPING] Transforming DTO to authentication entity...");
-        AuthenticationEntity authenticationEntity = mapper.mapRequestDtoToEntity(authenticationRequestDTO, userEntity.getRoleCode(), userEntity.getRoleName(), jti);
+        AuthenticationEntity authenticationEntity = mapper.mapRequestDtoToEntity(authenticationRequestDTO, userEntity, jti);
         log.info("📦 [MAPPING] Entity created. User: {}", authenticationEntity.getUsuario());
 
         // 3️⃣ Guardar en BD solo si es accessToken

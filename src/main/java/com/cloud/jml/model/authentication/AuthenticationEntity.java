@@ -30,6 +30,15 @@ public class AuthenticationEntity {
     private String roleName;
 
     @Column(unique = true, nullable = false)
+    private Long identificacion;
+
+    @Column(nullable = false)
+    private String nombres;
+
+    @Column(nullable = false)
+    private String apellidos;
+
+    @Column(unique = true, nullable = false)
     private String jti;
 
     @Column(name = "fecha_creacion", nullable = false, updatable = false)
