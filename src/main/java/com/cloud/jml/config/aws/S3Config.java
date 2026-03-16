@@ -34,7 +34,7 @@ public class S3Config {
             // S3Client s3 = s3Client(); // Entorno AWS
             S3Client s3 = s3ClientLocal();
             Region region = detectAwsRegion();
-            createBucketIfNotExists(s3, generalUtils.getEnvOrDefault("BUCKET_NAME", s3Properties.getBucket()), region);
+            createBucketIfNotExists(s3, generalUtils.getEnvOrDefault("AWS_S3_BUCKET_NAME", s3Properties.getBucket()), region);
         } catch (S3Exception e) {
             log.warn("⚠️ No se pudo verificar o crear el bucket S3 (posible token expirado): {}", e.getMessage());
         }
@@ -137,8 +137,24 @@ public class S3Config {
         try {
             s3Client.headBucket(b -> b.bucket(bucketName));
             return true;
+
         } catch (S3Exception e) {
-            return false;
+
+            // 404 → bucket no existe
+            if (e.statusCode() == 404) {
+                log.info("ℹ️ El bucket '{}' no existe.", bucketName);
+                return false;
+            }
+
+            // 403 o 301 → bucket existe pero no accesible o región diferente
+            if (e.statusCode() == 403 || e.statusCode() == 301) {
+                log.info("ℹ️ El bucket '{}' existe pero está en otra región o con acceso restringido.", bucketName);
+                return true;
+            }
+
+            log.warn("⚠️ Error verificando bucket '{}': {}", bucketName, e.awsErrorDetails().errorMessage());
+
+            return true;
         }
     }
 }

@@ -65,7 +65,7 @@ public class ConfigEmpresaUtils {
     public String subirLogoAS3(MultipartFile file) {
         log.info("📤 [S3 UPLOAD] Iniciando subida de logo a S3: {}", file.getOriginalFilename());
 
-        String bucketName = generalUtils.getEnvOrDefault("BUCKET_NAME", s3Properties.getBucket());
+        String bucketName = generalUtils.getEnvOrDefault("AWS_S3_BUCKET_NAME", s3Properties.getBucket());
         String region = generalUtils.getEnvOrDefault("REGION", s3Properties.getRegion());
 
         try {

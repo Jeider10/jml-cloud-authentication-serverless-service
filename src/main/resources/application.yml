@@ -2,14 +2,19 @@
 #  port: 1081
 #
 #spring:
+#  application:
+#    name: jml-cloud-authentication-serverless-service
+#  main:
+#    banner-mode: "console"
+#
+application:
+  version: "@project.version@"
+
 #  datasource:
 #    url: jdbc:mysql://localhost:3306/application_table_db
 #    username: root
 #    password:
 #    driver-class-name: com.mysql.cj.jdbc.Driver
-#
-#  application:
-#    name: jml-cloud-authentication-serverless-service
 #
 #  jpa:
 #    hibernate:
