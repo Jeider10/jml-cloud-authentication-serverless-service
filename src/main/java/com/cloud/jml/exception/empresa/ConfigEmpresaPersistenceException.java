@@ -16,15 +16,15 @@ public class ConfigEmpresaPersistenceException extends ConfigEmpresaRuntimeExcep
         );
     }
 
-    // 🔒 Violación de integridad (constraint, duplicado, etc.) al guardar
+    // 🔒 Violacion de integridad (constraint, duplicado, etc.) al guardar
     public static ConfigEmpresaPersistenceException integrityViolation(Throwable cause) {
         return new ConfigEmpresaPersistenceException(
-                "❌ [INTEGRIDAD] Violación de integridad en base de datos al guardar la empresa",
+                "❌ [INTEGRIDAD] Violacion de integridad en base de datos al guardar la empresa",
                 cause
         );
     }
 
-    // ⚙️ Error técnico de acceso a datos
+    // ⚙️ Error tecnico de acceso a datos
     public static ConfigEmpresaPersistenceException dataAccessError(Throwable cause) {
         return new ConfigEmpresaPersistenceException(
                 "❌ [DATOS] Error de acceso a datos al intentar guardar la empresa",
@@ -35,7 +35,7 @@ public class ConfigEmpresaPersistenceException extends ConfigEmpresaRuntimeExcep
     // 💥 Error inesperado
     public static ConfigEmpresaPersistenceException unexpected(Throwable cause) {
         return new ConfigEmpresaPersistenceException(
-                "💥 [INESPERADO] Ocurrió un error inesperado al registrar la empresa",
+                "💥 [INESPERADO] Ocurrio un error inesperado al registrar la empresa",
                 cause
         );
     }

@@ -4,6 +4,8 @@
 spring:
   application:
     name: jml-cloud-authentication-serverless-service
+#  thymeleaf:
+#    enabled: false
 #  main:
 #    banner-mode: "console"
 #

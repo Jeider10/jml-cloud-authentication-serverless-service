@@ -21,7 +21,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 @Slf4j
-@Component // 🔹 Anotación para indicar que es un componente de Spring
+@Component // 🔹 Anotacion para indicar que es un componente de Spring
 public class UserUtils {
 
     private final UserRepository userRepository;
@@ -34,13 +34,13 @@ public class UserUtils {
     }
 
     public UserEntity validarExistenciaUsuario(UserRequestDTO userRequestDTO) {
-        log.info("✅ Inicia validación de existencia del usuario para actualización: {}", userRequestDTO.getUserName());
+        log.info("✅ Inicia validacion de existencia del usuario para actualizacion: {}", userRequestDTO.getUserName());
 
-        // 🔹 Paso 1: Buscar el usuario actual por identificación (el que debe existir)
+        // 🔹 Paso 1: Buscar el usuario actual por identificacion (el que debe existir)
         Optional<UserEntity> usuarioActualOptional = userRepository.findByIdentificacion(userRequestDTO.getIdentificacion());
 
         if (usuarioActualOptional.isEmpty()) {
-            log.error("❌ No se encontró el usuario: {} con identificación: {}", userRequestDTO.getUserName(), userRequestDTO.getIdentificacion());
+            log.error("❌ No se encontro el usuario: {} con identificacion: {}", userRequestDTO.getUserName(), userRequestDTO.getIdentificacion());
             throw new UserNotFoundException(userRequestDTO.getUserName());
         }
 
@@ -52,41 +52,41 @@ public class UserUtils {
         if (usuarioConNuevoUserNameOpt.isPresent()) {
             UserEntity usuarioConNuevoUserName = usuarioConNuevoUserNameOpt.get();
 
-            // Si el usuario con ese userName tiene otra identificación, no se puede usar ese nombre
+            // Si el usuario con ese userName tiene otra identificacion, no se puede usar ese nombre
             Long usuarioActualIdentificacion = usuarioActual.getIdentificacion();
             if (!Objects.equals(usuarioConNuevoUserName.getIdentificacion(), usuarioActualIdentificacion)) {
-                log.warn("⚠️ El userName '{}' ya pertenece a otro usuario con identificación diferente: {}",
+                log.warn("⚠️ El userName '{}' ya pertenece a otro usuario con identificacion diferente: {}",
                         userRequestDTO.getUserName(), usuarioConNuevoUserName.getIdentificacion());
                 throw new UserAlreadyExistsException(userRequestDTO.getUserName());
             }
         } else {
-            log.info("ℹ️ El nuevo userName '{}' está disponible para uso.", userRequestDTO.getUserName());
+            log.info("ℹ️ El nuevo userName '{}' esta disponible para uso.", userRequestDTO.getUserName());
         }
 
-        log.info("✅ [FINALIZADO] Usuario existente validado correctamente para actualización: {}", usuarioActual.getUserName());
+        log.info("✅ [FINALIZADO] Usuario existente validado correctamente para actualizacion: {}", usuarioActual.getUserName());
 
         return usuarioActual;
     }
 
     public RoleEntity obtenerRolePorCodigo(int roleCode) {
-        log.info("✅ Inicia consulta de role con código: {}", roleCode);
+        log.info("✅ Inicia consulta de role con codigo: {}", roleCode);
 
         Optional<RoleEntity> optionalRole = roleRepository.findByRoleCode(roleCode);
 
         if (optionalRole.isPresent()) {
             RoleEntity roleEntity = optionalRole.get();
-            log.info("✅ Role encontrado: Código = {}, Nombre = {}", roleCode, roleEntity.getRoleName());
+            log.info("✅ Role encontrado: Codigo = {}, Nombre = {}", roleCode, roleEntity.getRoleName());
             return roleEntity;
         } else {
-            log.warn("⚠️ Role no encontrado con código: {}", roleCode);
+            log.warn("⚠️ Role no encontrado con codigo: {}", roleCode);
             throw new RoleNotFoundException(roleCode);
         }
     }
 
     public void validarUnicoAdministrador(UserEntity userEntity) {
-        log.info("✅ Verificando si el usuario es único administrador: {}", userEntity.getUserName());
+        log.info("✅ Verificando si el usuario es unico administrador: {}", userEntity.getUserName());
 
-        // 🚫 Validar que no haya más de un administrador
+        // 🚫 Validar que no haya mas de un administrador
         if (esRolAdministrador(userEntity)) {
             boolean existeAdmin = userRepository.existsByRoleNameIgnoreCase(userEntity.getRoleName());
 
@@ -95,12 +95,12 @@ public class UserUtils {
             if (existeAdmin) {
                 // 1. Define el mensaje base
                 String baseMessage = "❌ [ERROR] Ya existe un usuario con el rol de administrador ('%s'). "
-                        + "No se permiten múltiples usuarios administradores.";
+                        + "No se permiten multiples usuarios administradores.";
 
                 // 2. Formatea el mensaje, reemplazando '%s' por el valor real
                 String formattedMessage = String.format(baseMessage, userEntity.getRoleName());
 
-                // 3. Usa el mensaje formateado para el log y la excepción
+                // 3. Usa el mensaje formateado para el log y la excepcion
                 log.warn(formattedMessage);
                 throw new RoleDuplicationException(formattedMessage);
             }
@@ -122,7 +122,7 @@ public class UserUtils {
                         "SUPERADMIN")
                 .anyMatch(admin -> admin.equalsIgnoreCase(roleName.trim()));
 
-        log.info("✅ Verificación de rol completada. Es administrador: {}", roleMatch);
+        log.info("✅ Verificacion de rol completada. Es administrador: {}", roleMatch);
 
         return roleMatch;
     }
@@ -132,16 +132,16 @@ public class UserUtils {
             return userRepository.save(userEntity);
 
         } catch (DataIntegrityViolationException e) {
-            log.error("🚨 Violación de integridad al guardar el usuario: {}", e.getMessage(), e);
-            throw new UserPersistenceException("Error de integridad en base de datos al guardar el usuario", e);
+            log.error("🚨 Violacion de integridad al guardar el usuario: {}", e.getMessage(), e);
+            throw UserPersistenceException.integrityViolation(e);
 
         } catch (DataAccessException e) {
             log.error("🚨 Error de acceso a datos al guardar el usuario: {}", e.getMessage(), e);
-            throw new UserPersistenceException("Error al guardar el usuario en la base de datos", e);
+            throw UserPersistenceException.dataAccessError(e);
 
         } catch (Exception e) {
             log.error("🚨 Error inesperado al guardar el usuario: {}", e.getMessage(), e);
-            throw new UserPersistenceException("Error inesperado al registrar el usuario", e);
+            throw UserPersistenceException.unexpected(e);
         }
     }
 
@@ -150,16 +150,16 @@ public class UserUtils {
             userRepository.delete(userEntity);
 
         } catch (DataIntegrityViolationException e) {
-            log.error("🚨 Violación de integridad al eliminar el usuario: {}", e.getMessage(), e);
-            throw new UserDeletionException("Error de integridad en base de datos al eliminar el usuario", e);
+            log.error("🚨 Violacion de integridad al eliminar el usuario: {}", e.getMessage(), e);
+            throw UserDeletionException.integrityViolation(e);
 
         } catch (DataAccessException e) {
             log.error("🚨 Error de acceso a datos al eliminar el usuario: {}", e.getMessage(), e);
-            throw new UserDeletionException("Error al eliminar el usuario en la base de datos", e);
+            throw UserDeletionException.dataAccessError(e);
 
         } catch (Exception e) {
             log.error("🚨 Error inesperado al eliminar el usuario: {}", e.getMessage(), e);
-            throw new UserDeletionException("Error inesperado al eliminar el usuario", e);
+            throw UserDeletionException.unexpected(e);
         }
     }
 }

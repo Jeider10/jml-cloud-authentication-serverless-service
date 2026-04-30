@@ -19,6 +19,6 @@ public class AuthenticationRefreshTokenValidationException extends Authenticatio
     public AuthenticationRefreshTokenValidationException() {
         super(
                 HttpStatus.BAD_REQUEST,
-                "❌ [REFRESH TOKEN] No se proporcionó el refresh token en la solicitud.");
+                "❌ [REFRESH TOKEN] No se proporciono el refresh token en la solicitud.");
     }
 }

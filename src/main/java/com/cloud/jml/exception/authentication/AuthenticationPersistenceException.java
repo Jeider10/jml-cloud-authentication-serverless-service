@@ -16,15 +16,15 @@ public class AuthenticationPersistenceException extends AuthenticationRuntimeExc
         );
     }
 
-    // 🔒 Violación de integridad (constraint, duplicado, etc.) al guardar
+    // 🔒 Violacion de integridad (constraint, duplicado, etc.) al guardar
     public static AuthenticationPersistenceException integrityViolation(Throwable cause) {
         return new AuthenticationPersistenceException(
-                "❌ [INTEGRIDAD] Violación de integridad en base de datos al guardar la authentication",
+                "❌ [INTEGRIDAD] Violacion de integridad en base de datos al guardar la authentication",
                 cause
         );
     }
 
-    // ⚙️ Error técnico de acceso a datos
+    // ⚙️ Error tecnico de acceso a datos
     public static AuthenticationPersistenceException dataAccessError(Throwable cause) {
         return new AuthenticationPersistenceException(
                 "❌ [DATOS] Error de acceso a datos al intentar guardar la authentication",
@@ -35,7 +35,7 @@ public class AuthenticationPersistenceException extends AuthenticationRuntimeExc
     // 💥 Error inesperado
     public static AuthenticationPersistenceException unexpected(Throwable cause) {
         return new AuthenticationPersistenceException(
-                "💥 [INESPERADO] Ocurrió un error inesperado al registrar la authentication",
+                "💥 [INESPERADO] Ocurrio un error inesperado al registrar la authentication",
                 cause
         );
     }

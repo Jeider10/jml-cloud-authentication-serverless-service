@@ -5,21 +5,21 @@ import org.springframework.http.HttpStatus;
 public class AuthenticationRefreshTokenDeletionException extends AuthenticationRuntimeException {
 
     public AuthenticationRefreshTokenDeletionException(String message) {
-        super(HttpStatus.INTERNAL_SERVER_ERROR, "🗑️ [ELIMINACIÓN] " + message);
+        super(HttpStatus.INTERNAL_SERVER_ERROR, "🗑️ [ELIMINACION] " + message);
     }
 
     public AuthenticationRefreshTokenDeletionException(String message, Throwable cause) {
         super(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "🗑️ [ELIMINACIÓN] " + message +
+                "🗑️ [ELIMINACION] " + message +
                         (cause != null ? " | 💥 Causa: " + cause.getMessage() : "")
         );
     }
 
-    // 🔒 Violación de integridad referencial (por constraints o dependencias)
+    // 🔒 Violacion de integridad referencial (por constraints o dependencias)
     public static AuthenticationRefreshTokenDeletionException integrityViolation(Throwable cause) {
         return new AuthenticationRefreshTokenDeletionException(
-                "❌ [INTEGRIDAD] No se pudo eliminar la empresa debido a una violación de integridad referencial",
+                "❌ [INTEGRIDAD] No se pudo eliminar la empresa debido a una violacion de integridad referencial",
                 cause
         );
     }
@@ -35,7 +35,7 @@ public class AuthenticationRefreshTokenDeletionException extends AuthenticationR
     // 💥 Error inesperado
     public static AuthenticationRefreshTokenDeletionException unexpected(Throwable cause) {
         return new AuthenticationRefreshTokenDeletionException(
-                "💥 [INESPERADO] Ocurrió un error inesperado al intentar eliminar la empresa",
+                "💥 [INESPERADO] Ocurrio un error inesperado al intentar eliminar la empresa",
                 cause
         );
     }

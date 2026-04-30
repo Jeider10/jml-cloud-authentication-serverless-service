@@ -3,6 +3,7 @@ package com.cloud.jml.controller.user;
 import com.cloud.jml.dto.user.UserRequestDTO;
 import com.cloud.jml.dto.user.UserResponseDTO;
 import com.cloud.jml.service.user.UserService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +40,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserResponseDTO> registrarUsuario(@RequestBody UserRequestDTO userRequestDTO) {
+    public ResponseEntity<UserResponseDTO> registrarUsuario(@RequestBody @Valid UserRequestDTO userRequestDTO) {
         log.info("📥 [SOLICITUD] /usuario/register -> Crear usuario: {}.", userRequestDTO.getUserName());
 
         UserResponseDTO userResponseDTO = userService.registrarUsuario(userRequestDTO);
@@ -49,14 +50,14 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-        log.info("📤 [RESPUESTA] Usuario creado exitosamente: {} (identificación: {}).", userResponseDTO.getUserName(), userResponseDTO.getIdentificacion());
+        log.info("📤 [RESPUESTA] Usuario creado exitosamente: {} (identificacion: {}).", userResponseDTO.getUserName(), userResponseDTO.getIdentificacion());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(userResponseDTO);
     }
 
     @GetMapping("/identificacion")
     public ResponseEntity<UserResponseDTO> obtenerUsuarioPorIdentificacion(@RequestParam("identificacion") Long identificacion) {
-        log.info("📥 [SOLICITUD] /usuario/identificacion -> Obtener usuario con identificación: {}.", identificacion);
+        log.info("📥 [SOLICITUD] /usuario/identificacion -> Obtener usuario con identificacion: {}.", identificacion);
 
         UserRequestDTO userRequestDTO = new UserRequestDTO();
         userRequestDTO.setIdentificacion(identificacion);
@@ -64,11 +65,11 @@ public class UserController {
         UserResponseDTO userResponseDTO = userService.obtenerUsuarioPorIdentificacion(userRequestDTO);
 
         if (userResponseDTO == null || userResponseDTO.getIdentificacion() == null) {
-            log.warn("⚠️ [RESPUESTA] Usuario no encontrado con identificación: {}.", identificacion);
+            log.warn("⚠️ [RESPUESTA] Usuario no encontrado con identificacion: {}.", identificacion);
             return ResponseEntity.noContent().build();
         }
 
-        log.info("📤 [RESPUESTA] Usuario obtenido correctamente: {} (identificación: {}).", userResponseDTO.getUserName(), userResponseDTO.getIdentificacion());
+        log.info("📤 [RESPUESTA] Usuario obtenido correctamente: {} (identificacion: {}).", userResponseDTO.getUserName(), userResponseDTO.getIdentificacion());
 
         return ResponseEntity.ok(userResponseDTO);
     }
@@ -167,7 +168,7 @@ public class UserController {
 
     @PutMapping("/update")
     public ResponseEntity<UserResponseDTO> actualizarUsuario(
-            @RequestBody UserRequestDTO userRequestDTO,
+            @RequestBody @Valid UserRequestDTO userRequestDTO,
             @RequestParam("userLogin") String userLogin) {
 
         log.info("📥 [SOLICITUD] /usuario/update -> Actualizar usuario: {}.", userRequestDTO.getUserName());
@@ -179,21 +180,21 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-        log.info("📤 [RESPUESTA] Usuario actualizado correctamente: {} (identificación: {}).", userResponseDTO.getUserName(), userResponseDTO.getIdentificacion());
+        log.info("📤 [RESPUESTA] Usuario actualizado correctamente: {} (identificacion: {}).", userResponseDTO.getUserName(), userResponseDTO.getIdentificacion());
 
         return ResponseEntity.ok(userResponseDTO);
     }
 
     @DeleteMapping("/delete")
     public ResponseEntity<Void> eliminarUsuario(@RequestParam("identificacion") Long identificacion) {
-        log.info("📥 [SOLICITUD] Eliminar usuario con identificación: {}", identificacion);
+        log.info("📥 [SOLICITUD] Eliminar usuario con identificacion: {}", identificacion);
 
         UserRequestDTO userRequestDTO = new UserRequestDTO();
         userRequestDTO.setIdentificacion(identificacion);
 
         userService.eliminarUsuario(userRequestDTO);
 
-        log.info("📤 [RESPUESTA] Usuario eliminado correctamente con identificación: {}", identificacion);
+        log.info("📤 [RESPUESTA] Usuario eliminado correctamente con identificacion: {}", identificacion);
 
         return ResponseEntity.ok().build();
     }

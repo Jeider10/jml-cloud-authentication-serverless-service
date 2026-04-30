@@ -24,8 +24,8 @@ mvn spring-boot:run -Dspring-boot.run.jvmArguments="-agentlib:jdwp=transport=dt_
 # Paso 3
 # Buscar la sesion: (mysqld) luego la propiedad: max_allowed_packet=10M y modificarle a gusto
 
-# Aumentar el parámetro max_allowed_packet en el servidor MySQL.
+# Aumentar el parametro max_allowed_packet en el servidor MySQL.
 SET GLOBAL max_allowed_packet=67108864;
 
-# Restaurar el parámetro max_allowed_packet en el servidor MySQL.
+# Restaurar el parametro max_allowed_packet en el servidor MySQL.
 SET GLOBAL max_allowed_packet=1048576;

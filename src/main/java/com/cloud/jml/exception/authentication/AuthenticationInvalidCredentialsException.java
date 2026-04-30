@@ -7,12 +7,12 @@ public class AuthenticationInvalidCredentialsException extends AuthenticationRun
     public AuthenticationInvalidCredentialsException(String userName) {
         super(
                 HttpStatus.NOT_FOUND,
-                "❌ [CONSULTA] Usuario: " + userName + " no encontrado para autenticación");
+                "❌ [CONSULTA] Usuario: " + userName + " no encontrado para autenticacion");
     }
 
     public AuthenticationInvalidCredentialsException() {
         super(
                 HttpStatus.UNAUTHORIZED,
-                "❌ [CONSULTA] Contraseña incorrecta, por favor verifique");
+                "❌ [CONSULTA] Contrasena incorrecta, por favor verifique");
     }
 }

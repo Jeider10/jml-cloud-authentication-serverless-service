@@ -7,6 +7,6 @@ public class ConfigEmpresaDuplicationException extends ConfigEmpresaRuntimeExcep
     public ConfigEmpresaDuplicationException(String nombreEmpresa, Long nit) {
         super(
                 HttpStatus.CONFLICT,
-                "⚠️ [DUPLICADO] Empresa duplicada: " + nombreEmpresa + "con nit: " + nit);
+                "⚠️ [DUPLICADO] Empresa duplicada: " + nombreEmpresa + " con nit: " + nit);
     }
 }

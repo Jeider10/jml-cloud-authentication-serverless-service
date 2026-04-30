@@ -16,15 +16,15 @@ public class AuthenticationRefreshTokenPersistenceException extends Authenticati
         );
     }
 
-    // 🔒 Violación de integridad (constraint, duplicado, etc.) al guardar
+    // 🔒 Violacion de integridad (constraint, duplicado, etc.) al guardar
     public static AuthenticationRefreshTokenPersistenceException integrityViolation(Throwable cause) {
         return new AuthenticationRefreshTokenPersistenceException(
-                "❌ [INTEGRIDAD] Violación de integridad en base de datos al guardar la authentication",
+                "❌ [INTEGRIDAD] Violacion de integridad en base de datos al guardar la authentication",
                 cause
         );
     }
 
-    // ⚙️ Error técnico de acceso a datos
+    // ⚙️ Error tecnico de acceso a datos
     public static AuthenticationRefreshTokenPersistenceException dataAccessError(Throwable cause) {
         return new AuthenticationRefreshTokenPersistenceException(
                 "❌ [DATOS] Error de acceso a datos al intentar guardar la authentication",
@@ -35,7 +35,7 @@ public class AuthenticationRefreshTokenPersistenceException extends Authenticati
     // 💥 Error inesperado
     public static AuthenticationRefreshTokenPersistenceException unexpected(Throwable cause) {
         return new AuthenticationRefreshTokenPersistenceException(
-                "💥 [INESPERADO] Ocurrió un error inesperado al registrar la authentication",
+                "💥 [INESPERADO] Ocurrio un error inesperado al registrar la authentication",
                 cause
         );
     }

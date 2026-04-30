@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Slf4j
-@Component // 🔹 Anotación para indicar que es un componente de Spring
+@Component // 🔹 Anotacion para indicar que es un componente de Spring
 public class RefreshTokenUtils {
 
     private final JwtUtil jwtUtil;
@@ -38,7 +38,7 @@ public class RefreshTokenUtils {
 
         String refreshToken = generatorTokenUtils.generateToken(usuario, roleCode, roleName, "refreshToken");
         String jti = jwtUtil.extractJti(refreshToken);
-        log.info("🔑 [TOKEN] JTI extraído del refreshToken: {}", jti);
+        log.info("🔑 [TOKEN] JTI extraido del refreshToken: {}", jti);
 
         RefreshTokenEntity refreshTokenEntity = RefreshTokenEntity.builder()
                 .jti(jti)
@@ -59,10 +59,10 @@ public class RefreshTokenUtils {
     }
 
     public RefreshTokenEntity verifyExpiration(String token) {
-        log.info("🔍 [UTILS] Verificando validez y expiración del token de refresco...");
+        log.info("🔍 [UTILS] Verificando validez y expiracion del token de refresco...");
 
         String jti = jwtUtil.extractJti(token);
-        log.info("🔑 [TOKEN] JTI extraído del token: {}", jti);
+        log.info("🔑 [TOKEN] JTI extraido del token: {}", jti);
 
         Optional<RefreshTokenEntity> optionalJti = refreshTokenRepository.findByJti(jti);
 
@@ -84,21 +84,21 @@ public class RefreshTokenUtils {
             throw new AuthenticationTokenValidationException("El token de refresco ha expirado.");
         }
 
-        log.info("✅ [TOKEN] Token válido y vigente. jti={}", refreshToken.getJti());
+        log.info("✅ [TOKEN] Token valido y vigente. jti={}", refreshToken.getJti());
 
         return refreshToken;
     }
 
     public void revokeToken(String token) {
-        log.info("🔍 [UTILS] Iniciando revocación del refresh token...");
+        log.info("🔍 [UTILS] Iniciando revocacion del refresh token...");
 
         String jti = jwtUtil.extractJti(token);
-        log.info("🔑 [TOKEN] JTI extraído del token: {} para revoke.", jti);
+        log.info("🔑 [TOKEN] JTI extraido del token: {} para revoke.", jti);
 
         Optional<RefreshTokenEntity> optionalToken = refreshTokenRepository.findByJti(jti);
 
         if (optionalToken.isEmpty()) {
-            log.error("❌ [ERROR] No se encontró el refresh token especificado. token={}", token);
+            log.error("❌ [ERROR] No se encontro el refresh token especificado. token={}", token);
             throw new AuthenticationTokenValidationException("Token de refresco no encontrado.");
         }
 
@@ -117,7 +117,7 @@ public class RefreshTokenUtils {
             return refreshTokenRepository.save(refreshTokenEntity);
 
         } catch (DataIntegrityViolationException e) {
-            log.error("🚨 Violación de integridad al guardar el refresh token: {}", e.getMessage(), e);
+            log.error("🚨 Violacion de integridad al guardar el refresh token: {}", e.getMessage(), e);
             throw new AuthenticationRefreshTokenPersistenceException("Error de integridad en base de datos al guardar el refresh token", e);
 
         } catch (DataAccessException e) {
@@ -135,7 +135,7 @@ public class RefreshTokenUtils {
             refreshTokenRepository.delete(refreshTokenEntity);
 
         } catch (DataIntegrityViolationException e) {
-            log.error("🚨 Violación de integridad al eliminar el refresh token: {}", e.getMessage(), e);
+            log.error("🚨 Violacion de integridad al eliminar el refresh token: {}", e.getMessage(), e);
             throw new AuthenticationRefreshTokenDeletionException("Error de integridad en base de datos al eliminar el refresh token", e);
 
         } catch (DataAccessException e) {

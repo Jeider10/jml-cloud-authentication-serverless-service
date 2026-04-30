@@ -12,18 +12,18 @@ import org.springframework.util.unit.DataSize;
 public class FileUploadConfig {
 
     // ===============================
-    // 🔹 Configurar Multipart programáticamente
+    // 🔹 Configurar Multipart programaticamente
     // ===============================
     @Bean
     public MultipartConfigElement multipartConfigElement() {
-        log.info("🔥 Configuración de carga de archivos inicializada.");
-        // Configuración para cargar imagenes
+        log.info("🔥 Configuracion de carga de archivos inicializada.");
+        // Configuracion para cargar imagenes
         MultipartConfigFactory factory = new MultipartConfigFactory();
 
-        factory.setMaxFileSize(DataSize.ofMegabytes(10));  // 10MB máximo por archivo
-        factory.setMaxRequestSize(DataSize.ofMegabytes(10)); // 10MB total por petición
+        factory.setMaxFileSize(DataSize.ofMegabytes(10));  // 10MB maximo por archivo
+        factory.setMaxRequestSize(DataSize.ofMegabytes(10)); // 10MB total por peticion
 
-        log.info("🔥 Configuración de carga de archivos finalizada.");
+        log.info("🔥 Configuracion de carga de archivos finalizada.");
 
         return factory.createMultipartConfig();
     }

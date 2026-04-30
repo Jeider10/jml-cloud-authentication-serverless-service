@@ -13,7 +13,7 @@ public class AuthenticationResponseDTO {
 
     private AuthenticationOptionsDTO options;
     private String accessToken; // JWT de acceso (token_use = "accessToken")
-    private Long expiresIn; // Tiempo de expiración en segundos
+    private Long expiresIn; // Tiempo de expiracion en segundos
     private String tokenType; // Tipo de token "Bearer"
     private String refreshToken;  // Token de refresco (token_use = "refreshToken")
     private String authorization; // JWT de identidad (token_use = "authorization")

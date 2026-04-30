@@ -5,21 +5,21 @@ import org.springframework.http.HttpStatus;
 public class UserDeletionException extends UserRuntimeException {
 
     public UserDeletionException(String message) {
-        super(HttpStatus.INTERNAL_SERVER_ERROR, "🗑️ [ELIMINACIÓN] " + message);
+        super(HttpStatus.INTERNAL_SERVER_ERROR, "🗑️ [ELIMINACION] " + message);
     }
 
     public UserDeletionException(String message, Throwable cause) {
         super(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "🗑️ [ELIMINACIÓN] " + message +
+                "🗑️ [ELIMINACION] " + message +
                         (cause != null ? " | 💥 Causa: " + cause.getMessage() : "")
         );
     }
 
-    // 🔒 Violación de integridad referencial (por constraints o dependencias)
+    // 🔒 Violacion de integridad referencial (por constraints o dependencias)
     public static UserDeletionException integrityViolation(Throwable cause) {
         return new UserDeletionException(
-                "❌ [INTEGRIDAD] No se pudo eliminar el usuario debido a una violación de integridad referencial",
+                "❌ [INTEGRIDAD] No se pudo eliminar el usuario debido a una violacion de integridad referencial",
                 cause
         );
     }
@@ -35,7 +35,7 @@ public class UserDeletionException extends UserRuntimeException {
     // 💥 Error inesperado
     public static UserDeletionException unexpected(Throwable cause) {
         return new UserDeletionException(
-                "💥 [INESPERADO] Ocurrió un error inesperado al intentar eliminar el usuario",
+                "💥 [INESPERADO] Ocurrio un error inesperado al intentar eliminar el usuario",
                 cause
         );
     }

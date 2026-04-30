@@ -2,9 +2,9 @@ package com.cloud.jml.service.token;
 
 import com.cloud.jml.dto.authentication.AuthenticationRequestDTO;
 import com.cloud.jml.utils.token.GeneratorTokenUtils;
-import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -23,7 +23,7 @@ public class GeneratorTokenService {
 
         // 1️⃣ Generar token
         String token = generatorTokenUtils.generateToken(authenticationRequestDTO.getUsuario(), roleCode, roleName, tokenUse);
-        log.info("🔑 [TOKEN] Token generado: {}", token);
+        log.info("🔑 [TOKEN] Token generado correctamente para tipo: {}", tokenUse);
 
         // 2️⃣ Retornar token
         log.info("📤 [RESPUESTA] Token JWT generado correctamente para el usuario: {}", authenticationRequestDTO.getUsuario());

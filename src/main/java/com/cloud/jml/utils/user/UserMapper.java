@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 
 @Slf4j
-@Component // 🔹 Anotación para indicar que es un componente de Spring
+@Component // 🔹 Anotacion para indicar que es un componente de Spring
 public class UserMapper {
 
     private final UserUtils userUtils;
@@ -21,7 +21,7 @@ public class UserMapper {
     public UserMapper(UserUtils userUtils, UserFormatearFecha userFormatearFecha, PasswordEncoder passwordEncoder) {
         this.userUtils = userUtils;
         this.userFormatearFecha = userFormatearFecha;
-        this.passwordEncoder = passwordEncoder; // Encriptador de contraseñas
+        this.passwordEncoder = passwordEncoder; // Encriptador de contrasenas
         log.info("🔥 UserMapper inicializado correctamente.");
     }
 
@@ -63,7 +63,7 @@ public class UserMapper {
     }
 
     public UserResponseDTO buildUserResponseDTO(UserEntity userEntity) {
-        log.info("📦 [MAPEO] Iniciando construcción de DTO de respuesta para usuario: {}", userEntity.getUserName());
+        log.info("📦 [MAPEO] Iniciando construccion de DTO de respuesta para usuario: {}", userEntity.getUserName());
 
         UserResponseDTO userResponseDTO = new UserResponseDTO();
 
@@ -96,7 +96,7 @@ public class UserMapper {
         userEntity.setDireccion(userRequestDTO.getDireccion());
         userEntity.setHistorialUltimoActualizado(userLogin);
 
-        // Actualizamos la fecha de actualización
+        // Actualizamos la fecha de actualizacion
         userEntity.setFechaActualizacion(LocalDateTime.now());
 
         RoleEntity roleEntity = userUtils.obtenerRolePorCodigo(userRequestDTO.getRoleCode());

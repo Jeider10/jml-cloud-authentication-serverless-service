@@ -30,7 +30,7 @@ public class ConfigEmpresaController {
         List<ConfigEmpresaResponseDTO> primeraEmpresa = configEmpresaService.obtenerPrimeraEmpresa();
 
         if (primeraEmpresa == null || primeraEmpresa.isEmpty()) {
-            log.warn("⚠️ [RESPUESTA] No se encontró ninguna empresa registrada.");
+            log.warn("⚠️ [RESPUESTA] No se encontro ninguna empresa registrada.");
             return ResponseEntity.noContent().build();
         }
 
@@ -49,7 +49,7 @@ public class ConfigEmpresaController {
         ConfigEmpresaResponseDTO response = configEmpresaService.buscarEmpresaNit(configEmpresaRequestDTO);
 
         if (response == null || response.getNit() == null) {
-            log.warn("⚠️ [RESPUESTA] No se encontró empresa con NIT: {}", nit);
+            log.warn("⚠️ [RESPUESTA] No se encontro empresa con NIT: {}", nit);
             return ResponseEntity.noContent().build();
         }
 

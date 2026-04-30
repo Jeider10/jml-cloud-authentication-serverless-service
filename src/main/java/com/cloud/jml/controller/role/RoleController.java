@@ -3,6 +3,7 @@ package com.cloud.jml.controller.role;
 import com.cloud.jml.dto.role.RoleRequestDTO;
 import com.cloud.jml.dto.role.RoleResponseDTO;
 import com.cloud.jml.service.role.RoleService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,8 +40,8 @@ public class RoleController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<RoleResponseDTO> registrarRole(@RequestBody RoleRequestDTO roleRequestDTO) {
-        log.info("📥 [SOLICITUD] /roles/register -> Crear rol: {} (código: {}).", roleRequestDTO.getRoleName(), roleRequestDTO.getRoleCode());
+    public ResponseEntity<RoleResponseDTO> registrarRole(@RequestBody @Valid RoleRequestDTO roleRequestDTO) {
+        log.info("📥 [SOLICITUD] /roles/register -> Crear rol: {} (codigo: {}).", roleRequestDTO.getRoleName(), roleRequestDTO.getRoleCode());
 
         RoleResponseDTO response = roleService.registrarRole(roleRequestDTO);
 
@@ -49,14 +50,14 @@ public class RoleController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-        log.info("📤 [RESPUESTA] Rol creado exitosamente: {} (código: {}).", response.getRoleName(), response.getRoleCode());
+        log.info("📤 [RESPUESTA] Rol creado exitosamente: {} (codigo: {}).", response.getRoleName(), response.getRoleCode());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/roleCode")
     public ResponseEntity<RoleResponseDTO> buscarRolePorCodigo(@RequestParam("roleCode") int roleCode) {
-        log.info("📥 [SOLICITUD] /roles/roleCode -> Buscar rol con código: {}", roleCode);
+        log.info("📥 [SOLICITUD] /roles/roleCode -> Buscar rol con codigo: {}", roleCode);
 
         RoleRequestDTO roleRequestDTO = new RoleRequestDTO();
         roleRequestDTO.setRoleCode(roleCode);
@@ -64,11 +65,11 @@ public class RoleController {
         RoleResponseDTO roleResponseDTO = roleService.buscarRolePorCodigo(roleRequestDTO);
 
         if (roleResponseDTO == null) {
-            log.warn("⚠️ [RESPUESTA] Rol no encontrado con código: {}", roleCode);
+            log.warn("⚠️ [RESPUESTA] Rol no encontrado con codigo: {}", roleCode);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        log.info("📤 [RESPUESTA] Rol encontrado: {} (código: {}).", roleResponseDTO.getRoleName(), roleResponseDTO.getRoleCode());
+        log.info("📤 [RESPUESTA] Rol encontrado: {} (codigo: {}).", roleResponseDTO.getRoleName(), roleResponseDTO.getRoleCode());
 
         return ResponseEntity.ok(roleResponseDTO);
     }
@@ -93,8 +94,8 @@ public class RoleController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<RoleResponseDTO> actualizarRole(@RequestBody RoleRequestDTO roleRequestDTO) {
-        log.info("📥 [SOLICITUD] /roles/update -> Actualizar rol: {} (código: {}).", roleRequestDTO.getRoleName(), roleRequestDTO.getRoleCode());
+    public ResponseEntity<RoleResponseDTO> actualizarRole(@RequestBody @Valid RoleRequestDTO roleRequestDTO) {
+        log.info("📥 [SOLICITUD] /roles/update -> Actualizar rol: {} (codigo: {}).", roleRequestDTO.getRoleName(), roleRequestDTO.getRoleCode());
 
         RoleResponseDTO roleResponseDTO = roleService.actualizarRole(roleRequestDTO);
 
@@ -103,21 +104,21 @@ public class RoleController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-        log.info("📤 [RESPUESTA] Rol actualizado correctamente: {} (código: {}).", roleResponseDTO.getRoleName(), roleResponseDTO.getRoleCode());
+        log.info("📤 [RESPUESTA] Rol actualizado correctamente: {} (codigo: {}).", roleResponseDTO.getRoleName(), roleResponseDTO.getRoleCode());
 
         return ResponseEntity.ok(roleResponseDTO);
     }
 
     @DeleteMapping("/delete")
     public ResponseEntity<Void> eliminarRole(@RequestParam("roleCode") int roleCode) {
-        log.info("📥 [SOLICITUD] Eliminar rol con código: {}", roleCode);
+        log.info("📥 [SOLICITUD] Eliminar rol con codigo: {}", roleCode);
 
         RoleRequestDTO roleRequestDTO = new RoleRequestDTO();
         roleRequestDTO.setRoleCode(roleCode);
 
         roleService.eliminarRole(roleRequestDTO);
 
-        log.info("📤 [RESPUESTA] Rol eliminado correctamente con código: {}", roleCode);
+        log.info("📤 [RESPUESTA] Rol eliminado correctamente con codigo: {}", roleCode);
 
         return ResponseEntity.ok().build();
     }

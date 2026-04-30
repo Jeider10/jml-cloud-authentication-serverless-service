@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 
 @Slf4j
-@Component // 🔹 Anotación para indicar que es un componente de Spring
+@Component // 🔹 Anotacion para indicar que es un componente de Spring
 public class ConfigEmpresaMapper {
 
     private final ConfigEmpresaFormatearFecha configEmpresaFormatearFecha;
@@ -68,7 +68,7 @@ public class ConfigEmpresaMapper {
     }
 
     public ConfigEmpresaResponseDTO buildConfigEmpresaResponseDTO(ConfigEmpresaEntity configEmpresaEntity) {
-        log.info("📦 [MAPEO] Iniciando construcción de DTO de respuesta para empresa: {}", configEmpresaEntity.getNombreEmpresa());
+        log.info("📦 [MAPEO] Iniciando construccion de DTO de respuesta para empresa: {}", configEmpresaEntity.getNombreEmpresa());
 
         ConfigEmpresaResponseDTO configEmpresaResponseDTO = new ConfigEmpresaResponseDTO();
 

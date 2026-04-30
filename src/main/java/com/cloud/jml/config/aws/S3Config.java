@@ -31,8 +31,7 @@ public class S3Config {
     @EventListener(ApplicationReadyEvent.class)
     public void onApplicationReady() {
         try {
-            // S3Client s3 = s3Client(); // Entorno AWS
-            S3Client s3 = s3ClientLocal();
+            S3Client s3 = s3Client();
             Region region = detectAwsRegion();
             createBucketIfNotExists(s3, generalUtils.getEnvOrDefault("AWS_S3_BUCKET_NAME", s3Properties.getBucket()), region);
         } catch (S3Exception e) {
@@ -40,54 +39,53 @@ public class S3Config {
         }
     }
 
+    // FIX: Un solo @Bean que decide el tipo de cliente segun s3Properties.profile
+    // "local" (default) = credenciales estaticas (accessKey/secretKey de S3Properties)
+    // "aws" = DefaultCredentialsProvider (IAM role, env vars, ~/.aws/credentials)
+    // Se cambia con: variable de entorno CLOUD_AWS_PROFILE=aws o en application.yml cloud.aws.profile=aws
     @Bean
     public S3Client s3Client() {
-        log.info("🔥 [AWS S3] Configuración de cliente S3 inicializada.");
-
         Region region = detectAwsRegion();
 
-        // Servidor AWS
-        S3Client s3Client = S3Client.builder()
-                .region(region)
-                // Usa el proveedor de credenciales por defecto (entorno, archivo, IAM role, etc.)
-                .credentialsProvider(DefaultCredentialsProvider.builder().build())
-                .build();
+        if (s3Properties.isAwsProfile()) {
+            // Entorno AWS: usa credenciales del entorno (IAM role, env vars, etc.)
+            log.info("🔥 [AWS S3] Configurando cliente S3 con DefaultCredentialsProvider (perfil: aws)");
 
-        log.info("🔥 [AWS S3] Configuración de cliente S3 finalizada correctamente en región {}", region);
+            S3Client s3Client = S3Client.builder()
+                    .region(region)
+                    .credentialsProvider(DefaultCredentialsProvider.builder().build())
+                    .build();
 
-        return s3Client;
-    }
+            log.info("🔥 [AWS S3] Cliente S3 configurado correctamente en region {}", region);
+            return s3Client;
+        }
 
-    @Bean
-    public S3Client s3ClientLocal() {
-        log.info("🔥 [AWS S3 Local] Configuración de cliente S3 inicializada.");
+        // Entorno local: usa credenciales estaticas de S3Properties
+        log.info("🔥 [AWS S3 Local] Configurando cliente S3 con credenciales estaticas (perfil: local)");
 
-        Region region = detectAwsRegion();
-
-        // Desarrollo y pruebas local
         S3Client s3Client = S3Client.builder()
                 .region(region)
                 .credentialsProvider(
-                        StaticCredentialsProvider.create(AwsBasicCredentials.create(s3Properties.getAccessKey(), s3Properties.getSecretKey())))
+                        StaticCredentialsProvider.create(
+                                AwsBasicCredentials.create(s3Properties.getAccessKey(), s3Properties.getSecretKey())))
                 .build();
 
-        log.info("🔥 [AWS S3 Local] Configuración de cliente S3 finalizada correctamente en región {}", region);
-
+        log.info("🔥 [AWS S3 Local] Cliente S3 configurado correctamente en region {}", region);
         return s3Client;
     }
 
     /**
-     * Detecta la región de AWS usando la cadena de proveedores por defecto.
+     * Detecta la region de AWS usando la cadena de proveedores por defecto.
      * Si no puede detectarla, retorna us-east-1 como valor por defecto.
      */
     private Region detectAwsRegion() {
         try {
             Region region = new DefaultAwsRegionProviderChain().getRegion();
-            log.info("🌍 Región detectada: {}", region);
+            log.info("🌍 Region detectada: {}", region);
             return region;
         } catch (Exception e) {
             Region defaultRegion = Region.US_EAST_1;
-            log.warn("🚨 No se pudo detectar la región. Se usará la región por defecto: {}", defaultRegion, e);
+            log.warn("🚨 No se pudo detectar la region. Se usara la region por defecto: {}", defaultRegion, e);
             return defaultRegion;
         }
     }
@@ -102,8 +100,8 @@ public class S3Config {
         log.info("🔥 Verificando si el bucket '{}' ya existe...", bucketName);
 
         if (bucketName == null || bucketName.trim().isEmpty()) {
-            log.error("❌ El nombre del bucket no puede estar vacío.");
-            throw new IllegalArgumentException("El nombre del bucket no puede estar vacío.");
+            log.error("❌ El nombre del bucket no puede estar vacio.");
+            throw new IllegalArgumentException("El nombre del bucket no puede estar vacio.");
         }
 
         if (bucketExists(s3Client, bucketName)) {
@@ -112,14 +110,14 @@ public class S3Config {
         }
 
         try {
-            log.info("🚀 Creando nuevo bucket '{}' en región {}...", bucketName, region.id());
+            log.info("🚀 Creando nuevo bucket '{}' en region {}...", bucketName, region.id());
 
             s3Client.createBucket(b -> b
                     .bucket(bucketName)
                     .createBucketConfiguration(c -> c.locationConstraint(region.id()))
             );
 
-            log.info("🎉 Bucket '{}' creado exitosamente en región {}.", bucketName, region.id());
+            log.info("🎉 Bucket '{}' creado exitosamente en region {}.", bucketName, region.id());
         } catch (Exception e) {
             log.error("❌ Error al crear/verificar bucket '{}': {}", bucketName, e.getMessage(), e);
             throw new RuntimeException("Error creando bucket S3: " + e.getMessage(), e);
@@ -146,9 +144,9 @@ public class S3Config {
                 return false;
             }
 
-            // 403 o 301 → bucket existe pero no accesible o región diferente
+            // 403 o 301 → bucket existe pero no accesible o region diferente
             if (e.statusCode() == 403 || e.statusCode() == 301) {
-                log.info("ℹ️ El bucket '{}' existe pero está en otra región o con acceso restringido.", bucketName);
+                log.info("ℹ️ El bucket '{}' existe pero esta en otra region o con acceso restringido.", bucketName);
                 return true;
             }
 

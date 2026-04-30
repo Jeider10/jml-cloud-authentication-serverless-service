@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 @Slf4j
-@Component // 🔹 Anotación para indicar que es un componente de Spring
+@Component // 🔹 Anotacion para indicar que es un componente de Spring
 public class AuthenticationUtils {
 
     private final AuthenticationRepository authenticationRepository;
@@ -49,28 +49,28 @@ public class AuthenticationUtils {
 
         UserEntity user = userOpt.get();
 
-        // Comparación segura de contraseñas
+        // Comparacion segura de contrasenas
         if (!authenticationRequestDTO.getPassword().equals(user.getPassword())) {
-            log.warn("⚠️ Contraseña incorrecta para usuario: {}", authenticationRequestDTO.getUsuario());
+            log.warn("⚠️ Contrasena incorrecta para usuario: {}", authenticationRequestDTO.getUsuario());
             throw new AuthenticationInvalidCredentialsException();
         }
 
 //        if (!passwordEncoder.matches(password, user.getPassword())) {
-//            log.warn("⚠️ Contraseña incorrecta para usuario: {}", userName);
-//            throw new BadCredentialsException("Contraseña incorrecta");
+//            log.warn("⚠️ Contrasena incorrecta para usuario: {}", userName);
+//            throw new BadCredentialsException("Contrasena incorrecta");
 //        }
 
-        log.info("✅ [FINALIZADO] Usuario verificado correctamente para autenticación: {}", authenticationRequestDTO.getUsuario());
+        log.info("✅ [FINALIZADO] Usuario verificado correctamente para autenticacion: {}", authenticationRequestDTO.getUsuario());
 
         return user;
     }
 
     public void processAndSaveAuthentication(String accessToken, AuthenticationRequestDTO authenticationRequestDTO, UserEntity userEntity) {
-        log.info("📝 [PROCESO] Procesando y guardando autenticación para usuario: {}", userEntity.getUserName());
+        log.info("📝 [PROCESO] Procesando y guardando autenticacion para usuario: {}", userEntity.getUserName());
 
         // 1️⃣ Extraer el token JWT del header
         String jti = jwtUtil.extractJti(accessToken);
-        log.info("🔑 [TOKEN] JTI extraído del accessToken: {}", jti);
+        log.info("🔑 [TOKEN] JTI extraido del accessToken: {}", jti);
 
         // 2️⃣ Map DTO to Entity
         log.info("📦 [MAPPING] Transforming DTO to authentication entity...");
@@ -83,19 +83,19 @@ public class AuthenticationUtils {
     }
 
     public AuthenticationOptionsDTO obtenerUsuarioActual(String refreshTokenHeader) {
-        log.info("👤 [CONSULTA] Intentando obtener usuario actual: {}", refreshTokenHeader);
+        log.info("👤 [CONSULTA] Intentando obtener usuario actual.");
 
         // 1️⃣ Extraer el token JWT del header
         String refreshToken = refreshTokenHeader.replace("Bearer ", "");
-        log.info("🔑 refreshToken extraído: {}", refreshToken);
+        log.info("🔑 refreshToken extraido correctamente.");
 
-        // 2️⃣ Verificar expiración y validez
+        // 2️⃣ Verificar expiracion y validez
         RefreshTokenEntity refreshTokenEntity = refreshTokenUtils.verifyExpiration(refreshTokenHeader);
-        log.info("🔐 [TOKEN] Token válido detectado. Usuario: {}, jti={}", refreshTokenEntity.getUsuario(), refreshTokenEntity.getJti());
+        log.info("🔐 [TOKEN] Token valido detectado. Usuario: {}, jti={}", refreshTokenEntity.getUsuario(), refreshTokenEntity.getJti());
 
         // 3️⃣ Obtener el userName del token
         String userName = jwtUtil.extractUserName(refreshToken);
-        log.info("👤 Usuario extraído del token: {}", userName);
+        log.info("👤 Usuario extraido del token: {}", userName);
 
         // 4️⃣ Buscar el usuario en la base de datos
         Optional<UserEntity> usuario = userRepository.findByUserName(userName);
@@ -106,7 +106,7 @@ public class AuthenticationUtils {
         }
 
         UserEntity userEntity = usuario.get();
-        log.info("✅ Usuario: {} encontrado.", userEntity);
+        log.info("✅ Usuario: {} encontrado.", userEntity.getUserName());
 
         // 5️⃣ Crear el DTO de respuesta
         AuthenticationOptionsDTO authenticationOptionsDTO = mapper.mapEntityToAuthenticationOptionsDTO(userEntity);
@@ -121,16 +121,16 @@ public class AuthenticationUtils {
             return authenticationRepository.save(authenticationEntity);
 
         } catch (DataIntegrityViolationException e) {
-            log.error("🚨 Violación de integridad al guardar el usuario: {}", e.getMessage(), e);
-            throw new AuthenticationPersistenceException("Error de integridad en base de datos al guardar el usuario", e);
+            log.error("🚨 Violacion de integridad al guardar el usuario: {}", e.getMessage(), e);
+            throw AuthenticationPersistenceException.integrityViolation(e);
 
         } catch (DataAccessException e) {
             log.error("🚨 Error de acceso a datos al guardar el usuario: {}", e.getMessage(), e);
-            throw new AuthenticationPersistenceException("Error al guardar el usuario en la base de datos", e);
+            throw AuthenticationPersistenceException.dataAccessError(e);
 
         } catch (Exception e) {
             log.error("🚨 Error inesperado al guardar el usuario: {}", e.getMessage(), e);
-            throw new AuthenticationPersistenceException("Error inesperado al registrar el usuario", e);
+            throw AuthenticationPersistenceException.unexpected(e);
         }
     }
 }

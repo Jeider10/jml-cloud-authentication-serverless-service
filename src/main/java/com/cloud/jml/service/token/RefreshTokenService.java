@@ -7,9 +7,9 @@ import com.cloud.jml.exception.authentication.AuthenticationRefreshTokenValidati
 import com.cloud.jml.model.token.RefreshTokenEntity;
 import com.cloud.jml.utils.authentication.AuthenticationMapper;
 import com.cloud.jml.utils.token.RefreshTokenUtils;
-import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
@@ -30,21 +30,21 @@ public class RefreshTokenService {
 
     @Transactional
     public AuthenticationResponseDTO refreshToken(Map<String, String> body) {
-        log.info("♻️ [SERVICIO] Iniciando validación del refresh token.");
+        log.info("♻️ [SERVICIO] Iniciando validacion del refresh token.");
 
         // 1️⃣ Obtener token del cuerpo
         String refreshToken = body.get("refreshToken");
-        log.info("🔑 [TOKEN] Refresh token recibido: {}", refreshToken);
+        log.info("🔑 [TOKEN] Refresh token recibido correctamente.");
 
         // 2️⃣ Verificar que exista el refresh token
         if (refreshToken == null || refreshToken.isBlank()) {
-            log.warn("⚠️ [VALIDACIÓN] Refresh token ausente o vacío en la solicitud.");
+            log.warn("⚠️ [VALIDACION] Refresh token ausente o vacio en la solicitud.");
             throw new AuthenticationRefreshTokenValidationException("Debe proporcionar un refresh token.");
         }
 
-        // 3️⃣ Verificar expiración y validez
+        // 3️⃣ Verificar expiracion y validez
         RefreshTokenEntity refreshTokenEntity = refreshTokenUtils.verifyExpiration(refreshToken);
-        log.info("🔐 [TOKEN] Token válido detectado. Usuario: {}, jti={}", refreshTokenEntity.getUsuario(), refreshTokenEntity.getJti());
+        log.info("🔐 [TOKEN] Token valido detectado. Usuario: {}, jti={}", refreshTokenEntity.getUsuario(), refreshTokenEntity.getJti());
 
         // 4️⃣ Generar nuevo access token
         AuthenticationRequestDTO authenticationRequestDTO = new AuthenticationRequestDTO();
@@ -84,7 +84,7 @@ public class RefreshTokenService {
                 nuevoAuthorization,
                 true);
 
-        log.info("📦 [RESPUESTA] DTO de autenticación preparado correctamente para envío.");
+        log.info("📦 [RESPUESTA] DTO de autenticacion preparado correctamente para envio.");
 
         return authenticationResponseDTO;
     }
@@ -97,12 +97,12 @@ public class RefreshTokenService {
         String refreshToken = body.get("refreshToken");
 
         if (refreshToken == null || refreshToken.isBlank()) {
-            log.warn("⚠️ [VALIDACIÓN] Refresh token ausente o vacío en la solicitud de logout.");
+            log.warn("⚠️ [VALIDACION] Refresh token ausente o vacio en la solicitud de logout.");
             throw new AuthenticationRefreshTokenValidationException("Debe proporcionar un refresh token.");
         }
 
         // 2️⃣ Revocar token
-        log.info("🔐 [TOKEN] Solicitando revocación del refresh token...");
+        log.info("🔐 [TOKEN] Solicitando revocacion del refresh token...");
         refreshTokenUtils.revokeToken(refreshToken);
 
         log.info("🚫 [TOKEN] Token de refresco revocado exitosamente.");

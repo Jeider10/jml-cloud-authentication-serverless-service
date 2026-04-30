@@ -2,21 +2,18 @@ package com.cloud.jml.utils.empresa;
 
 import com.cloud.jml.dto.empresa.ConfigEmpresaResponseDTO;
 import com.cloud.jml.model.empresa.ConfigEmpresaEntity;
+import com.cloud.jml.utils.date.FormatearFecha;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
-
 @Slf4j
-@Component // 🔹 Anotación para indicar que es un componente de Spring
+@Component // 🔹 Anotacion para indicar que es un componente de Spring
 public class ConfigEmpresaFormatearFecha {
 
-    private static final DateTimeFormatter FORMATTER =
-            DateTimeFormatter.ofPattern("d/M/yyyy, h:mm:ss a", Locale.of("es", "CO"));
+    private final FormatearFecha formatearFecha;
 
-    public ConfigEmpresaFormatearFecha() {
+    public ConfigEmpresaFormatearFecha(FormatearFecha formatearFecha) {
+        this.formatearFecha = formatearFecha;
         log.info("🔥 ConfigEmpresaFormatearFecha inicializado correctamente.");
     }
 
@@ -28,37 +25,14 @@ public class ConfigEmpresaFormatearFecha {
 
         log.info("📦 Asignando fechas formateadas a la empresa: {}", configEmpresaEntity.getNombreEmpresa());
 
-        // Fecha de creación
-        String fechaCreacion = formatearFecha(configEmpresaEntity.getFechaCreacion());
+        // Fecha de creacion
+        String fechaCreacion = formatearFecha.formatearFecha(configEmpresaEntity.getFechaCreacion());
         configEmpresaResponseDTO.setFechaCreacion(fechaCreacion);
-        log.info("🕓 Fecha de creación asignada: {}", fechaCreacion);
+        log.info("🕓 Fecha de creacion asignada: {}", fechaCreacion);
 
-        // Fecha de actualización
-        String fechaActualizacion = formatearFecha(configEmpresaEntity.getFechaActualizacion());
+        // Fecha de actualizacion
+        String fechaActualizacion = formatearFecha.formatearFecha(configEmpresaEntity.getFechaActualizacion());
         configEmpresaResponseDTO.setFechaActualizacion(fechaActualizacion);
-        log.info("🕓 Fecha de actualización asignada: {}", fechaActualizacion);
-    }
-
-    /**
-     * 🕒 Formatea una fecha LocalDateTime al formato colombiano:
-     * Ejemplo → 18/10/2025, 2:35:45 p.m.
-     */
-    public String formatearFecha(LocalDateTime fecha) {
-        if (fecha == null) {
-            log.warn("⚠️ Fecha recibida nula, se retorna null.");
-            return null;
-        }
-
-        String fechaFormateada = fecha.format(FORMATTER).toLowerCase();
-        log.info("🕓 Formateando fecha: {}", fechaFormateada);
-
-        // Reemplazar expresiones locales de AM/PM con formato limpio
-        fechaFormateada = fechaFormateada
-                .replace("a. m.", "a.m.")
-                .replace("p. m.", "p.m.");
-
-        log.info("🕓 Fecha formateada correctamente: {}", fechaFormateada);
-
-        return fechaFormateada;
+        log.info("🕓 Fecha de actualizacion asignada: {}", fechaActualizacion);
     }
 }

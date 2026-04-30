@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 
 @Slf4j
-@Component // 🔹 Anotación para indicar que es un componente de Spring
+@Component // 🔹 Anotacion para indicar que es un componente de Spring
 public class RoleMapper {
 
     private final RoleFormatearFecha roleFormatearFecha;
@@ -52,16 +52,16 @@ public class RoleMapper {
     }
 
     public void actualizarDatosRole(RoleRequestDTO roleRequestDTO, RoleEntity roleEntity) {
-        log.info("📌 Inicia actualización de datos del role con código: {}", roleRequestDTO.getRoleCode());
+        log.info("📌 Inicia actualizacion de datos del role con codigo: {}", roleRequestDTO.getRoleCode());
 
         // Actualizamos solo los campos permitidos
         roleEntity.setRoleCode(roleRequestDTO.getRoleCode());
         roleEntity.setRoleName(roleRequestDTO.getRoleName());
         roleEntity.setDescripcion(roleRequestDTO.getDescripcion());
 
-        // Actualizamos la fecha de actualización
+        // Actualizamos la fecha de actualizacion
         roleEntity.setFechaActualizacion(LocalDateTime.now());
 
-        log.info("📌 Finaliza actualización de datos del role con código: {}", roleRequestDTO.getRoleCode());
+        log.info("📌 Finaliza actualizacion de datos del role con codigo: {}", roleRequestDTO.getRoleCode());
     }
 }

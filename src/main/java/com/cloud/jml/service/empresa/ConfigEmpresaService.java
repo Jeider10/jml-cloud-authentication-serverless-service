@@ -39,7 +39,7 @@ public class ConfigEmpresaService {
         List<ConfigEmpresaEntity> empresaExistente = configEmpresaRepository.findAll();
 
         if (empresaExistente.isEmpty()) {
-            log.warn("⚠️ [RESULTADO] No se encontró ninguna empresa registrada en la base de datos");
+            log.warn("⚠️ [RESULTADO] No se encontro ninguna empresa registrada en la base de datos");
             return List.of();
         }
 
@@ -61,7 +61,7 @@ public class ConfigEmpresaService {
 
     @Transactional(readOnly = true)
     public ConfigEmpresaResponseDTO buscarEmpresaNit(ConfigEmpresaRequestDTO configEmpresaRequestDTO) {
-        log.info("🔍 [CONSULTA] Iniciando búsqueda de empresa con nit: {}", configEmpresaRequestDTO.getNit());
+        log.info("🔍 [CONSULTA] Iniciando busqueda de empresa con nit: {}", configEmpresaRequestDTO.getNit());
 
         Optional<ConfigEmpresaEntity> empresaExistente = configEmpresaRepository.findByNit(configEmpresaRequestDTO.getNit());
 
@@ -119,7 +119,7 @@ public class ConfigEmpresaService {
 
     @Transactional
     public ConfigEmpresaResponseDTO actualizarEmpresa(ConfigEmpresaRequestDTO configEmpresaRequestDTO, MultipartFile file) {
-        log.info("🔍 [CONSULTA] Inicio de actualización de empresa: {}", configEmpresaRequestDTO.getNombreEmpresa());
+        log.info("🔍 [CONSULTA] Inicio de actualizacion de empresa: {}", configEmpresaRequestDTO.getNombreEmpresa());
 
         // Paso 1: Validar existencia
         ConfigEmpresaEntity configEmpresaEntity = configEmpresaUtils.validarExistenciaEmpresa(configEmpresaRequestDTO);
@@ -141,17 +141,17 @@ public class ConfigEmpresaService {
         // Paso 5: Mapear a DTO
         log.info("📦 [MAPEO] Transformando entidad de empresa a DTO. (actualizarEmpresa)");
         ConfigEmpresaResponseDTO configEmpresaResponseDTO = mapper.mapEntityToResponseDto(actualizado);
-        log.info("📦 [MAPEO] Empresa mapeado a DTO. nombre: {}, nit: {}, dirección: {}",
+        log.info("📦 [MAPEO] Empresa mapeado a DTO. nombre: {}, nit: {}, direccion: {}",
                 configEmpresaResponseDTO.getNombreEmpresa(), configEmpresaResponseDTO.getNit(), configEmpresaResponseDTO.getDireccion());
 
-        log.info("✅ [FINALIZADO] Actualización de empresa completada: {} con nit: {}", configEmpresaResponseDTO.getNombreEmpresa(), configEmpresaResponseDTO.getNit());
+        log.info("✅ [FINALIZADO] Actualizacion de empresa completada: {} con nit: {}", configEmpresaResponseDTO.getNombreEmpresa(), configEmpresaResponseDTO.getNit());
 
         return configEmpresaResponseDTO;
     }
 
     @Transactional
     public void eliminarEmpresa(ConfigEmpresaRequestDTO configEmpresaRequestDTO) {
-        log.info("🔍 [CONSULTA] Inicio de eliminación de empresa: {} con nit: {}", configEmpresaRequestDTO.getNombreEmpresa(), configEmpresaRequestDTO.getNit());
+        log.info("🔍 [CONSULTA] Inicio de eliminacion de empresa: {} con nit: {}", configEmpresaRequestDTO.getNombreEmpresa(), configEmpresaRequestDTO.getNit());
 
         Optional<ConfigEmpresaEntity> empresaExistente = configEmpresaRepository.findByNit(configEmpresaRequestDTO.getNit());
 

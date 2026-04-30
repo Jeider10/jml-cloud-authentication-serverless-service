@@ -15,4 +15,15 @@ public class S3Properties {
     private String region = "us-east-1";
     private String accessKey;
     private String secretKey;
+
+    // FIX: Propiedad para controlar que cliente S3 se crea
+    // "local" = usa credenciales estaticas (accessKey/secretKey)
+    // "aws"   = usa DefaultCredentialsProvider (IAM role, env vars, etc.)
+    // Se puede sobreescribir con variable de entorno: CLOUD_AWS_PROFILE=aws
+    private String profile = "local";
+
+    // Metodo utilitario para saber si el perfil activo es AWS
+    public boolean isAwsProfile() {
+        return "aws".equalsIgnoreCase(profile);
+    }
 }

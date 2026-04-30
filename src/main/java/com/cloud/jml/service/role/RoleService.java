@@ -60,7 +60,7 @@ public class RoleService {
 
     @Transactional
     public RoleResponseDTO registrarRole(RoleRequestDTO roleRequestDTO) {
-        log.info("🔍 [CONSULTA] Inicio de creación de role: {} con código: {}", roleRequestDTO.getRoleName(), roleRequestDTO.getRoleCode());
+        log.info("🔍 [CONSULTA] Inicio de creacion de role: {} con codigo: {}", roleRequestDTO.getRoleName(), roleRequestDTO.getRoleCode());
 
         Optional<RoleEntity> roleExistente = roleRepository.findByRoleCode(roleRequestDTO.getRoleCode());
 
@@ -71,46 +71,46 @@ public class RoleService {
 
         log.info("📦 [MAPEO] Transformando DTO a entidad de role");
         RoleEntity roleEntity = mapper.mapRequestDtoToEntity(roleRequestDTO);
-        log.info("📦 [MAPEO] Role mapeado a entidad. role: {} con código: {}", roleEntity.getRoleName(), roleEntity.getRoleCode());
+        log.info("📦 [MAPEO] Role mapeado a entidad. role: {} con codigo: {}", roleEntity.getRoleName(), roleEntity.getRoleCode());
 
         RoleEntity guardarRole = roleUtils.guardarRoleBD(roleEntity);
-        log.info("💾 [PERSISTENCIA] Role guardado exitosamente. role: {} con código: {}", guardarRole.getRoleName(), guardarRole.getRoleCode());
+        log.info("💾 [PERSISTENCIA] Role guardado exitosamente. role: {} con codigo: {}", guardarRole.getRoleName(), guardarRole.getRoleCode());
 
         log.info("📦 [MAPEO] Transformando entidad de role a DTO. (registrarRole)");
         RoleResponseDTO roleResponseDTO = mapper.mapEntityToResponseDto(guardarRole);
-        log.info("📦 [MAPEO] Role mapeado a DTO. nombre: {} con código: {} y descripción: {}",
+        log.info("📦 [MAPEO] Role mapeado a DTO. nombre: {} con codigo: {} y descripcion: {}",
                 roleResponseDTO.getRoleName(), roleResponseDTO.getRoleCode(), roleResponseDTO.getDescripcion());
 
-        log.info("✅ [FINALIZADO] Role creado correctamente: {} con código {}", roleResponseDTO.getRoleName(), roleResponseDTO.getRoleCode());
+        log.info("✅ [FINALIZADO] Role creado correctamente: {} con codigo {}", roleResponseDTO.getRoleName(), roleResponseDTO.getRoleCode());
 
         return roleResponseDTO;
     }
 
     @Transactional(readOnly = true)
     public RoleResponseDTO buscarRolePorCodigo(RoleRequestDTO roleRequestDTO) {
-        log.info("🔍 [CONSULTA] Inicio de búsqueda de role por código: {}", roleRequestDTO.getRoleCode());
+        log.info("🔍 [CONSULTA] Inicio de busqueda de role por codigo: {}", roleRequestDTO.getRoleCode());
 
         Optional<RoleEntity> roleEntity = roleRepository.findByRoleCode(roleRequestDTO.getRoleCode());
 
         if (roleEntity.isEmpty()) {
-            log.warn("❌ [NO ENCONTRADO] Role con código: {} no encontrado.", roleRequestDTO.getRoleCode());
+            log.warn("❌ [NO ENCONTRADO] Role con codigo: {} no encontrado.", roleRequestDTO.getRoleCode());
             return null;
         }
 
-        log.info("📦 [ENCONTRADO] Role encontrado -> con código: {}", roleEntity.get().getRoleCode());
+        log.info("📦 [ENCONTRADO] Role encontrado -> con codigo: {}", roleEntity.get().getRoleCode());
 
         log.info("📦 [MAPEO] Transformando entidad de role a DTO. (buscarRolePorCodigo)");
         RoleResponseDTO roleResponseDTO = mapper.mapEntityToResponseDto(roleEntity.get());
-        log.info("📦 [MAPEO] Role mapeado a DTO. código: {}", roleResponseDTO.getRoleCode());
+        log.info("📦 [MAPEO] Role mapeado a DTO. codigo: {}", roleResponseDTO.getRoleCode());
 
-        log.info("✅ [FINALIZADO] Búsqueda de role por código completada con código: {}", roleResponseDTO.getRoleCode());
+        log.info("✅ [FINALIZADO] Busqueda de role por codigo completada con codigo: {}", roleResponseDTO.getRoleCode());
 
         return roleResponseDTO;
     }
 
     @Transactional(readOnly = true)
     public List<RoleResponseDTO> buscarRolePorNombre(RoleRequestDTO roleRequestDTO) {
-        log.info("🔍 [CONSULTA] Inicio de búsqueda de role por nombre: {}", roleRequestDTO.getRoleName());
+        log.info("🔍 [CONSULTA] Inicio de busqueda de role por nombre: {}", roleRequestDTO.getRoleName());
 
         List<RoleEntity> roleEntity = roleRepository.findByRoleNameContainingIgnoreCase(roleRequestDTO.getRoleName());
 
@@ -137,7 +137,7 @@ public class RoleService {
 
     @Transactional
     public RoleResponseDTO actualizarRole(RoleRequestDTO roleRequestDTO) {
-        log.info("🔍 [CONSULTA] Inicio de actualización de role: {} con código: {}", roleRequestDTO.getRoleName(), roleRequestDTO.getRoleCode());
+        log.info("🔍 [CONSULTA] Inicio de actualizacion de role: {} con codigo: {}", roleRequestDTO.getRoleName(), roleRequestDTO.getRoleCode());
 
         // Paso 1: Validar existencia
         RoleEntity roleEntity = roleUtils.validarExistenciaRole(roleRequestDTO);
@@ -147,33 +147,33 @@ public class RoleService {
 
         // Paso 3: Guardar cambios en la BD
         RoleEntity actualizado = roleUtils.guardarRoleBD(roleEntity);
-        log.info("💾 [PERSISTENCIA] Role actualizado con código: {}", actualizado.getRoleCode());
+        log.info("💾 [PERSISTENCIA] Role actualizado con codigo: {}", actualizado.getRoleCode());
 
         // Paso 4: Mapear a DTO
         log.info("📦 [MAPEO] Transformando entidad de role a DTO. (actualizarRole)");
         RoleResponseDTO roleResponseDTO = mapper.mapEntityToResponseDto(actualizado);
-        log.info("📦 [MAPEO] Role mapeado a DTO. nombre: {}, código: {}",
+        log.info("📦 [MAPEO] Role mapeado a DTO. nombre: {}, codigo: {}",
                 roleResponseDTO.getRoleName(), roleResponseDTO.getRoleCode());
 
-        log.info("✅ [FINALIZADO] Actualización de role completada: {} con código: {}", roleResponseDTO.getRoleName(), roleResponseDTO.getRoleCode());
+        log.info("✅ [FINALIZADO] Actualizacion de role completada: {} con codigo: {}", roleResponseDTO.getRoleName(), roleResponseDTO.getRoleCode());
 
         return roleResponseDTO;
     }
 
     @Transactional
     public void eliminarRole(RoleRequestDTO roleRequestDTO) {
-        log.info("🔍 [CONSULTA] Inicio de eliminación de  role: {} con código: {}", roleRequestDTO.getRoleName(), roleRequestDTO.getRoleCode());
+        log.info("🔍 [CONSULTA] Inicio de eliminacion de  role: {} con codigo: {}", roleRequestDTO.getRoleName(), roleRequestDTO.getRoleCode());
 
         Optional<RoleEntity> roleExistente = roleRepository.findByRoleCode(roleRequestDTO.getRoleCode());
 
         if (roleExistente.isPresent()) {
             RoleEntity roleEntity = roleExistente.get();
-            log.info("📦 [ENCONTRADO] Role localizado -> {} con código: {}", roleEntity.getRoleName(), roleEntity.getRoleCode());
+            log.info("📦 [ENCONTRADO] Role localizado -> {} con codigo: {}", roleEntity.getRoleName(), roleEntity.getRoleCode());
 
             roleUtils.eliminarRoleBD(roleEntity);
-            log.info("🗑️ [ELIMINADO] Role eliminado correctamente -> {} con código: {}", roleEntity.getRoleName(), roleEntity.getRoleCode());
+            log.info("🗑️ [ELIMINADO] Role eliminado correctamente -> {} con codigo: {}", roleEntity.getRoleName(), roleEntity.getRoleCode());
         } else {
-            log.warn("❌ [NO ENCONTRADO] Role no encontrado con código: {}", roleRequestDTO.getRoleCode());
+            log.warn("❌ [NO ENCONTRADO] Role no encontrado con codigo: {}", roleRequestDTO.getRoleCode());
             throw new RoleNotFoundException(roleRequestDTO.getRoleCode());
         }
     }

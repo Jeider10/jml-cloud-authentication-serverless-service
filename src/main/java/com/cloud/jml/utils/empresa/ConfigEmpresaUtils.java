@@ -28,7 +28,7 @@ import java.util.Base64;
 import java.util.Optional;
 
 @Slf4j
-@Component // 🔹 Anotación para indicar que es un componente de Spring
+@Component // 🔹 Anotacion para indicar que es un componente de Spring
 public class ConfigEmpresaUtils {
 
     private final ConfigEmpresaRepository configEmpresaRepository;
@@ -45,7 +45,7 @@ public class ConfigEmpresaUtils {
     }
 
     public ConfigEmpresaEntity validarExistenciaEmpresa(ConfigEmpresaRequestDTO configEmpresaRequestDTO) {
-        log.info("📌 Inicia validación de existencia de la empresa: {}", configEmpresaRequestDTO.getNombreEmpresa());
+        log.info("📌 Inicia validacion de existencia de la empresa: {}", configEmpresaRequestDTO.getNombreEmpresa());
 
         Optional<ConfigEmpresaEntity> configEmpresaExistencia = configEmpresaRepository.findByNombreEmpresa(configEmpresaRequestDTO.getNombreEmpresa());
 
@@ -57,7 +57,7 @@ public class ConfigEmpresaUtils {
         ConfigEmpresaEntity configEmpresaEntity = configEmpresaExistencia.get();
         log.info("📦 [ENCONTRADO] Empresa localizada -> {} con nit: {}", configEmpresaEntity.getNombreEmpresa(), configEmpresaEntity.getNit());
 
-        log.info("✅ [FINALIZADO] Empresa verificada correctamente para actualización: {}", configEmpresaEntity.getNombreEmpresa());
+        log.info("✅ [FINALIZADO] Empresa verificada correctamente para actualizacion: {}", configEmpresaEntity.getNombreEmpresa());
 
         return configEmpresaEntity;
     }
@@ -70,7 +70,7 @@ public class ConfigEmpresaUtils {
 
         try {
             log.info("📤 [S3 UPLOAD] Subiendo logo a bucket {}", bucketName);
-            // 🔹 Nombre único para el archivo
+            // 🔹 Nombre unico para el archivo
             String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
             String objectKey = "logos/" + fileName;
 
@@ -84,7 +84,7 @@ public class ConfigEmpresaUtils {
             // 🔹 Subir el archivo
             s3Client.putObject(putObjectRequest, RequestBody.fromBytes(file.getBytes()));
 
-            // 🔹 Construir la URL pública
+            // 🔹 Construir la URL publica
             String formatUrl = "https://%s.s3.%s.amazonaws.com/%s";
             String logoUrl = String.format(
                     formatUrl,
@@ -110,18 +110,18 @@ public class ConfigEmpresaUtils {
         log.info("📂 [UPLOAD] Iniciando proceso de carga del logo: {} en la base", file.getOriginalFilename());
 
         try {
-            // 🔹 Límite máximo permitido (10 MB)
+            // 🔹 Limite maximo permitido (10 MB)
             final Long MAX_SIZE_BYTES = 10L * 1024 * 1024;
 
             Long fileSize = file.getSize();
             if (fileSize > MAX_SIZE_BYTES) {
-                log.warn("⚠️ El archivo excede el tamaño máximo permitido: {} bytes (límite: {})", fileSize, MAX_SIZE_BYTES);
+                log.warn("⚠️ El archivo excede el tamano maximo permitido: {} bytes (limite: {})", fileSize, MAX_SIZE_BYTES);
                 throw ConfigEmpresaLogoUploadException.fileTooLarge(fileSize);
             }
 
             // 🔹 Leer el contenido del archivo directamente en memoria
             byte[] contenido = file.getBytes();
-            log.info("✅ [UPLOAD] Archivo '{}' cargado correctamente (tamaño: {} bytes)",
+            log.info("✅ [UPLOAD] Archivo '{}' cargado correctamente (tamano: {} bytes)",
                     file.getOriginalFilename(), contenido.length);
 
             // 🔹 Codificar en Base64
@@ -146,7 +146,7 @@ public class ConfigEmpresaUtils {
     public String subirLogo(MultipartFile file) {
         log.info("📂 [UPLOAD] Iniciando proceso de carga del logo: {}", file.getOriginalFilename());
         try {
-            // Carpeta donde se guardarán los logos
+            // Carpeta donde se guardaran los logos
             String uploadDir = "uploads/logos/";
             File directorio = new File(uploadDir);
             if (!directorio.exists()) {
@@ -175,16 +175,16 @@ public class ConfigEmpresaUtils {
             return configEmpresaRepository.save(configEmpresaEntity);
 
         } catch (DataIntegrityViolationException e) {
-            log.error("🚨 Violación de integridad al guardar la empresa: {}", e.getMessage(), e);
-            throw new ConfigEmpresaPersistenceException("Error de integridad en base de datos al guardar la empresa", e);
+            log.error("🚨 Violacion de integridad al guardar la empresa: {}", e.getMessage(), e);
+            throw ConfigEmpresaPersistenceException.integrityViolation(e);
 
         } catch (DataAccessException e) {
             log.error("🚨 Error de acceso a datos al guardar la empresa: {}", e.getMessage(), e);
-            throw new ConfigEmpresaPersistenceException("Error al guardar la empresa en la base de datos", e);
+            throw ConfigEmpresaPersistenceException.dataAccessError(e);
 
         } catch (Exception e) {
             log.error("🚨 Error inesperado al guardar la empresa: {}", e.getMessage(), e);
-            throw new ConfigEmpresaPersistenceException("Error inesperado al registrar la empresa", e);
+            throw ConfigEmpresaPersistenceException.unexpected(e);
         }
     }
 
@@ -193,16 +193,16 @@ public class ConfigEmpresaUtils {
             configEmpresaRepository.delete(configEmpresaEntity);
 
         } catch (DataIntegrityViolationException e) {
-            log.error("🚨 Violación de integridad al eliminar la empresa: {}", e.getMessage(), e);
-            throw new ConfigEmpresaDeletionException("Error de integridad en base de datos al eliminar la empresa", e);
+            log.error("🚨 Violacion de integridad al eliminar la empresa: {}", e.getMessage(), e);
+            throw ConfigEmpresaDeletionException.integrityViolation(e);
 
         } catch (DataAccessException e) {
             log.error("🚨 Error de acceso a datos al eliminar la empresa: {}", e.getMessage(), e);
-            throw new ConfigEmpresaDeletionException("Error al eliminar la empresa en la base de datos", e);
+            throw ConfigEmpresaDeletionException.dataAccessError(e);
 
         } catch (Exception e) {
             log.error("🚨 Error inesperado al eliminar la empresa: {}", e.getMessage(), e);
-            throw new ConfigEmpresaDeletionException("Error inesperado al eliminar la empresa", e);
+            throw ConfigEmpresaDeletionException.unexpected(e);
         }
     }
 }

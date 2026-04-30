@@ -11,12 +11,12 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        log.info("🔥 Configuración de recursos estáticos inicializada.");
-        // Mapea las rutas /uploads/** a la carpeta física /uploads
+        log.info("🔥 Configuracion de recursos estaticos inicializada.");
+        // Mapea las rutas /uploads/** a la carpeta fisica /uploads
         registry
                 .addResourceHandler("/uploads/**")
                 .addResourceLocations("file:uploads/");
 
-        log.info("🔥 Configuración de recursos estáticos finalizada.");
+        log.info("🔥 Configuracion de recursos estaticos finalizada.");
     }
 }

@@ -5,21 +5,21 @@ import org.springframework.http.HttpStatus;
 public class RoleDeletionException extends RoleRuntimeException {
 
     public RoleDeletionException(String message) {
-        super(HttpStatus.INTERNAL_SERVER_ERROR, "🗑️ [ELIMINACIÓN] " + message);
+        super(HttpStatus.INTERNAL_SERVER_ERROR, "🗑️ [ELIMINACION] " + message);
     }
 
     public RoleDeletionException(String message, Throwable cause) {
         super(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "🗑️ [ELIMINACIÓN] " + message +
+                "🗑️ [ELIMINACION] " + message +
                         (cause != null ? " | 💥 Causa: " + cause.getMessage() : "")
         );
     }
 
-    // 🔒 Violación de integridad referencial (por constraints o dependencias)
+    // 🔒 Violacion de integridad referencial (por constraints o dependencias)
     public static RoleDeletionException integrityViolation(Throwable cause) {
         return new RoleDeletionException(
-                "❌ [INTEGRIDAD] No se pudo eliminar el role debido a una violación de integridad referencial",
+                "❌ [INTEGRIDAD] No se pudo eliminar el role debido a una violacion de integridad referencial",
                 cause
         );
     }
@@ -35,7 +35,7 @@ public class RoleDeletionException extends RoleRuntimeException {
     // 💥 Error inesperado
     public static RoleDeletionException unexpected(Throwable cause) {
         return new RoleDeletionException(
-                "💥 [INESPERADO] Ocurrió un error inesperado al intentar eliminar el role",
+                "💥 [INESPERADO] Ocurrio un error inesperado al intentar eliminar el role",
                 cause
         );
     }

@@ -9,12 +9,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Slf4j
-@Component // 🔹 Anotación para indicar que es un componente de Spring
+@Component // 🔹 Anotacion para indicar que es un componente de Spring
 public class TokenCleanupScheduler {
 
     private final RefreshTokenRepository refreshTokenRepository;
@@ -27,10 +28,12 @@ public class TokenCleanupScheduler {
     }
 
     // 🧹 Se ejecuta cada 24 horas (🕑 a las 12 AM)
-    // (Minuto: 0 Hora: 0 Día del mes: * (todos) Mes: * (todos) Día de la semana: * (todos))
+    // (Minuto: 0 Hora: 0 Dia del mes: * (todos) Mes: * (todos) Dia de la semana: * (todos))
+    // FIX: Se agrego @Transactional para que las operaciones de eliminacion batch se ejecuten en una transaccion
+    @Transactional
     @Scheduled(cron = "0 0 0 * * *")
     public void limpiarRegistrosDeAutenticacionAntiguos() {
-        log.info("🧹 Iniciando limpieza incremental de registros de autenticación antiguos...");
+        log.info("🧹 Iniciando limpieza incremental de registros de autenticacion antiguos...");
 
         int batchSize = 1000;
         int totalEliminados = 0;
@@ -52,7 +55,9 @@ public class TokenCleanupScheduler {
     }
 
     // 🧹 Se ejecuta cada 24 horas (🕑 a las 2 AM)
-    // (Minuto: 0 Hora: 0 Día del mes: * (todos) Mes: * (todos) Día de la semana: * (todos))
+    // (Minuto: 0 Hora: 0 Dia del mes: * (todos) Mes: * (todos) Dia de la semana: * (todos))
+    // FIX: Se agrego @Transactional para que las operaciones de eliminacion batch se ejecuten en una transaccion
+    @Transactional
     @Scheduled(cron = "0 0 2 * * *")
     public void limpiarTokensExpiradosPorLotes() {
         log.info("🧹 Iniciando limpieza incremental de tokens expirados...");
@@ -77,7 +82,7 @@ public class TokenCleanupScheduler {
     // 🧹 Se ejecuta cada hora
 //    @Scheduled(cron = "0 0 * * * *")
 //    public void limpiarTokensExpirados() {
-//        log.info("🧹 Iniciando limpieza automática de tokens expirados...");
+//        log.info("🧹 Iniciando limpieza automatica de tokens expirados...");
 //
 //        int eliminados = refreshTokenRepository.deleteAllByExpiryDateBefore(Instant.now());
 //

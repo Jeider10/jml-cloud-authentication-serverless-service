@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 @Slf4j
-@Component // 🔹 Anotación para indicar que es un componente de Spring
+@Component // 🔹 Anotacion para indicar que es un componente de Spring
 public class RoleUtils {
 
     private final RoleRepository roleRepository;
@@ -25,15 +25,15 @@ public class RoleUtils {
     }
 
     public RoleEntity validarExistenciaRole(RoleRequestDTO roleRequestDTO) {
-        log.info("📌 Inicia validación de existencia del role con código: {}", roleRequestDTO.getRoleCode());
+        log.info("📌 Inicia validacion de existencia del role con codigo: {}", roleRequestDTO.getRoleCode());
 
         Optional<RoleEntity> optionalRole = roleRepository.findByRoleCode(roleRequestDTO.getRoleCode());
 
         if (optionalRole.isPresent()) {
-            log.info("📌 Role encontrado con código: {}", roleRequestDTO.getRoleCode());
+            log.info("📌 Role encontrado con codigo: {}", roleRequestDTO.getRoleCode());
             return optionalRole.get();
         } else {
-            log.warn("⚠️ Role no encontrado con código: {}", roleRequestDTO.getRoleCode());
+            log.warn("⚠️ Role no encontrado con codigo: {}", roleRequestDTO.getRoleCode());
             throw new RoleNotFoundException(roleRequestDTO.getRoleCode());
         }
     }
@@ -43,16 +43,16 @@ public class RoleUtils {
             return roleRepository.save(roleEntity);
 
         } catch (DataIntegrityViolationException e) {
-            log.error("🚨 Violación de integridad al guardar el Role: {}", e.getMessage(), e);
-            throw new RolePersistenceException("Error de integridad en base de datos al guardar el rol", e);
+            log.error("🚨 Violacion de integridad al guardar el Role: {}", e.getMessage(), e);
+            throw RolePersistenceException.integrityViolation(e);
 
         } catch (DataAccessException e) {
             log.error("🚨 Error de acceso a datos al guardar el Role: {}", e.getMessage(), e);
-            throw new RolePersistenceException("Error al guardar el rol en la base de datos", e);
+            throw RolePersistenceException.dataAccessError(e);
 
         } catch (Exception e) {
             log.error("🚨 Error inesperado al guardar el Role: {}", e.getMessage(), e);
-            throw new RolePersistenceException("Error inesperado al registrar el rol", e);
+            throw RolePersistenceException.unexpected(e);
         }
     }
 
@@ -61,16 +61,16 @@ public class RoleUtils {
             roleRepository.delete(roleEntity);
 
         } catch (DataIntegrityViolationException e) {
-            log.error("🚨 Violación de integridad al eliminar el Role: {}", e.getMessage(), e);
-            throw new RoleDeletionException("Error de integridad en base de datos al eliminar el rol", e);
+            log.error("🚨 Violacion de integridad al eliminar el Role: {}", e.getMessage(), e);
+            throw RoleDeletionException.integrityViolation(e);
 
         } catch (DataAccessException e) {
             log.error("🚨 Error de acceso a datos al eliminar el Role: {}", e.getMessage(), e);
-            throw new RoleDeletionException("Error al eliminar el rol en la base de datos", e);
+            throw RoleDeletionException.dataAccessError(e);
 
         } catch (Exception e) {
             log.error("🚨 Error inesperado al eliminar el Role: {}", e.getMessage(), e);
-            throw new RoleDeletionException("Error inesperado al eliminar el rol", e);
+            throw RoleDeletionException.unexpected(e);
         }
     }
 }

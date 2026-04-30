@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 
 @Slf4j
-@Component // 🔹 Anotación para indicar que es un componente de Spring
+@Component // 🔹 Anotacion para indicar que es un componente de Spring
 public class AuthenticationMapper {
 
     private final JwtProperties jwtProperties;
@@ -28,7 +28,7 @@ public class AuthenticationMapper {
     }
 
     public AuthenticationEntity mapRequestDtoToEntity(AuthenticationRequestDTO authenticationRequestDTO, UserEntity userEntity, String jti) {
-        log.info("📦 [MAPEO] Iniciando mapeo DTO → Entity para autenticación: usuario={}", authenticationRequestDTO.getUsuario());
+        log.info("📦 [MAPEO] Iniciando mapeo DTO → Entity para autenticacion: usuario={}", authenticationRequestDTO.getUsuario());
 
         AuthenticationEntity authenticationEntity = new AuthenticationEntity();
 
@@ -41,13 +41,13 @@ public class AuthenticationMapper {
         authenticationEntity.setJti(jti);
         authenticationEntity.setFechaCreacion(LocalDateTime.now());
 
-        log.info("✅ [MAPEO] Mapeo completado DTO → Entity para autenticación: usuario={}", authenticationEntity.getUsuario());
+        log.info("✅ [MAPEO] Mapeo completado DTO → Entity para autenticacion: usuario={}", authenticationEntity.getUsuario());
 
         return authenticationEntity;
     }
 
     public AuthenticationOptionsDTO mapEntityToAuthenticationOptionsDTO(UserEntity userEntity) {
-        log.info("📦 [MAPEO] Iniciando mapeo Entity → DTO para autenticación de usuario: nombre={}", userEntity.getUserName());
+        log.info("📦 [MAPEO] Iniciando mapeo Entity → DTO para autenticacion de usuario: nombre={}", userEntity.getUserName());
 
         AuthenticationOptionsDTO authenticationOptionsDTO = new AuthenticationOptionsDTO();
 
@@ -55,13 +55,13 @@ public class AuthenticationMapper {
         authenticationOptionsDTO.setRoleCode(userEntity.getRoleCode());
         authenticationOptionsDTO.setRoleName(userEntity.getRoleName());
 
-        log.info("✅ [MAPEO] Mapeo completado DTO → Entity para autenticación de usuario: nombre={}", authenticationOptionsDTO.getLogin());
+        log.info("✅ [MAPEO] Mapeo completado DTO → Entity para autenticacion de usuario: nombre={}", authenticationOptionsDTO.getLogin());
 
         return authenticationOptionsDTO;
     }
 
     public UserResponseDTO buildUserResponseDTO(UserEntity userEntity) {
-        log.info("📦 [MAPEO] Iniciando construcción de DTO de respuesta para usuario: {}", userEntity.getUserName());
+        log.info("📦 [MAPEO] Iniciando construccion de DTO de respuesta para usuario: {}", userEntity.getUserName());
 
         // 🔹 Construimos el UserResponseDTO
         UserResponseDTO userResponseDTO = new UserResponseDTO();
@@ -100,7 +100,7 @@ public class AuthenticationMapper {
     }
 
     public AuthenticationResponseDTO mapAuthenticationResponseDTO(AuthenticationOptionsDTO options, String refreshToken) {
-        log.info("📦 [MAPEO] Iniciando mapeo Entity → DTO para autenticación: login={}", options.getLogin());
+        log.info("📦 [MAPEO] Iniciando mapeo Entity → DTO para autenticacion: login={}", options.getLogin());
 
         AuthenticationResponseDTO authenticationResponseDTO = new AuthenticationResponseDTO();
 
@@ -111,13 +111,13 @@ public class AuthenticationMapper {
         authenticationResponseDTO.setRefreshToken(refreshToken.replace("Bearer ", ""));
         authenticationResponseDTO.setAuthorization("");
 
-        log.info("✅ [MAPEO] Mapeo completado DTO → Entity para autenticación: login={}", authenticationResponseDTO.getOptions().getLogin());
+        log.info("✅ [MAPEO] Mapeo completado DTO → Entity para autenticacion: login={}", authenticationResponseDTO.getOptions().getLogin());
 
         return authenticationResponseDTO;
     }
 
     public AuthenticationResponseDTO mapAuthenticationResponseDTO(AuthenticationOptionsDTO options, String accessToken, String refreshToken, String tokenAuthorization, boolean isRefreshToken) {
-        log.info("📦 [MAPEO] Iniciando mapeo Entity → DTO para autenticación con refresh token: login={}", options.getLogin());
+        log.info("📦 [MAPEO] Iniciando mapeo Entity → DTO para autenticacion con refresh token: login={}", options.getLogin());
 
         long expiration = isRefreshToken ? jwtProperties.getRefreshExpirationMs() : jwtProperties.getExpiration();
 

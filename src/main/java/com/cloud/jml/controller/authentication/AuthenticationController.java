@@ -55,7 +55,7 @@ public class AuthenticationController {
         AuthenticationResponseDTO authenticationResponseDTO = authenticationService.obtenerUsuarioActual(refreshTokenHeader);
 
         if (authenticationResponseDTO == null || authenticationResponseDTO.getOptions() == null || authenticationResponseDTO.getOptions().getLogin() == null) {
-            log.warn("⚠️ [RESPUESTA] No se encontró información del usuario actual o token inválido.");
+            log.warn("⚠️ [RESPUESTA] No se encontro informacion del usuario actual o token invalido.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 

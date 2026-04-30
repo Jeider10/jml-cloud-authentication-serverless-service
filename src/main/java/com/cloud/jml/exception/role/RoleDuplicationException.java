@@ -7,7 +7,7 @@ public class RoleDuplicationException extends RoleRuntimeException {
     public RoleDuplicationException(int roleCode) {
         super(
                 HttpStatus.CONFLICT,
-                "⚠️ [DUPLICADO] Role duplicado con código: " + roleCode);
+                "⚠️ [DUPLICADO] Role duplicado con codigo: " + roleCode);
     }
 
     public RoleDuplicationException(String message) {

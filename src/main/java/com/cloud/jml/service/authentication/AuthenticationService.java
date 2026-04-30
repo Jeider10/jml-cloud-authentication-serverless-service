@@ -33,13 +33,13 @@ public class AuthenticationService {
     public AuthenticationResponseDTO authenticationLogin(AuthenticationRequestDTO authenticationRequestDTO) {
         log.info("🔐 [CONSULTA] Validando usuario: {}", authenticationRequestDTO.getUsuario());
 
-        // 1️⃣ Validar usuario y contraseña
+        // 1️⃣ Validar usuario y contrasena
         UserEntity userEntity = authenticationUtils.validarUsuario(authenticationRequestDTO);
 
         // 2️⃣ Generar access token (token_use = "accessToken")
         String accessToken = generatorTokenService.generarToken(authenticationRequestDTO, userEntity.getRoleCode(), userEntity.getRoleName(), "accessToken");
 
-        // 3️⃣ Procesa y guarda la autenticación
+        // 3️⃣ Procesa y guarda la autenticacion
         authenticationUtils.processAndSaveAuthentication(accessToken, authenticationRequestDTO, userEntity);
 
         // 4️⃣ Generar refresh token (token_use = "refreshToken")

@@ -16,15 +16,15 @@ public class UserPersistenceException extends UserRuntimeException {
         );
     }
 
-    // 🔒 Violación de integridad (constraint, duplicado, etc.) al guardar
+    // 🔒 Violacion de integridad (constraint, duplicado, etc.) al guardar
     public static UserPersistenceException integrityViolation(Throwable cause) {
         return new UserPersistenceException(
-                "❌ [INTEGRIDAD] Violación de integridad en base de datos al guardar el usuario",
+                "❌ [INTEGRIDAD] Violacion de integridad en base de datos al guardar el usuario",
                 cause
         );
     }
 
-    // ⚙️ Error técnico de acceso a datos
+    // ⚙️ Error tecnico de acceso a datos
     public static UserPersistenceException dataAccessError(Throwable cause) {
         return new UserPersistenceException(
                 "❌ [DATOS] Error de acceso a datos al intentar guardar el usuario",
@@ -35,7 +35,7 @@ public class UserPersistenceException extends UserRuntimeException {
     // 💥 Error inesperado
     public static UserPersistenceException unexpected(Throwable cause) {
         return new UserPersistenceException(
-                "💥 [INESPERADO] Ocurrió un error inesperado al registrar el usuario",
+                "💥 [INESPERADO] Ocurrio un error inesperado al registrar el usuario",
                 cause
         );
     }
