@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -119,7 +120,7 @@ public class RoleService {
             return List.of();
         }
 
-        log.info("📦 [MAPEO] Transformando {} entidades de usuarios a DTOs (roleName: {})", roleEntity.size(), roleRequestDTO.getRoleName());
+        log.info("📦 [MAPEO] Transformando {} entidades de roles a DTOs (roleName: {})", roleEntity.size(), roleRequestDTO.getRoleName());
 
         // convertir a stream
         Stream<RoleEntity> streamRoles = roleEntity.stream();
@@ -133,6 +134,31 @@ public class RoleService {
         log.info("✅ [FINALIZADO] Roles encontrados con roleName: {}. Total encontrados: {}", roleRequestDTO.getRoleName(), rolesResponse.size());
 
         return rolesResponse;
+    }
+
+    @Transactional(readOnly = true)
+    public List<RoleResponseDTO> obtenerRolePorFechaCreacion(String fechaInicio, String fechaFin) {
+        log.info("🔍 [CONSULTA] Iniciando busqueda de roles por rango de fecha de creacion: {} - {}", fechaInicio, fechaFin);
+
+        LocalDateTime inicio = roleUtils.parsearFechaInicio(fechaInicio);
+        LocalDateTime fin = roleUtils.parsearFechaFin(fechaFin);
+
+        log.info("📅 [RANGO] Buscando roles entre {} y {}", inicio, fin);
+
+        List<RoleEntity> roleEntity = roleRepository.findByFechaCreacionBetween(inicio, fin);
+
+        if (roleEntity.isEmpty()) {
+            log.warn("❌ [RESULTADO] No se encontraron roles en el rango de fechas: {} - {}", inicio, fin);
+            return List.of();
+        }
+
+        List<RoleResponseDTO> roleResponse = roleEntity.stream()
+                .map(mapper::mapEntityToResponseDto)
+                .toList();
+
+        log.info("✅ [FINALIZADO] Roles encontrados en rango de fechas. Total: {}", roleResponse.size());
+
+        return roleResponse;
     }
 
     @Transactional

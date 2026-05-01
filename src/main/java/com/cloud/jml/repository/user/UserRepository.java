@@ -3,10 +3,14 @@ package com.cloud.jml.repository.user;
 import com.cloud.jml.model.user.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
+
+    List<UserEntity> findByFechaCreacionBetween(LocalDateTime inicio, LocalDateTime fin);
+
     Optional<UserEntity> findByIdentificacion(Long identificacion);
 
     Optional<UserEntity> findByUserName(String userName);

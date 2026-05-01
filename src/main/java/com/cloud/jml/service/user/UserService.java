@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -237,6 +238,31 @@ public class UserService {
         log.info("✅ [FINALIZADO] Usuarios encontrados con roleName: {}. Total encontrados: {}", roleName, usuariosResponse.size());
 
         return usuariosResponse;
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserResponseDTO> obtenerUsuarioPorFechaCreacion(String fechaInicio, String fechaFin) {
+        log.info("🔍 [CONSULTA] Iniciando busqueda de usuarios por rango de fecha de creacion: {} - {}", fechaInicio, fechaFin);
+
+        LocalDateTime inicio = userUtils.parsearFechaInicio(fechaInicio);
+        LocalDateTime fin = userUtils.parsearFechaFin(fechaFin);
+
+        log.info("📅 [RANGO] Buscando usuarios entre {} y {}", inicio, fin);
+
+        List<UserEntity> userEntity = userRepository.findByFechaCreacionBetween(inicio, fin);
+
+        if (userEntity.isEmpty()) {
+            log.warn("❌ [RESULTADO] No se encontraron usuarios en el rango de fechas: {} - {}", inicio, fin);
+            return List.of();
+        }
+
+        List<UserResponseDTO> userResponse = userEntity.stream()
+                .map(mapper::mapEntityToResponseDto)
+                .toList();
+
+        log.info("✅ [FINALIZADO] Usuarios encontrados en rango de fechas. Total: {}", userResponse.size());
+
+        return userResponse;
     }
 
     @Transactional

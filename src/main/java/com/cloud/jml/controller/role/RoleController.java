@@ -93,6 +93,25 @@ public class RoleController {
         return ResponseEntity.ok(roles);
     }
 
+    @GetMapping("/fechaCreacion")
+    public ResponseEntity<List<RoleResponseDTO>> obtenerRolePorFechaCreacion(
+            @RequestParam("fechaInicio") String fechaInicio,
+            @RequestParam("fechaFin") String fechaFin) {
+
+        log.info("📥 [SOLICITUD] Buscar roles por rango de fecha de creacion: {} - {}", fechaInicio, fechaFin);
+
+        List<RoleResponseDTO> roleFecha = roleService.obtenerRolePorFechaCreacion(fechaInicio, fechaFin);
+
+        if (roleFecha == null || roleFecha.isEmpty()) {
+            log.warn("⚠️ [RESPUESTA] No se encontraron roles en el rango de fechas.");
+            return ResponseEntity.noContent().build();
+        }
+
+        log.info("📤 [RESPUESTA] Se retornan {} roles en el rango de fechas.", roleFecha.size());
+
+        return ResponseEntity.ok(roleFecha);
+    }
+
     @PutMapping("/update")
     public ResponseEntity<RoleResponseDTO> actualizarRole(@RequestBody @Valid RoleRequestDTO roleRequestDTO) {
         log.info("📥 [SOLICITUD] /roles/update -> Actualizar rol: {} (codigo: {}).", roleRequestDTO.getRoleName(), roleRequestDTO.getRoleCode());

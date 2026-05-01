@@ -166,6 +166,25 @@ public class UserController {
         return ResponseEntity.ok(userResponseDTO);
     }
 
+    @GetMapping("/fechaCreacion")
+    public ResponseEntity<List<UserResponseDTO>> obtenerUsuarioPorFechaCreacion(
+            @RequestParam("fechaInicio") String fechaInicio,
+            @RequestParam("fechaFin") String fechaFin) {
+
+        log.info("📥 [SOLICITUD] Buscar usuarios por rango de fecha de creacion: {} - {}", fechaInicio, fechaFin);
+
+        List<UserResponseDTO> usuariosFecha = userService.obtenerUsuarioPorFechaCreacion(fechaInicio, fechaFin);
+
+        if (usuariosFecha == null || usuariosFecha.isEmpty()) {
+            log.warn("⚠️ [RESPUESTA] No se encontraron usuarios en el rango de fechas.");
+            return ResponseEntity.noContent().build();
+        }
+
+        log.info("📤 [RESPUESTA] Se retornan {} usuarios en el rango de fechas.", usuariosFecha.size());
+
+        return ResponseEntity.ok(usuariosFecha);
+    }
+
     @PutMapping("/update")
     public ResponseEntity<UserResponseDTO> actualizarUsuario(
             @RequestBody @Valid UserRequestDTO userRequestDTO,
