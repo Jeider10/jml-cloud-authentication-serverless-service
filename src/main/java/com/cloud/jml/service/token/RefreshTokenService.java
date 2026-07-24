@@ -5,6 +5,8 @@ import com.cloud.jml.dto.authentication.AuthenticationRequestDTO;
 import com.cloud.jml.dto.authentication.AuthenticationResponseDTO;
 import com.cloud.jml.exception.authentication.AuthenticationRefreshTokenValidationException;
 import com.cloud.jml.model.token.RefreshTokenEntity;
+import com.cloud.jml.model.user.UserEntity;
+import com.cloud.jml.repository.user.UserRepository;
 import com.cloud.jml.utils.authentication.AuthenticationMapper;
 import com.cloud.jml.utils.token.RefreshTokenUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -20,11 +23,13 @@ public class RefreshTokenService {
     private final RefreshTokenUtils refreshTokenUtils;
     private final GeneratorTokenService generatorTokenService;
     private final AuthenticationMapper mapper;
+    private final UserRepository userRepository;
 
-    public RefreshTokenService(RefreshTokenUtils refreshTokenUtils, GeneratorTokenService generatorTokenService, AuthenticationMapper mapper) {
+    public RefreshTokenService(RefreshTokenUtils refreshTokenUtils, GeneratorTokenService generatorTokenService, AuthenticationMapper mapper, UserRepository userRepository) {
         this.refreshTokenUtils = refreshTokenUtils;
         this.generatorTokenService = generatorTokenService;
         this.mapper = mapper;
+        this.userRepository = userRepository;
         log.info("🔥 RefreshTokenService inicializado correctamente.");
     }
 
@@ -73,8 +78,14 @@ public class RefreshTokenService {
 
         log.info("✅ [TOKEN] Nuevo access token generado para el usuario: {}", refreshTokenEntity.getUsuario());
 
-        // 7️⃣ Construir respuesta option
-        AuthenticationOptionsDTO authenticationOptionsDTO = mapper.mapEntityToAuthenticationOptionsDTO(refreshTokenEntity);
+        // 7️⃣ Construir respuesta option (buscar UserEntity para incluir identificacion, nombres, apellidos)
+        AuthenticationOptionsDTO authenticationOptionsDTO;
+        Optional<UserEntity> userOpt = userRepository.findByUserName(refreshTokenEntity.getUsuario());
+        if (userOpt.isPresent()) {
+            authenticationOptionsDTO = mapper.mapEntityToAuthenticationOptionsDTO(userOpt.get());
+        } else {
+            authenticationOptionsDTO = mapper.mapEntityToAuthenticationOptionsDTO(refreshTokenEntity);
+        }
 
         // 8️⃣ Construir respuesta de refresh token
         AuthenticationResponseDTO authenticationResponseDTO = mapper.mapAuthenticationResponseDTO(

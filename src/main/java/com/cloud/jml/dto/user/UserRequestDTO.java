@@ -32,7 +32,7 @@ public class UserRequestDTO {
     private String userName;
 
     @NotBlank(message = "El campo 'password' es obligatorio")
-    @Size(min = 6, message = "El campo 'password' debe tener al menos 6 caracteres")
+    @Size(min = 3, message = "El campo 'password' debe tener al menos 3 caracteres")
     private String password;
 
     private int roleCode;

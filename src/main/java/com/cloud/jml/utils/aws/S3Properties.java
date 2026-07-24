@@ -11,10 +11,10 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "cloud.aws")
 public class S3Properties {
 
-    private String bucket = "elasticbeanstalk-logos-us-east-1-536322508385";
     private String region = "us-east-1";
-    private String accessKey;
-    private String secretKey;
+    private String accessKey = System.getenv("AWS_ACCESS_KEY_ID");
+    private String secretKey = System.getenv("AWS_SECRET_ACCESS_KEY");
+    private String bucket = "elasticbeanstalk-logos-us-east-1-536322508385";
 
     // FIX: Propiedad para controlar que cliente S3 se crea
     // "local" = usa credenciales estaticas (accessKey/secretKey)

@@ -14,4 +14,7 @@ public class AuthenticationOptionsDTO {
     private String login;
     private int roleCode;
     private String roleName;
+    private Long identificacion;
+    private String nombres;
+    private String apellidos;
 }

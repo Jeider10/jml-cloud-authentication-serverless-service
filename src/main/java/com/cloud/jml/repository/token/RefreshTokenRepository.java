@@ -13,4 +13,3 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshTokenEntity
 
     Page<RefreshTokenEntity> findByExpiryDateBefore(Instant now, PageRequest of);
 }
-

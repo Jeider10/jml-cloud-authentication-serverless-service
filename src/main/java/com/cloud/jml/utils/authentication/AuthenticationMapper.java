@@ -54,6 +54,9 @@ public class AuthenticationMapper {
         authenticationOptionsDTO.setLogin(userEntity.getUserName());
         authenticationOptionsDTO.setRoleCode(userEntity.getRoleCode());
         authenticationOptionsDTO.setRoleName(userEntity.getRoleName());
+        authenticationOptionsDTO.setIdentificacion(userEntity.getIdentificacion());
+        authenticationOptionsDTO.setNombres(userEntity.getNombres());
+        authenticationOptionsDTO.setApellidos(userEntity.getApellidos());
 
         log.info("✅ [MAPEO] Mapeo completado DTO → Entity para autenticacion de usuario: nombre={}", authenticationOptionsDTO.getLogin());
 

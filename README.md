@@ -29,3 +29,9 @@ SET GLOBAL max_allowed_packet=67108864;
 
 # Restaurar el parametro max_allowed_packet en el servidor MySQL.
 SET GLOBAL max_allowed_packet=1048576;
+
+# Seteo de variables en consola Git Bash
+export AWS_REGION="us-east-1"
+export AWS_ACCESS_KEY_ID=""
+export AWS_SECRET_ACCESS_KEY=""
+export AWS_S3_BUCKET_NAME="elasticbeanstalk-logos-us-east-1-536322508385"

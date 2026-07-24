@@ -29,7 +29,7 @@ public class AuthenticationEntity {
     @Column(nullable = false)
     private String roleName;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private Long identificacion;
 
     @Column(nullable = false)

@@ -204,6 +204,25 @@ public class UserController {
         return ResponseEntity.ok(userResponseDTO);
     }
 
+    @PutMapping("/forgot-password")
+    public ResponseEntity<Void> resetearPassword(@RequestBody java.util.Map<String, String> body) {
+        String userName = body.get("userName");
+        String password = body.get("password");
+
+        log.info("📥 [SOLICITUD] /usuario/forgot-password -> Resetear password para usuario: {}", userName);
+
+        if (userName == null || userName.isBlank() || password == null || password.isBlank()) {
+            log.warn("⚠️ [RESPUESTA] userName o password vacios.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        userService.resetearPassword(userName, password);
+
+        log.info("📤 [RESPUESTA] Password reseteado correctamente para usuario: {}", userName);
+
+        return ResponseEntity.ok().build();
+    }
+
     @DeleteMapping("/delete")
     public ResponseEntity<Void> eliminarUsuario(@RequestParam("identificacion") Long identificacion) {
         log.info("📥 [SOLICITUD] Eliminar usuario con identificacion: {}", identificacion);

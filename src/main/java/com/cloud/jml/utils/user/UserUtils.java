@@ -2,7 +2,9 @@ package com.cloud.jml.utils.user;
 
 import com.cloud.jml.dto.user.UserRequestDTO;
 import com.cloud.jml.exception.role.RoleDuplicationException;
+import com.cloud.jml.exception.role.RoleNotAllowedException;
 import com.cloud.jml.exception.role.RoleNotFoundException;
+import com.cloud.jml.exception.role.RoleRequiredException;
 import com.cloud.jml.exception.user.UserAlreadyExistsException;
 import com.cloud.jml.exception.user.UserDeletionException;
 import com.cloud.jml.exception.user.UserNotFoundException;
@@ -90,6 +92,9 @@ public class UserUtils {
     public void validarUnicoAdministrador(UserEntity userEntity) {
         log.info("✅ Verificando si el usuario es unico administrador: {}", userEntity.getUserName());
 
+        // Validar que el rol sea uno de los permitidos
+        validarRolPermitido(userEntity);
+
         // 🚫 Validar que no haya mas de un administrador
         if (esRolAdministrador(userEntity)) {
             boolean existeAdmin = userRepository.existsByRoleNameIgnoreCase(userEntity.getRoleName());
@@ -109,6 +114,30 @@ public class UserUtils {
                 throw new RoleDuplicationException(formattedMessage);
             }
         }
+    }
+
+    /**
+     * Valida que el rol del usuario sea uno de los permitidos en el sistema.
+     * Roles validos: ADMIN, ADMINISTRADOR, SUPERADMIN, USER, USUARIO, CAJERO
+     */
+    public void validarRolPermitido(UserEntity userEntity) {
+        String roleName = userEntity.getRoleName();
+
+        if (roleName == null || roleName.isBlank()) {
+            throw new RoleRequiredException();
+        }
+
+        boolean esValido = Stream.of(
+                        "ADMIN", "ADMINISTRADOR", "SUPERADMIN",
+                        "USER", "USUARIO", "CAJERO")
+                .anyMatch(rol -> rol.equalsIgnoreCase(roleName.trim()));
+
+        if (!esValido) {
+            log.warn("❌ [ERROR] Rol no permitido: {}", roleName);
+            throw new RoleNotAllowedException(roleName);
+        }
+
+        log.info("✅ Rol '{}' validado correctamente", roleName);
     }
 
     public boolean esRolAdministrador(UserEntity userEntity) {

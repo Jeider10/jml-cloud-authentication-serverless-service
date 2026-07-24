@@ -38,7 +38,7 @@ public class UserMapper {
         userEntity.setEmail(userRequestDTO.getEmail());
         userEntity.setTelefono(userRequestDTO.getTelefono());
         userEntity.setDireccion(userRequestDTO.getDireccion());
-        userEntity.setFechaCreacion(LocalDateTime.now());
+        userEntity.setFechaCreacion(LocalDateTime.now().truncatedTo(java.time.temporal.ChronoUnit.SECONDS));
 
         RoleEntity roleEntity = userUtils.obtenerRolePorCodigo(userRequestDTO.getRoleCode());
         userEntity.setRoleCode(roleEntity.getRoleCode());
@@ -97,7 +97,7 @@ public class UserMapper {
         userEntity.setHistorialUltimoActualizado(userLogin);
 
         // Actualizamos la fecha de actualizacion
-        userEntity.setFechaActualizacion(LocalDateTime.now());
+        userEntity.setFechaActualizacion(LocalDateTime.now().truncatedTo(java.time.temporal.ChronoUnit.SECONDS));
 
         RoleEntity roleEntity = userUtils.obtenerRolePorCodigo(userRequestDTO.getRoleCode());
         userEntity.setRoleCode(userRequestDTO.getRoleCode());

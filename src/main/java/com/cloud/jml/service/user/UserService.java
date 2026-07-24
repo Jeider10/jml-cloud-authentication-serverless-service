@@ -240,6 +240,32 @@ public class UserService {
         return usuariosResponse;
     }
 
+    @Transactional
+    public void resetearPassword(String userName, String newPassword) {
+        log.info("🔑 [RESET] Reseteando password para usuario: {}", userName);
+
+        Optional<UserEntity> optionalUser = userRepository.findByUserName(userName);
+
+        if (optionalUser.isEmpty()) {
+            log.warn("❌ [NO ENCONTRADO] Usuario no encontrado: {}", userName);
+            throw new UserNotFoundException(userName);
+        }
+
+        UserEntity userEntity = optionalUser.get();
+
+        userEntity.setPassword(newPassword);
+        userEntity.setFechaActualizacion(LocalDateTime.now().truncatedTo(java.time.temporal.ChronoUnit.SECONDS));
+
+        // Encriptar la nueva contraseña
+//        String encodedPassword = passwordEncoder.encode(newPassword);
+//        userEntity.setPassword(encodedPassword);
+//        userEntity.setFechaActualizacion(LocalDateTime.now());
+
+        userRepository.save(userEntity);
+
+        log.info("✅ [RESET] Password reseteado correctamente para usuario: {}", userName);
+    }
+
     @Transactional(readOnly = true)
     public List<UserResponseDTO> obtenerUsuarioPorFechaCreacion(String fechaInicio, String fechaFin) {
         log.info("🔍 [CONSULTA] Iniciando busqueda de usuarios por rango de fecha de creacion: {} - {}", fechaInicio, fechaFin);
