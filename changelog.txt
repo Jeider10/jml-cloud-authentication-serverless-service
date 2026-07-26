@@ -1,0 +1,12 @@
+=====================================
+ JML Cloud - Authentication Service
+ Historial de Cambios
+=====================================
+
+[1.0.0-SNAPSHOT] - 2026-07-26 - (Jeider Montiel)
+  - Version inicial del servicio de autenticacion.
+  - Login y logout de usuarios.
+  - Generacion y validacion de tokens JWT.
+  - Refresh token.
+  - Gestion de roles y usuarios.
+  - Configuracion de empresa (datos + logo S3).
