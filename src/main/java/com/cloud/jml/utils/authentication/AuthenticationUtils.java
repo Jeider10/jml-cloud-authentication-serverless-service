@@ -4,10 +4,12 @@ import com.cloud.jml.dto.authentication.AuthenticationOptionsDTO;
 import com.cloud.jml.dto.authentication.AuthenticationRequestDTO;
 import com.cloud.jml.exception.authentication.AuthenticationInvalidCredentialsException;
 import com.cloud.jml.exception.authentication.AuthenticationPersistenceException;
+import com.cloud.jml.exception.role.RoleNotFoundException;
 import com.cloud.jml.model.authentication.AuthenticationEntity;
 import com.cloud.jml.model.token.RefreshTokenEntity;
 import com.cloud.jml.model.user.UserEntity;
 import com.cloud.jml.repository.authentication.AuthenticationRepository;
+import com.cloud.jml.repository.role.RoleRepository;
 import com.cloud.jml.repository.user.UserRepository;
 import com.cloud.jml.utils.jwt.JwtUtil;
 import com.cloud.jml.utils.token.RefreshTokenUtils;
@@ -24,13 +26,15 @@ public class AuthenticationUtils {
 
     private final AuthenticationRepository authenticationRepository;
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final JwtUtil jwtUtil;
     private final RefreshTokenUtils refreshTokenUtils;
     private final AuthenticationMapper mapper;
 
-    public AuthenticationUtils(AuthenticationRepository authenticationRepository, UserRepository userRepository, JwtUtil jwtUtil, RefreshTokenUtils refreshTokenUtils, AuthenticationMapper mapper) {
+    public AuthenticationUtils(AuthenticationRepository authenticationRepository, UserRepository userRepository, RoleRepository roleRepository, JwtUtil jwtUtil, RefreshTokenUtils refreshTokenUtils, AuthenticationMapper mapper) {
         this.authenticationRepository = authenticationRepository;
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
         this.jwtUtil = jwtUtil;
         this.refreshTokenUtils = refreshTokenUtils;
         this.mapper = mapper;
@@ -48,6 +52,14 @@ public class AuthenticationUtils {
         }
 
         UserEntity user = userOpt.get();
+
+        // Validar que el rol asignado al usuario exista en la tabla roles
+        roleRepository.findByRoleCode(user.getRoleCode()).orElseThrow(() -> {
+            log.warn("⚠️ El usuario {} tiene roleCode={} que no existe en la tabla roles. Login denegado.",
+                    user.getUserName(), user.getRoleCode());
+            return new RoleNotFoundException(user.getRoleCode());
+        });
+        log.info("✅ Rol validado correctamente: roleCode={}, roleName={}", user.getRoleCode(), user.getRoleName());
 
         // Comparacion segura de contrasenas
         if (!authenticationRequestDTO.getPassword().equals(user.getPassword())) {
