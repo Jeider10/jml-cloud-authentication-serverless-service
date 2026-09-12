@@ -299,6 +299,31 @@ public class UserService {
         return userResponse;
     }
 
+    @Transactional(readOnly = true)
+    public List<UserResponseDTO> obtenerUsuarioPorFechaActualizacion(String fechaInicio, String fechaFin) {
+        log.info("🔍 [CONSULTA] Iniciando busqueda de usuarios por rango de fecha de actualizacion: {} - {}", fechaInicio, fechaFin);
+
+        LocalDateTime inicio = userUtils.parsearFechaInicio(fechaInicio);
+        LocalDateTime fin = userUtils.parsearFechaFin(fechaFin);
+
+        log.info("📅 [RANGO] Buscando usuarios entre {} y {}", inicio, fin);
+
+        List<UserEntity> userEntity = userRepository.findByFechaActualizacionBetween(inicio, fin);
+
+        if (userEntity.isEmpty()) {
+            log.warn("❌ [RESULTADO] No se encontraron usuarios en el rango de actualizacion: {} - {}", inicio, fin);
+            return List.of();
+        }
+
+        List<UserResponseDTO> userResponse = userEntity.stream()
+                .map(mapper::mapEntityToResponseDto)
+                .toList();
+
+        log.info("✅ [FINALIZADO] Usuarios encontrados por actualizacion. Total: {}", userResponse.size());
+
+        return userResponse;
+    }
+
     @Transactional
     public UserResponseDTO actualizarUsuario(UserRequestDTO userRequestDTO, String userLogin) {
         log.info("🔍 [CONSULTA] Inicio de actualizacion de usuario: {}", userRequestDTO.getUserName());

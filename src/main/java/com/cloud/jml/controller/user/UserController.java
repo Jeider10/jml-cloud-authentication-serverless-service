@@ -185,6 +185,25 @@ public class UserController {
         return ResponseEntity.ok(usuariosFecha);
     }
 
+    @GetMapping("/fechaActualizacion")
+    public ResponseEntity<List<UserResponseDTO>> obtenerUsuarioPorFechaActualizacion(
+            @RequestParam("fechaInicio") String fechaInicio,
+            @RequestParam("fechaFin") String fechaFin) {
+
+        log.info("📥 [SOLICITUD] Buscar usuarios por rango de fecha de actualizacion: {} - {}", fechaInicio, fechaFin);
+
+        List<UserResponseDTO> usuariosFecha = userService.obtenerUsuarioPorFechaActualizacion(fechaInicio, fechaFin);
+
+        if (usuariosFecha == null || usuariosFecha.isEmpty()) {
+            log.warn("⚠️ [RESPUESTA] No se encontraron usuarios en el rango de fecha de actualizacion.");
+            return ResponseEntity.noContent().build();
+        }
+
+        log.info("📤 [RESPUESTA] Se retornan {} usuarios por fecha de actualizacion.", usuariosFecha.size());
+
+        return ResponseEntity.ok(usuariosFecha);
+    }
+
     @PutMapping("/update")
     public ResponseEntity<UserResponseDTO> actualizarUsuario(
             @RequestBody @Valid UserRequestDTO userRequestDTO,

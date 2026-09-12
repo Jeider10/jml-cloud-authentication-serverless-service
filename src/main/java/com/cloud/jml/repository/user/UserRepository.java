@@ -11,6 +11,8 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     List<UserEntity> findByFechaCreacionBetween(LocalDateTime inicio, LocalDateTime fin);
 
+    List<UserEntity> findByFechaActualizacionBetween(LocalDateTime inicio, LocalDateTime fin);
+
     Optional<UserEntity> findByIdentificacion(Long identificacion);
 
     Optional<UserEntity> findByUserName(String userName);
