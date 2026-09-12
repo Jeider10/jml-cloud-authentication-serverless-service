@@ -16,6 +16,7 @@ import com.cloud.jml.utils.token.RefreshTokenUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -30,14 +31,16 @@ public class AuthenticationUtils {
     private final JwtUtil jwtUtil;
     private final RefreshTokenUtils refreshTokenUtils;
     private final AuthenticationMapper mapper;
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthenticationUtils(AuthenticationRepository authenticationRepository, UserRepository userRepository, RoleRepository roleRepository, JwtUtil jwtUtil, RefreshTokenUtils refreshTokenUtils, AuthenticationMapper mapper) {
+    public AuthenticationUtils(AuthenticationRepository authenticationRepository, UserRepository userRepository, RoleRepository roleRepository, JwtUtil jwtUtil, RefreshTokenUtils refreshTokenUtils, AuthenticationMapper mapper, PasswordEncoder passwordEncoder) {
         this.authenticationRepository = authenticationRepository;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.jwtUtil = jwtUtil;
         this.refreshTokenUtils = refreshTokenUtils;
         this.mapper = mapper;
+        this.passwordEncoder = passwordEncoder;
         log.info("🔥 AuthenticationUtils inicializado correctamente.");
     }
 
@@ -62,8 +65,14 @@ public class AuthenticationUtils {
         log.info("✅ Rol validado correctamente: roleCode={}, roleName={}", user.getRoleCode(), user.getRoleName());
 
         // Comparacion segura de contrasenas
-        if (!authenticationRequestDTO.getPassword().equals(user.getPassword())) {
-            log.warn("⚠️ Contrasena incorrecta para usuario: {}", authenticationRequestDTO.getUsuario());
+//        if (!authenticationRequestDTO.getPassword().equals(user.getPassword())) {
+//            log.warn("⚠️ Contrasena incorrecta para usuario: {}", authenticationRequestDTO.getUsuario());
+//            throw new AuthenticationInvalidCredentialsException();
+//        }
+
+        // Comparacion segura con BCrypt
+        if (!passwordEncoder.matches(authenticationRequestDTO.getPassword(), user.getPassword())) {
+            log.warn("⚠️ Contraseña incorrecta para usuario: {}", authenticationRequestDTO.getUsuario());
             throw new AuthenticationInvalidCredentialsException();
         }
 
