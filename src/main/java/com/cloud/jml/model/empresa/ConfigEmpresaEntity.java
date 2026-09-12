@@ -29,6 +29,7 @@ public class ConfigEmpresaEntity {
     private String direccion;
     private String telefono;
     private String mensaje;
+    private String email;
 
     @Column(name = "logo", columnDefinition = "LONGTEXT")
     private String logo;

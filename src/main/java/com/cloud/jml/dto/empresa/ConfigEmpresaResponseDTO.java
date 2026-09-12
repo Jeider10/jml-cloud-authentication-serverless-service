@@ -16,6 +16,7 @@ public class ConfigEmpresaResponseDTO {
     private String direccion;
     private String telefono;
     private String mensaje;
+    private String email;
     private String logo;
     private String fechaCreacion;
     private String fechaActualizacion;

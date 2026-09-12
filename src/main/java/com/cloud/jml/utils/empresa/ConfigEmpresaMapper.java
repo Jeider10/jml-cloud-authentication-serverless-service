@@ -28,6 +28,7 @@ public class ConfigEmpresaMapper {
         configEmpresaEntity.setDireccion(configEmpresaRequestDTO.getDireccion());
         configEmpresaEntity.setTelefono(configEmpresaRequestDTO.getTelefono());
         configEmpresaEntity.setMensaje(configEmpresaRequestDTO.getMensaje());
+        configEmpresaEntity.setEmail(configEmpresaRequestDTO.getEmail());
 
         // El logo solo se actualiza si viene uno nuevo en el DTO
         if (configEmpresaRequestDTO.getLogo() != null) {
@@ -50,6 +51,7 @@ public class ConfigEmpresaMapper {
         configEmpresaEntity.setDireccion(configEmpresaRequestDTO.getDireccion());
         configEmpresaEntity.setTelefono(configEmpresaRequestDTO.getTelefono());
         configEmpresaEntity.setMensaje(configEmpresaRequestDTO.getMensaje());
+        configEmpresaEntity.setEmail(configEmpresaRequestDTO.getEmail());
         configEmpresaEntity.setLogo(configEmpresaRequestDTO.getLogo());
         configEmpresaEntity.setFechaCreacion(LocalDateTime.now());
 
@@ -81,6 +83,7 @@ public class ConfigEmpresaMapper {
         configEmpresaResponseDTO.setDireccion(configEmpresaEntity.getDireccion());
         configEmpresaResponseDTO.setTelefono(configEmpresaEntity.getTelefono());
         configEmpresaResponseDTO.setMensaje(configEmpresaEntity.getMensaje());
+        configEmpresaResponseDTO.setEmail(configEmpresaEntity.getEmail());
         configEmpresaResponseDTO.setLogo(configEmpresaEntity.getLogo());
 
         log.info("✅ [MAPEO] Mapeo completado de DTO de respuesta para empresa: {}", configEmpresaResponseDTO.getNombreEmpresa());
