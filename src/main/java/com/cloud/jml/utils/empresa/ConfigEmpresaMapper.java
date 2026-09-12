@@ -22,13 +22,17 @@ public class ConfigEmpresaMapper {
     public void actualizarDatosEmpresa(ConfigEmpresaRequestDTO configEmpresaRequestDTO, ConfigEmpresaEntity configEmpresaEntity) {
         log.info("📌 Actualizando datos de la empresa: {}", configEmpresaRequestDTO.getNombreEmpresa());
 
-        // Actualizamos solo los campos permitidos
-        configEmpresaEntity.setNit(configEmpresaRequestDTO.getNit());
+        // NOTA: El NIT es el @Id — no se modifica en un update.
+        // Solo actualizamos los campos de negocio permitidos.
         configEmpresaEntity.setNombreEmpresa(configEmpresaRequestDTO.getNombreEmpresa());
         configEmpresaEntity.setDireccion(configEmpresaRequestDTO.getDireccion());
         configEmpresaEntity.setTelefono(configEmpresaRequestDTO.getTelefono());
         configEmpresaEntity.setMensaje(configEmpresaRequestDTO.getMensaje());
-        configEmpresaEntity.setLogo(configEmpresaRequestDTO.getLogo());
+
+        // El logo solo se actualiza si viene uno nuevo en el DTO
+        if (configEmpresaRequestDTO.getLogo() != null) {
+            configEmpresaEntity.setLogo(configEmpresaRequestDTO.getLogo());
+        }
 
         // Actualiza fecha
         configEmpresaEntity.setFechaActualizacion(LocalDateTime.now());

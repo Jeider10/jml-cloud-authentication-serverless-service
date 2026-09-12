@@ -28,13 +28,14 @@ public class ConfigEmpresaUtils {
     }
 
     public ConfigEmpresaEntity validarExistenciaEmpresa(ConfigEmpresaRequestDTO configEmpresaRequestDTO) {
-        log.info("📌 Inicia validacion de existencia de la empresa: {}", configEmpresaRequestDTO.getNombreEmpresa());
+        log.info("📌 Inicia validacion de existencia de la empresa con nit: {}", configEmpresaRequestDTO.getNit());
 
-        Optional<ConfigEmpresaEntity> configEmpresaExistencia = configEmpresaRepository.findByNombreEmpresa(configEmpresaRequestDTO.getNombreEmpresa());
+        // Buscar por NIT (es el @Id) — no por nombre, porque el nombre puede cambiar en el update
+        Optional<ConfigEmpresaEntity> configEmpresaExistencia = configEmpresaRepository.findByNit(configEmpresaRequestDTO.getNit());
 
         if (configEmpresaExistencia.isEmpty()) {
-            log.warn("⚠️ Empresa no encontrada: {}", configEmpresaRequestDTO.getNombreEmpresa());
-            throw new ConfigEmpresaNotFoundException(configEmpresaRequestDTO.getNombreEmpresa());
+            log.warn("⚠️ Empresa no encontrada con nit: {}", configEmpresaRequestDTO.getNit());
+            throw new ConfigEmpresaNotFoundException(String.valueOf(configEmpresaRequestDTO.getNit()));
         }
 
         ConfigEmpresaEntity configEmpresaEntity = configEmpresaExistencia.get();
