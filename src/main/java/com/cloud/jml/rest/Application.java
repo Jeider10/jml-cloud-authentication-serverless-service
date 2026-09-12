@@ -17,14 +17,17 @@ public class Application {
 
     public static final String MICRO_NAME = "M i c r o  -  A u t h e n t i c a t i o n";
 
-    static void main(String[] args) {
-
-        log.info("Hello, World!");
+    public static void main(String[] args) {
 
         SpringApplication app = new SpringApplication(Application.class);
-
         app.setBanner(new DynamicBanner(MICRO_NAME));
-
         app.run(args);
+
+        log.info("=======================================================");
+        log.info("  ✅  jml-cloud-authentication-serverless-service  ONLINE");
+        log.info("  🔐  Servicio de autenticacion, usuarios y roles");
+        log.info("  🌐  Puerto : 1081  →  http://localhost:1081");
+        log.info("  📊  Actuator: http://localhost:1081/actuator/health");
+        log.info("=======================================================");
     }
 }

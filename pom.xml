@@ -13,7 +13,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.1.0</version>
+        <version>4.1.1</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -27,7 +27,6 @@
 
         <com.mysql.version>9.7.0</com.mysql.version>
         <projectlombok.version>1.18.46</projectlombok.version>
-        <software.amazon.awssdk.version>2.43.1</software.amazon.awssdk.version>
         <jsonwebtoken.version>0.13.0</jsonwebtoken.version>
         <jetbrains.version>26.1.0</jetbrains.version>
         <jfiglet.version>0.0.9</jfiglet.version>
@@ -116,12 +115,10 @@
             <version>${com.mysql.version}</version>
         </dependency>
 
-        <!-- Amazon S3 -->
+        <!-- Actuator -->
         <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>s3</artifactId>
-            <version>${software.amazon.awssdk.version}</version>
-            <scope>compile</scope>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
         <!-- JWT: API para crear y validar tokens -->
