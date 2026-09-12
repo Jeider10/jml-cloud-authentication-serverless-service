@@ -6,20 +6,24 @@ import com.cloud.jml.repository.role.RoleRepository;
 import com.cloud.jml.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jspecify.annotations.NonNull;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 /**
- * Inicializa datos por defecto al arrancar la aplicación.
+ * Inicializa datos por defecto al arrancar la aplicacion.
  * <p>
  * Crea:
- * - Rol ADMIN (roleCode=1) si no existe en la tabla roles.
- * - Rol CAJERO (roleCode=2) si no existe.
- * - Usuario administrador por defecto si no existe ningún usuario con userName="admin".
+ * - Rol ADMIN   (roleCode=1) si no existe.
+ * - Rol CAJERO  (roleCode=2) si no existe.
+ * - Rol USUARIO (roleCode=3) si no existe.
+ * - Usuario administrador por defecto si no existe ningun usuario con userName="admin".
+ * <p>
+ * Si el usuario admin ya existe pero su contraseña NO esta encodeada con BCrypt,
+ * la actualiza automaticamente con el hash correcto.
  * <p>
  * Credenciales por defecto:
  * usuario  : admin
@@ -36,16 +40,16 @@ public class DataInitializer implements CommandLineRunner {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public void run(String @NonNull ... args) {
+    public void run(String... args) {
         log.info("🔧 [DataInitializer] Verificando datos por defecto...");
 
         crearRolSiNoExiste(1, "ADMIN", "Administrador del sistema");
         crearRolSiNoExiste(2, "CAJERO", "Cajero / vendedor");
-        crearRolSiNoExiste(3, "USUARIO", "Usuario estándar");
+        crearRolSiNoExiste(3, "USUARIO", "Usuario estandar");
 
-        crearAdminSiNoExiste();
+        crearORepararAdmin();
 
-        log.info("✅ [DataInitializer] Inicialización completada.");
+        log.info("✅ [DataInitializer] Inicializacion completada.");
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -65,19 +69,33 @@ public class DataInitializer implements CommandLineRunner {
         }
     }
 
-    private void crearAdminSiNoExiste() {
-        if (userRepository.findByUserName("admin").isPresent()) {
-            log.info("ℹ️  [DataInitializer] Usuario 'admin' ya existe, no se crea de nuevo.");
+    private void crearORepararAdmin() {
+        Optional<UserEntity> existente = userRepository.findByUserName("admin");
+
+        if (existente.isPresent()) {
+            UserEntity admin = existente.get();
+            String pwd = admin.getPassword();
+
+            // Si la contraseña NO esta encodeada con BCrypt, la corregimos
+            if (pwd == null || (!pwd.startsWith("$2a$") && !pwd.startsWith("$2b$"))) {
+                admin.setPassword(passwordEncoder.encode("admin"));
+                admin.setFechaActualizacion(LocalDateTime.now());
+                admin.setHistorialUltimoActualizado("Contraseña re-encodeada con BCrypt por DataInitializer");
+                userRepository.save(admin);
+                log.info("🔑 [DataInitializer] Contraseña del admin corregida con BCrypt.");
+            } else {
+                log.info("ℹ️  [DataInitializer] Usuario 'admin' ya existe con contraseña BCrypt valida.");
+            }
             return;
         }
 
+        // No existe — crearlo desde cero
         UserEntity admin = new UserEntity();
         admin.setIdentificacion(1L);
         admin.setNombres("Administrador");
         admin.setApellidos("Sistema");
         admin.setUserName("admin");
-//        admin.setPassword(passwordEncoder.encode("admin"));
-        admin.setPassword("admin");
+        admin.setPassword(passwordEncoder.encode("admin"));
         admin.setRoleCode(1);
         admin.setRoleName("ADMIN");
         admin.setEmail("admin@admin.com");
@@ -89,6 +107,6 @@ public class DataInitializer implements CommandLineRunner {
 
         userRepository.save(admin);
         log.info("✅ [DataInitializer] Usuario admin creado → userName=admin | email=admin@admin.com");
-        log.warn("⚠️  [DataInitializer] Cambia la contraseña del admin en producción.");
+        log.warn("⚠️  [DataInitializer] Recuerda cambiar la contraseña del admin en produccion.");
     }
 }
