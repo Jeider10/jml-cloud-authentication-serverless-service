@@ -9,10 +9,12 @@ import com.cloud.jml.repository.user.UserRepository;
 import com.cloud.jml.utils.user.UserMapper;
 import com.cloud.jml.utils.user.UserUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -24,11 +26,13 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper mapper;
     private final UserUtils userUtils;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, UserMapper mapper, UserUtils userUtils) {
+    public UserService(UserRepository userRepository, UserMapper mapper, UserUtils userUtils, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.mapper = mapper;
         this.userUtils = userUtils;
+        this.passwordEncoder = passwordEncoder;
         log.info("🔥 UserService inicializado correctamente.");
     }
 
@@ -253,8 +257,12 @@ public class UserService {
 
         UserEntity userEntity = optionalUser.get();
 
-        userEntity.setPassword(newPassword);
-        userEntity.setFechaActualizacion(LocalDateTime.now().truncatedTo(java.time.temporal.ChronoUnit.SECONDS));
+//        userEntity.setPassword(newPassword);
+//        userEntity.setFechaActualizacion(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+
+        // Encodear siempre con BCrypt
+        userEntity.setPassword(passwordEncoder.encode(newPassword));
+        userEntity.setFechaActualizacion(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
 
         // Encriptar la nueva contraseña
 //        String encodedPassword = passwordEncoder.encode(newPassword);

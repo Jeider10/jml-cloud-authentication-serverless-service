@@ -33,7 +33,9 @@ public class UserMapper {
         userEntity.setNombres(userRequestDTO.getNombres());
         userEntity.setApellidos(userRequestDTO.getApellidos());
         userEntity.setUserName(userRequestDTO.getUserName());
-        userEntity.setPassword(userRequestDTO.getPassword());
+//        userEntity.setPassword(userRequestDTO.getPassword());
+        // Siempre encodear la contraseña con BCrypt al crear
+        userEntity.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
         userEntity.setIdentificacion(userRequestDTO.getIdentificacion());
         userEntity.setEmail(userRequestDTO.getEmail());
         userEntity.setTelefono(userRequestDTO.getTelefono());
@@ -95,6 +97,13 @@ public class UserMapper {
         userEntity.setTelefono(userRequestDTO.getTelefono());
         userEntity.setDireccion(userRequestDTO.getDireccion());
         userEntity.setHistorialUltimoActualizado(userLogin);
+
+        // Actualizar contraseña SOLO si viene una nueva (no vacía)
+        String nuevaPassword = userRequestDTO.getPassword();
+        if (nuevaPassword != null && !nuevaPassword.isBlank()) {
+            userEntity.setPassword(passwordEncoder.encode(nuevaPassword));
+            log.info("🔑 Contraseña actualizada con BCrypt para usuario: {}", userEntity.getUserName());
+        }
 
         // Actualizamos la fecha de actualizacion
         userEntity.setFechaActualizacion(LocalDateTime.now().truncatedTo(java.time.temporal.ChronoUnit.SECONDS));
