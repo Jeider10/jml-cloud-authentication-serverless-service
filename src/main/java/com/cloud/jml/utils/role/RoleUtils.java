@@ -53,13 +53,17 @@ public class RoleUtils {
             LocalDateTime res = LocalDateTime.parse(fecha, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             log.info("✅ [PARSEADO] Fecha inicio procesada (Formato Completo): {}", res);
             return res;
-        } catch (DateTimeParseException ignored) {}
+        } catch (DateTimeParseException e) {
+            log.debug("📅 [FECHA] Formato 'yyyy-MM-dd HH:mm:ss' no aplica para '{}', intentando siguiente formato. Detalle: {}", fecha, e.getMessage());
+        }
 
         try {
             LocalDateTime res = LocalDateTime.parse(fecha);
             log.info("✅ [PARSEADO] Fecha inicio procesada (ISO): {}", res);
             return res;
-        } catch (DateTimeParseException ignored) {}
+        } catch (DateTimeParseException e) {
+            log.debug("📅 [FECHA] Formato ISO DateTime no aplica para '{}', intentando siguiente formato. Detalle: {}", fecha, e.getMessage());
+        }
 
         try {
             LocalDate localDate = LocalDate.parse(fecha, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -83,13 +87,17 @@ public class RoleUtils {
             LocalDateTime res = LocalDateTime.parse(fecha, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             log.info("✅ [PARSEADO] Fecha fin procesada (Formato Completo): {}", res);
             return res;
-        } catch (DateTimeParseException ignored) {}
+        } catch (DateTimeParseException e) {
+            log.debug("📅 [FECHA] Formato 'yyyy-MM-dd HH:mm:ss' no aplica para '{}', intentando siguiente formato. Detalle: {}", fecha, e.getMessage());
+        }
 
         try {
             LocalDateTime res = LocalDateTime.parse(fecha);
             log.info("✅ [PARSEADO] Fecha fin procesada (ISO): {}", res);
             return res;
-        } catch (DateTimeParseException ignored) {}
+        } catch (DateTimeParseException e) {
+            log.debug("📅 [FECHA] Formato ISO DateTime no aplica para '{}', intentando siguiente formato. Detalle: {}", fecha, e.getMessage());
+        }
 
         try {
             LocalDate localDate = LocalDate.parse(fecha, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
