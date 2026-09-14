@@ -40,10 +40,12 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserResponseDTO> registrarUsuario(@RequestBody @Valid UserRequestDTO userRequestDTO) {
+    public ResponseEntity<UserResponseDTO> registrarUsuario(
+            @RequestBody @Valid UserRequestDTO userRequestDTO,
+            @RequestParam("creadoPor") String creadoPor) {
         log.info("📥 [SOLICITUD] /usuario/register -> Crear usuario: {}.", userRequestDTO.getUserName());
 
-        UserResponseDTO userResponseDTO = userService.registrarUsuario(userRequestDTO);
+        UserResponseDTO userResponseDTO = userService.registrarUsuario(userRequestDTO, creadoPor);
 
         if (userResponseDTO == null || userResponseDTO.getIdentificacion() == null) {
             log.warn("⚠️ [RESPUESTA] No se pudo registrar el usuario: {}.", userRequestDTO.getUserName());

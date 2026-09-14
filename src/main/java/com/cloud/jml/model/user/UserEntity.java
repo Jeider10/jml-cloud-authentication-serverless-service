@@ -52,4 +52,7 @@ public class UserEntity {
     private LocalDateTime fechaActualizacion;
 
     private String historialUltimoActualizado;
+
+    @Column(name = "creado_por")
+    private String creadoPor;
 }

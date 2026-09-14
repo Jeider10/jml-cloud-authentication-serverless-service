@@ -79,6 +79,7 @@ public class UserMapper {
         userResponseDTO.setTelefono(userEntity.getTelefono());
         userResponseDTO.setDireccion(userEntity.getDireccion());
         userResponseDTO.setHistorialUltimoActualizado(userEntity.getHistorialUltimoActualizado());
+        userResponseDTO.setCreadoPor(userEntity.getCreadoPor());
 
         log.info("✅ [MAPEO] Mapeo completado de DTO de respuesta para usuario: {}", userResponseDTO.getUserName());
 

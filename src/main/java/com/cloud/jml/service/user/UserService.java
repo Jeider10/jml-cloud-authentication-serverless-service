@@ -64,7 +64,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponseDTO registrarUsuario(UserRequestDTO userRequestDTO) {
+    public UserResponseDTO registrarUsuario(UserRequestDTO userRequestDTO, String creadoPor) {
         log.info("🔍 [CONSULTA] Inicio de creacion de usuario: {} con identificacion: {}", userRequestDTO.getUserName(), userRequestDTO.getIdentificacion());
 
         Optional<UserEntity> existingUserAndRole = userRepository.findByUserNameAndRoleCode(userRequestDTO.getUserName(), userRequestDTO.getRoleCode());
@@ -77,6 +77,8 @@ public class UserService {
         log.info("📦 [MAPEO] Transformando DTO a entidad de usuario");
         UserEntity userEntity = mapper.mapRequestDtoToEntity(userRequestDTO);
         log.info("📦 [MAPEO] Usuario mapeado a entidad. nombre: {}, identificacion: {}", userEntity.getUserName(), userEntity.getIdentificacion());
+
+        userEntity.setCreadoPor(creadoPor);
 
         userUtils.validarUnicoAdministrador(userEntity);
 
