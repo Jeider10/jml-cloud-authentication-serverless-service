@@ -9,10 +9,31 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
-    List<UserEntity> findByFechaCreacionBetween(LocalDateTime inicio, LocalDateTime fin);
+    // ─── Activos (eliminado = false) ─────────────────────────────────────────
+    Optional<UserEntity> findByIdentificacionAndEliminadoFalse(Long identificacion);
 
-    List<UserEntity> findByFechaActualizacionBetween(LocalDateTime inicio, LocalDateTime fin);
+    List<UserEntity> findAllByEliminadoFalse();
 
+    Optional<UserEntity> findByUserNameAndEliminadoFalse(String userName);
+
+    List<UserEntity> findByUserNameContainingIgnoreCaseAndEliminadoFalse(String userName);
+
+    List<UserEntity> findByNombresContainingIgnoreCaseAndEliminadoFalse(String nombres);
+
+    List<UserEntity> findByApellidosContainingIgnoreCaseAndEliminadoFalse(String apellidos);
+
+    List<UserEntity> findByRoleNameContainingIgnoreCaseAndEliminadoFalse(String roleName);
+
+    List<UserEntity> findByFechaCreacionBetweenAndEliminadoFalse(LocalDateTime inicio, LocalDateTime fin);
+
+    List<UserEntity> findByFechaActualizacionBetweenAndEliminadoFalse(LocalDateTime inicio, LocalDateTime fin);
+
+    // ─── Papelera (eliminado = true) ─────────────────────────────────────────
+    List<UserEntity> findAllByEliminadoTrue();
+
+    Optional<UserEntity> findByIdentificacionAndEliminadoTrue(Long identificacion);
+
+    // ─── Sin filtro: para auth, resetPassword, validaciones existentes ────────
     Optional<UserEntity> findByIdentificacion(Long identificacion);
 
     Optional<UserEntity> findByUserName(String userName);
@@ -26,6 +47,10 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     List<UserEntity> findByApellidosContainingIgnoreCase(String apellidos);
 
     List<UserEntity> findByRoleNameContainingIgnoreCase(String roleName);
+
+    List<UserEntity> findByFechaCreacionBetween(LocalDateTime inicio, LocalDateTime fin);
+
+    List<UserEntity> findByFechaActualizacionBetween(LocalDateTime inicio, LocalDateTime fin);
 
     Optional<UserEntity> findByUserNameAndRoleCode(String userName, int roleCode);
 

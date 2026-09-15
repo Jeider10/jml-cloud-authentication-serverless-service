@@ -1,9 +1,11 @@
 package com.cloud.jml.utils.user;
 
+import com.cloud.jml.dto.user.UserPapeleraResponseDTO;
 import com.cloud.jml.dto.user.UserRequestDTO;
 import com.cloud.jml.dto.user.UserResponseDTO;
 import com.cloud.jml.model.role.RoleEntity;
 import com.cloud.jml.model.user.UserEntity;
+import com.cloud.jml.utils.date.FormatearFecha;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -16,12 +18,15 @@ public class UserMapper {
 
     private final UserUtils userUtils;
     private final UserFormatearFecha userFormatearFecha;
+    private final FormatearFecha formatearFecha;
     private final PasswordEncoder passwordEncoder;
 
-    public UserMapper(UserUtils userUtils, UserFormatearFecha userFormatearFecha, PasswordEncoder passwordEncoder) {
+    public UserMapper(UserUtils userUtils, UserFormatearFecha userFormatearFecha,
+                      FormatearFecha formatearFecha, PasswordEncoder passwordEncoder) {
         this.userUtils = userUtils;
         this.userFormatearFecha = userFormatearFecha;
-        this.passwordEncoder = passwordEncoder; // Encriptador de contrasenas
+        this.formatearFecha = formatearFecha;
+        this.passwordEncoder = passwordEncoder;
         log.info("🔥 UserMapper inicializado correctamente.");
     }
 
@@ -41,6 +46,7 @@ public class UserMapper {
         userEntity.setTelefono(userRequestDTO.getTelefono());
         userEntity.setDireccion(userRequestDTO.getDireccion());
         userEntity.setFechaCreacion(LocalDateTime.now().truncatedTo(java.time.temporal.ChronoUnit.SECONDS));
+        userEntity.setEliminado(false);
 
         RoleEntity roleEntity = userUtils.obtenerRolePorCodigo(userRequestDTO.getRoleCode());
         userEntity.setRoleCode(roleEntity.getRoleCode());
@@ -84,6 +90,28 @@ public class UserMapper {
         log.info("✅ [MAPEO] Mapeo completado de DTO de respuesta para usuario: {}", userResponseDTO.getUserName());
 
         return userResponseDTO;
+    }
+
+    public UserPapeleraResponseDTO mapEntityToPapeleraDto(UserEntity userEntity) {
+        log.info("📦 [MAPEO] Iniciando mapeo Entity → PapeleraDTO para usuario: {}", userEntity.getIdentificacion());
+
+        UserPapeleraResponseDTO dto = new UserPapeleraResponseDTO();
+
+        dto.setIdentificacion(userEntity.getIdentificacion());
+        dto.setNombres(userEntity.getNombres());
+        dto.setApellidos(userEntity.getApellidos());
+        dto.setUserName(userEntity.getUserName());
+        dto.setRoleName(userEntity.getRoleName());
+        dto.setEmail(userEntity.getEmail());
+        dto.setCreadoPor(userEntity.getCreadoPor());
+        dto.setFechaCreacion(formatearFecha.formatearFecha(userEntity.getFechaCreacion()));
+        dto.setFechaEliminacion(formatearFecha.formatearFecha(userEntity.getFechaEliminacion()));
+        dto.setEliminadoPorId(userEntity.getEliminadoPorId());
+        dto.setEliminadoPorNombre(userEntity.getEliminadoPorNombre());
+
+        log.info("✅ [MAPEO] Mapeo papelera completado para usuario: {}", dto.getIdentificacion());
+
+        return dto;
     }
 
     public void actualizarDatosUsuario(UserRequestDTO userRequestDTO, UserEntity userEntity, String userLogin) {

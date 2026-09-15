@@ -1,5 +1,6 @@
 package com.cloud.jml.service.user;
 
+import com.cloud.jml.dto.user.UserPapeleraResponseDTO;
 import com.cloud.jml.dto.user.UserRequestDTO;
 import com.cloud.jml.dto.user.UserResponseDTO;
 import com.cloud.jml.exception.user.UserDuplicationException;
@@ -17,7 +18,6 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -36,36 +36,31 @@ public class UserService {
         log.info("🔥 UserService inicializado correctamente.");
     }
 
+    // ─── Listar activos ───────────────────────────────────────────────────────
     @Transactional(readOnly = true)
     public List<UserResponseDTO> listarUsuarios() {
-        log.info("🔍 [CONSULTA] Recuperando todos los usuarios desde la base de datos");
+        log.info("🔍 [CONSULTA] Recuperando todos los usuarios activos");
 
-        List<UserEntity> userEntity = userRepository.findAll();
+        List<UserEntity> entidades = userRepository.findAllByEliminadoFalse();
 
-        if (userEntity.isEmpty()) {
-            log.warn("⚠️ [RESULTADO] No se encontraron usuarios registrados en la base de datos");
+        if (entidades.isEmpty()) {
+            log.warn("⚠️ [RESULTADO] No se encontraron usuarios activos");
             return List.of();
         }
 
-        log.info("📦 [MAPEO] Transformando {} entidades de usuarios a DTOs", userEntity.size());
+        List<UserResponseDTO> respuesta = entidades.stream()
+                .map(mapper::mapEntityToResponseDto)
+                .toList();
 
-        // convertir a stream
-        Stream<UserEntity> entityStream = userEntity.stream();
+        log.info("✅ [FINALIZADO] Total de usuarios activos retornados: {}", respuesta.size());
 
-        // mapear entidades a DTOs
-        Stream<UserResponseDTO> streamDto = entityStream.map(mapper::mapEntityToResponseDto);
-
-        // recolectar en lista
-        List<UserResponseDTO> userResponse = streamDto.toList();
-
-        log.info("✅ [FINALIZADO] Total de usuarios mapeados y retornados: {}", userResponse.size());
-
-        return userResponse;
+        return respuesta;
     }
 
+    // ─── Registrar ────────────────────────────────────────────────────────────
     @Transactional
     public UserResponseDTO registrarUsuario(UserRequestDTO userRequestDTO, String creadoPor) {
-        log.info("🔍 [CONSULTA] Inicio de creacion de usuario: {} con identificacion: {}", userRequestDTO.getUserName(), userRequestDTO.getIdentificacion());
+        log.info("🔍 [SOLICITUD] Creando usuario: {} con identificacion: {}", userRequestDTO.getUserName(), userRequestDTO.getIdentificacion());
 
         Optional<UserEntity> existingUserAndRole = userRepository.findByUserNameAndRoleCode(userRequestDTO.getUserName(), userRequestDTO.getRoleCode());
 
@@ -82,22 +77,17 @@ public class UserService {
 
         userUtils.validarUnicoAdministrador(userEntity);
 
-        UserEntity guardarUsuario = userUtils.guardarUsuarioBD(userEntity);
-        log.info("💾 [PERSISTENCIA] Usuario guardado exitosamente. nombre: {}, identificacion: {}", guardarUsuario.getUserName(), guardarUsuario.getIdentificacion());
+        UserEntity guardado = userUtils.guardarUsuarioBD(userEntity);
 
-        log.info("📦 [MAPEO] Transformando entidad de usuario a DTO. (registrarUsuario)");
-        UserResponseDTO userResponseDTO = mapper.mapEntityToResponseDto(guardarUsuario);
-        log.info("📦 [MAPEO] Usuario mapeado a DTO. nombre: {} con identificacion: {}",
-                guardarUsuario.getUserName(), guardarUsuario.getIdentificacion());
+        log.info("💾 [PERSISTENCIA] Usuario guardado: {}", guardado.getIdentificacion());
 
-        log.info("✅ [FINALIZADO] Usuario creado correctamente: {} con identificacion {}", userResponseDTO.getUserName(), userResponseDTO.getIdentificacion());
-
-        return userResponseDTO;
+        return mapper.mapEntityToResponseDto(guardado);
     }
 
+    // ─── Buscar por identificación ────────────────────────────────────────────
     @Transactional(readOnly = true)
     public UserResponseDTO obtenerUsuarioPorIdentificacion(UserRequestDTO userRequestDTO) {
-        log.info("🔍 [CONSULTA] Inicio de busqueda de usuario con identificacion: {}", userRequestDTO.getIdentificacion());
+        log.info("🔍 [CONSULTA] Buscando usuario con identificacion: {}", userRequestDTO.getIdentificacion());
 
         Optional<UserEntity> userEntity = userRepository.findByIdentificacion(userRequestDTO.getIdentificacion());
 
@@ -106,101 +96,55 @@ public class UserService {
             return null;
         }
 
-        log.info("📦 [ENCONTRADO] Usuario encontrado -> con identificacion: {}", userEntity.get().getIdentificacion());
-
-        log.info("📦 [MAPEO] Transformando entidad de usuario a DTO. (obtenerUsuarioPorIdentificacion)");
-        UserResponseDTO userResponseDTO = mapper.mapEntityToResponseDto(userEntity.get());
-        log.info("📦 [MAPEO] Usuario mapeado a DTO. identificacion: {}", userResponseDTO.getIdentificacion());
-
-        log.info("✅ [FINALIZADO] Usuario obtenido correctamente con identificacion: {}", userResponseDTO.getIdentificacion());
-
-        return userResponseDTO;
+        return mapper.mapEntityToResponseDto(userEntity.get());
     }
 
+    // ─── Buscar por userName ──────────────────────────────────────────────────
     @Transactional(readOnly = true)
     public List<UserResponseDTO> obtenerUsuarioPorUserName(UserRequestDTO userRequestDTO) {
-        log.info("🔍 [CONSULTA] Inicio de busqueda de usuario con userName: {}", userRequestDTO.getUserName());
+        log.info("🔍 [CONSULTA] Buscando usuario con userName: {}", userRequestDTO.getUserName());
 
-        List<UserEntity> userEntity = userRepository.findByUserNameContainingIgnoreCase(userRequestDTO.getUserName());
+        List<UserEntity> entidades = userRepository.findByUserNameContainingIgnoreCaseAndEliminadoFalse(userRequestDTO.getUserName());
 
-        if (userEntity.isEmpty()) {
-            log.warn("❌ [NO ENCONTRADO] Usuario con userName: {} no encontrado.", userRequestDTO.getUserName());
+        if (entidades.isEmpty()) {
             return List.of();
         }
 
-        log.info("📦 [MAPEO] Transformando {} entidades de usuarios a DTOs (userName: {})", userEntity.size(), userRequestDTO.getUserName());
-
-        // convertir a stream
-        Stream<UserEntity> streamUsuarios = userEntity.stream();
-
-        // mapear entidades a DTOs
-        Stream<UserResponseDTO> streamDto = streamUsuarios.map(mapper::mapEntityToResponseDto);
-
-        // recolectar en lista
-        List<UserResponseDTO> usuariosResponse = streamDto.toList();
-
-        log.info("✅ [FINALIZADO] Usuarios encontrados con userName: {}. Total encontrados: {}", userRequestDTO.getUserName(), usuariosResponse.size());
-
-        return usuariosResponse;
+        return entidades.stream().map(mapper::mapEntityToResponseDto).toList();
     }
 
+    // ─── Buscar por nombres ───────────────────────────────────────────────────
     @Transactional(readOnly = true)
     public List<UserResponseDTO> obtenerUsuarioPorNombres(UserRequestDTO userRequestDTO) {
-        log.info("🔍 [CONSULTA] Inicio de busqueda de usuario con nombres: {}", userRequestDTO.getNombres());
+        log.info("🔍 [CONSULTA] Buscando usuario con nombres: {}", userRequestDTO.getNombres());
 
-        List<UserEntity> userEntity = userRepository.findByNombresContainingIgnoreCase(userRequestDTO.getNombres());
+        List<UserEntity> entidades = userRepository.findByNombresContainingIgnoreCaseAndEliminadoFalse(userRequestDTO.getNombres());
 
-        if (userEntity.isEmpty()) {
-            log.warn("❌ [NO ENCONTRADO] Usuario con nombres: {} no encontrado.", userRequestDTO.getNombres());
+        if (entidades.isEmpty()) {
             return List.of();
         }
 
-        log.info("📦 [MAPEO] Transformando {} entidades de usuarios a DTOs (nombres: {})", userEntity.size(), userRequestDTO.getNombres());
-
-        // convertir a stream
-        Stream<UserEntity> streamUsuarios = userEntity.stream();
-
-        // mapear entidades a DTOs
-        Stream<UserResponseDTO> streamDto = streamUsuarios.map(mapper::mapEntityToResponseDto);
-
-        // recolectar en lista
-        List<UserResponseDTO> usuariosResponse = streamDto.toList();
-
-        log.info("✅ [FINALIZADO] Usuarios encontrados con nombres: {}. Total encontrados: {}", userRequestDTO.getNombres(), usuariosResponse.size());
-
-        return usuariosResponse;
+        return entidades.stream().map(mapper::mapEntityToResponseDto).toList();
     }
 
+    // ─── Buscar por apellidos ─────────────────────────────────────────────────
     @Transactional(readOnly = true)
     public List<UserResponseDTO> obtenerUsuarioPorApellidos(UserRequestDTO userRequestDTO) {
-        log.info("🔍 [CONSULTA] Inicio de busqueda de usuario con apellidos: {}", userRequestDTO.getApellidos());
+        log.info("🔍 [CONSULTA] Buscando usuario con apellidos: {}", userRequestDTO.getApellidos());
 
-        List<UserEntity> userEntity = userRepository.findByApellidosContainingIgnoreCase(userRequestDTO.getApellidos());
+        List<UserEntity> entidades = userRepository.findByApellidosContainingIgnoreCaseAndEliminadoFalse(userRequestDTO.getApellidos());
 
-        if (userEntity.isEmpty()) {
-            log.warn("❌ [NO ENCONTRADO] Usuario con apellidos: {} no encontrado.", userRequestDTO.getApellidos());
+        if (entidades.isEmpty()) {
             return List.of();
         }
 
-        log.info("📦 [MAPEO] Transformando {} entidades de usuarios a DTOs (apellidos: {})", userEntity.size(), userRequestDTO.getApellidos());
-
-        // convertir a stream
-        Stream<UserEntity> streamUsuarios = userEntity.stream();
-
-        // mapear entidades a DTOs
-        Stream<UserResponseDTO> streamDto = streamUsuarios.map(mapper::mapEntityToResponseDto);
-
-        // recolectar en lista
-        List<UserResponseDTO> usuariosResponse = streamDto.toList();
-
-        log.info("✅ [FINALIZADO] Usuarios encontrados con apellidos: {}. Total encontrados: {}", userRequestDTO.getApellidos(), usuariosResponse.size());
-
-        return usuariosResponse;
+        return entidades.stream().map(mapper::mapEntityToResponseDto).toList();
     }
 
+    // ─── Buscar por roleCode ──────────────────────────────────────────────────
     @Transactional(readOnly = true)
     public UserResponseDTO obtenerUsuarioPorRoleCode(UserRequestDTO userRequestDTO) {
-        log.info("🔍 [CONSULTA] Inicio de busqueda de usuario con roleCode: {}", userRequestDTO.getRoleCode());
+        log.info("🔍 [CONSULTA] Buscando usuario con roleCode: {}", userRequestDTO.getRoleCode());
 
         Optional<UserEntity> userEntity = userRepository.findByRoleCode(userRequestDTO.getRoleCode());
 
@@ -209,43 +153,56 @@ public class UserService {
             return null;
         }
 
-        log.info("📦 [ENCONTRADO] Usuario encontrado -> con roleCode: {}", userEntity.get().getRoleCode());
-
-        log.info("📦 [MAPEO] Transformando entidad de usuario a DTO. (obtenerUsuarioPorRoleCode)");
-        UserResponseDTO userResponseDTO = mapper.mapEntityToResponseDto(userEntity.get());
-        log.info("📦 [MAPEO] Usuario mapeado a DTO. roleCode: {}", userResponseDTO.getRoleCode());
-
-        log.info("✅ [FINALIZADO] Usuario obtenido correctamente: con roleCode: {}", userResponseDTO.getRoleCode());
-
-        return userResponseDTO;
+        return mapper.mapEntityToResponseDto(userEntity.get());
     }
 
+    // ─── Buscar por roleName ──────────────────────────────────────────────────
+    @Transactional(readOnly = true)
     public List<UserResponseDTO> obtenerUsuarioPorRoleName(String roleName) {
-        log.info("🔍 [CONSULTA] Inicio de busqueda de usuario con roleName: {}", roleName);
+        log.info("🔍 [CONSULTA] Buscando usuario con roleName: {}", roleName);
 
-        List<UserEntity> userEntity = userRepository.findByRoleNameContainingIgnoreCase(roleName);
+        List<UserEntity> entidades = userRepository.findByRoleNameContainingIgnoreCaseAndEliminadoFalse(roleName);
 
-        if (userEntity.isEmpty()) {
-            log.warn("❌ [NO ENCONTRADO] Usuario con roleName: {} no encontrado.", roleName);
+        if (entidades.isEmpty()) {
             return List.of();
         }
 
-        log.info("📦 [MAPEO] Transformando {} entidades de usuarios a DTOs (roleName: {})", userEntity.size(), roleName);
-
-        // convertir a stream
-        Stream<UserEntity> streamUsuarios = userEntity.stream();
-
-        // mapear entidades a DTOs
-        Stream<UserResponseDTO> streamDto = streamUsuarios.map(mapper::mapEntityToResponseDto);
-
-        // recolectar en lista
-        List<UserResponseDTO> usuariosResponse = streamDto.toList();
-
-        log.info("✅ [FINALIZADO] Usuarios encontrados con roleName: {}. Total encontrados: {}", roleName, usuariosResponse.size());
-
-        return usuariosResponse;
+        return entidades.stream().map(mapper::mapEntityToResponseDto).toList();
     }
 
+    // ─── Buscar por fecha de creación ─────────────────────────────────────────
+    @Transactional(readOnly = true)
+    public List<UserResponseDTO> obtenerUsuarioPorFechaCreacion(String fechaInicio, String fechaFin) {
+
+        LocalDateTime inicio = userUtils.parsearFechaInicio(fechaInicio);
+        LocalDateTime fin = userUtils.parsearFechaFin(fechaFin);
+
+        List<UserEntity> entidades = userRepository.findByFechaCreacionBetweenAndEliminadoFalse(inicio, fin);
+
+        if (entidades.isEmpty()) {
+            return List.of();
+        }
+
+        return entidades.stream().map(mapper::mapEntityToResponseDto).toList();
+    }
+
+    // ─── Buscar por fecha de actualización ───────────────────────────────────
+    @Transactional(readOnly = true)
+    public List<UserResponseDTO> obtenerUsuarioPorFechaActualizacion(String fechaInicio, String fechaFin) {
+
+        LocalDateTime inicio = userUtils.parsearFechaInicio(fechaInicio);
+        LocalDateTime fin = userUtils.parsearFechaFin(fechaFin);
+
+        List<UserEntity> entidades = userRepository.findByFechaActualizacionBetweenAndEliminadoFalse(inicio, fin);
+
+        if (entidades.isEmpty()) {
+            return List.of();
+        }
+
+        return entidades.stream().map(mapper::mapEntityToResponseDto).toList();
+    }
+
+    // ─── Resetear password ────────────────────────────────────────────────────
     @Transactional
     public void resetearPassword(String userName, String newPassword) {
         log.info("🔑 [RESET] Reseteando password para usuario: {}", userName);
@@ -276,96 +233,96 @@ public class UserService {
         log.info("✅ [RESET] Password reseteado correctamente para usuario: {}", userName);
     }
 
-    @Transactional(readOnly = true)
-    public List<UserResponseDTO> obtenerUsuarioPorFechaCreacion(String fechaInicio, String fechaFin) {
-        log.info("🔍 [CONSULTA] Iniciando busqueda de usuarios por rango de fecha de creacion: {} - {}", fechaInicio, fechaFin);
-
-        LocalDateTime inicio = userUtils.parsearFechaInicio(fechaInicio);
-        LocalDateTime fin = userUtils.parsearFechaFin(fechaFin);
-
-        log.info("📅 [RANGO] Buscando usuarios entre {} y {}", inicio, fin);
-
-        List<UserEntity> userEntity = userRepository.findByFechaCreacionBetween(inicio, fin);
-
-        if (userEntity.isEmpty()) {
-            log.warn("❌ [RESULTADO] No se encontraron usuarios en el rango de fechas: {} - {}", inicio, fin);
-            return List.of();
-        }
-
-        List<UserResponseDTO> userResponse = userEntity.stream()
-                .map(mapper::mapEntityToResponseDto)
-                .toList();
-
-        log.info("✅ [FINALIZADO] Usuarios encontrados en rango de fechas. Total: {}", userResponse.size());
-
-        return userResponse;
-    }
-
-    @Transactional(readOnly = true)
-    public List<UserResponseDTO> obtenerUsuarioPorFechaActualizacion(String fechaInicio, String fechaFin) {
-        log.info("🔍 [CONSULTA] Iniciando busqueda de usuarios por rango de fecha de actualizacion: {} - {}", fechaInicio, fechaFin);
-
-        LocalDateTime inicio = userUtils.parsearFechaInicio(fechaInicio);
-        LocalDateTime fin = userUtils.parsearFechaFin(fechaFin);
-
-        log.info("📅 [RANGO] Buscando usuarios entre {} y {}", inicio, fin);
-
-        List<UserEntity> userEntity = userRepository.findByFechaActualizacionBetween(inicio, fin);
-
-        if (userEntity.isEmpty()) {
-            log.warn("❌ [RESULTADO] No se encontraron usuarios en el rango de actualizacion: {} - {}", inicio, fin);
-            return List.of();
-        }
-
-        List<UserResponseDTO> userResponse = userEntity.stream()
-                .map(mapper::mapEntityToResponseDto)
-                .toList();
-
-        log.info("✅ [FINALIZADO] Usuarios encontrados por actualizacion. Total: {}", userResponse.size());
-
-        return userResponse;
-    }
-
+    // ─── Actualizar ───────────────────────────────────────────────────────────
     @Transactional
     public UserResponseDTO actualizarUsuario(UserRequestDTO userRequestDTO, String userLogin) {
-        log.info("🔍 [CONSULTA] Inicio de actualizacion de usuario: {}", userRequestDTO.getUserName());
+        log.info("🔍 [SOLICITUD] Actualizando usuario: {}", userRequestDTO.getUserName());
 
-        // Paso 1: Validar existencia
-        UserEntity userEntity = userUtils.validarExistenciaUsuario(userRequestDTO);
+        UserEntity entidad = userUtils.validarExistenciaUsuario(userRequestDTO);
+        mapper.actualizarDatosUsuario(userRequestDTO, entidad, userLogin);
+        UserEntity actualizado = userUtils.guardarUsuarioBD(entidad);
 
-        // Paso 2: Actualizar datos
-        mapper.actualizarDatosUsuario(userRequestDTO, userEntity, userLogin);
+        log.info("✅ [FINALIZADO] Usuario actualizado: {}", actualizado.getIdentificacion());
 
-        // Paso 3: Guardar cambios en la BD
-        UserEntity actualizado = userUtils.guardarUsuarioBD(userEntity);
-        log.info("💾 [PERSISTENCIA] Usuario actualizado correctamente: {} con identificacion: {}", actualizado.getUserName(), actualizado.getIdentificacion());
-
-        // Paso 4: Mapear a DTO
-        log.info("📦 [MAPEO] Transformando entidad de usuario a DTO. (actualizarUsuario)");
-        UserResponseDTO userResponseDTO = mapper.mapEntityToResponseDto(actualizado);
-        log.info("📦 [MAPEO] Usuario mapeado a DTO. nombre: {}, identificacion: {}, direccion: {}",
-                userResponseDTO.getUserName(), userResponseDTO.getIdentificacion(), userResponseDTO.getDireccion());
-
-        log.info("✅ [FINALIZADO] Actualizacion de usuario completada: {} con identificacion: {}", userResponseDTO.getUserName(), userResponseDTO.getIdentificacion());
-
-        return userResponseDTO;
+        return mapper.mapEntityToResponseDto(actualizado);
     }
 
+    // ─── Soft delete (a papelera) ─────────────────────────────────────────────
     @Transactional
-    public void eliminarUsuario(UserRequestDTO userRequestDTO) {
-        log.info("🔍 [CONSULTA] Inicio de eliminacion de usuario: {} con identificacion: {}", userRequestDTO.getUserName(), userRequestDTO.getIdentificacion());
+    public void eliminarUsuario(Long identificacion, String eliminadoPorId, String eliminadoPorNombre) {
+        log.info("🔍 [SOLICITUD] Enviando a papelera usuario con identificacion: {}", identificacion);
 
-        Optional<UserEntity> usuarioExistente = userRepository.findByIdentificacion(userRequestDTO.getIdentificacion());
+        UserEntity entidad = userRepository.findByIdentificacionAndEliminadoFalse(identificacion)
+                .orElseThrow(() -> new UserNotFoundException(identificacion));
 
-        if (usuarioExistente.isPresent()) {
-            UserEntity userEntity = usuarioExistente.get();
-            log.info("📦 [ENCONTRADO] Usuario localizado -> {} con identificacion: {}", userEntity.getUserName(), userEntity.getIdentificacion());
+        entidad.setEliminado(true);
+        entidad.setFechaEliminacion(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+        entidad.setEliminadoPorId(eliminadoPorId);
+        entidad.setEliminadoPorNombre(eliminadoPorNombre);
 
-            userUtils.eliminarUsuarioBD(userEntity);
-            log.info("🗑️ [ELIMINADO] Usuario eliminado correctamente -> {} con identificacion: {}", userEntity.getUserName(), userEntity.getIdentificacion());
-        } else {
-            log.warn("❌ [NO ENCONTRADO] Usuario: {} no encontrado", userRequestDTO.getUserName());
-            throw new UserNotFoundException(userRequestDTO.getUserName());
+        userUtils.guardarUsuarioBD(entidad);
+
+        log.info("🗑️ [PAPELERA] Usuario {} enviado a papelera por: {}", identificacion, eliminadoPorNombre);
+    }
+
+    // ─── Listar papelera ──────────────────────────────────────────────────────
+    @Transactional(readOnly = true)
+    public List<UserPapeleraResponseDTO> listarPapelera() {
+        log.info("🔍 [CONSULTA] Listando usuarios en papelera");
+
+        List<UserEntity> entidades = userRepository.findAllByEliminadoTrue();
+
+        if (entidades.isEmpty()) {
+            log.warn("⚠️ [RESULTADO] No hay usuarios en papelera");
+            return List.of();
         }
+
+        List<UserPapeleraResponseDTO> respuesta = entidades.stream()
+                .map(mapper::mapEntityToPapeleraDto)
+                .toList();
+
+        log.info("✅ [FINALIZADO] Total de usuarios en papelera: {}", respuesta.size());
+
+        return respuesta;
+    }
+
+    // ─── Restaurar desde papelera ─────────────────────────────────────────────
+    @Transactional
+    public UserResponseDTO restaurarUsuario(Long identificacion) {
+        log.info("🔍 [SOLICITUD] Restaurando usuario con identificacion: {}", identificacion);
+
+        UserEntity entidad = userRepository.findByIdentificacionAndEliminadoTrue(identificacion)
+                .orElseThrow(() -> {
+                    log.warn("❌ [RESULTADO] Usuario no encontrado en papelera: {}", identificacion);
+                    return new UserNotFoundException(identificacion);
+                });
+
+        entidad.setEliminado(false);
+        entidad.setFechaEliminacion(null);
+        entidad.setEliminadoPorId(null);
+        entidad.setEliminadoPorNombre(null);
+        entidad.setFechaActualizacion(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+
+        UserEntity restaurado = userUtils.guardarUsuarioBD(entidad);
+
+        log.info("✅ [FINALIZADO] Usuario restaurado: {}", restaurado.getIdentificacion());
+
+        return mapper.mapEntityToResponseDto(restaurado);
+    }
+
+    // ─── Eliminar definitivamente ─────────────────────────────────────────────
+    @Transactional
+    public void eliminarDefinitivo(Long identificacion) {
+        log.info("🔍 [SOLICITUD] Eliminando definitivamente usuario con identificacion: {}", identificacion);
+
+        UserEntity entidad = userRepository.findByIdentificacionAndEliminadoTrue(identificacion)
+                .orElseThrow(() -> {
+                    log.warn("❌ [RESULTADO] Usuario no encontrado en papelera: {}", identificacion);
+                    return new UserNotFoundException(identificacion);
+                });
+
+        userUtils.eliminarUsuarioBD(entidad);
+
+        log.info("🗑️ [ELIMINADO] Usuario eliminado definitivamente: {}", identificacion);
     }
 }

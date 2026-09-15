@@ -1,5 +1,6 @@
 package com.cloud.jml.controller.user;
 
+import com.cloud.jml.dto.user.UserPapeleraResponseDTO;
 import com.cloud.jml.dto.user.UserRequestDTO;
 import com.cloud.jml.dto.user.UserResponseDTO;
 import com.cloud.jml.service.user.UserService;
@@ -23,59 +24,54 @@ public class UserController {
         log.info("🔥 UserController inicializado correctamente.");
     }
 
+    // ─── Listar activos ───────────────────────────────────────────────────────
     @GetMapping("/list/all")
     public ResponseEntity<List<UserResponseDTO>> listarUsuarios() {
-        log.info("📥 [SOLICITUD] /usuario/list/all -> Listar todos los usuarios.");
+        log.info("📥 [SOLICITUD] Listar todos los usuarios activos");
 
         List<UserResponseDTO> usuarios = userService.listarUsuarios();
 
-        if (usuarios == null || usuarios.isEmpty()) {
-            log.warn("⚠️ [RESPUESTA] No se encontraron usuarios registrados.");
+        if (usuarios.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
 
-        log.info("📤 [RESPUESTA] Se retornan {} usuarios.", usuarios.size());
+        log.info("📤 [RESPUESTA] Se retornan {} usuarios", usuarios.size());
 
         return ResponseEntity.ok(usuarios);
     }
 
+    // ─── Registrar ────────────────────────────────────────────────────────────
     @PostMapping("/register")
     public ResponseEntity<UserResponseDTO> registrarUsuario(
             @RequestBody @Valid UserRequestDTO userRequestDTO,
             @RequestParam("creadoPor") String creadoPor) {
-        log.info("📥 [SOLICITUD] /usuario/register -> Crear usuario: {}.", userRequestDTO.getUserName());
+        log.info("📥 [SOLICITUD] Crear usuario: {}", userRequestDTO.getUserName());
 
-        UserResponseDTO userResponseDTO = userService.registrarUsuario(userRequestDTO, creadoPor);
+        UserResponseDTO response = userService.registrarUsuario(userRequestDTO, creadoPor);
 
-        if (userResponseDTO == null || userResponseDTO.getIdentificacion() == null) {
-            log.warn("⚠️ [RESPUESTA] No se pudo registrar el usuario: {}.", userRequestDTO.getUserName());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+        log.info("📤 [RESPUESTA] Usuario creado: {} (identificacion: {})", response.getUserName(), response.getIdentificacion());
 
-        log.info("📤 [RESPUESTA] Usuario creado exitosamente: {} (identificacion: {}).", userResponseDTO.getUserName(), userResponseDTO.getIdentificacion());
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(userResponseDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    // ─── Buscar por identificación ────────────────────────────────────────────
     @GetMapping("/identificacion")
     public ResponseEntity<UserResponseDTO> obtenerUsuarioPorIdentificacion(@RequestParam("identificacion") Long identificacion) {
-        log.info("📥 [SOLICITUD] /usuario/identificacion -> Obtener usuario con identificacion: {}.", identificacion);
+        log.info("📥 [SOLICITUD] Obtener usuario con identificacion: {}", identificacion);
 
         UserRequestDTO userRequestDTO = new UserRequestDTO();
         userRequestDTO.setIdentificacion(identificacion);
 
-        UserResponseDTO userResponseDTO = userService.obtenerUsuarioPorIdentificacion(userRequestDTO);
+        UserResponseDTO response = userService.obtenerUsuarioPorIdentificacion(userRequestDTO);
 
-        if (userResponseDTO == null || userResponseDTO.getIdentificacion() == null) {
-            log.warn("⚠️ [RESPUESTA] Usuario no encontrado con identificacion: {}.", identificacion);
+        if (response == null || response.getIdentificacion() == null) {
             return ResponseEntity.noContent().build();
         }
 
-        log.info("📤 [RESPUESTA] Usuario obtenido correctamente: {} (identificacion: {}).", userResponseDTO.getUserName(), userResponseDTO.getIdentificacion());
-
-        return ResponseEntity.ok(userResponseDTO);
+        return ResponseEntity.ok(response);
     }
 
+    // ─── Buscar por userName ──────────────────────────────────────────────────
     @GetMapping("/userName")
     public ResponseEntity<List<UserResponseDTO>> obtenerUsuarioPorUserName(@RequestParam("userName") String userName) {
         log.info("📥 [SOLICITUD] /usuario/userName -> Buscar usuario con userName: {}.", userName);
@@ -83,18 +79,16 @@ public class UserController {
         UserRequestDTO userRequestDTO = new UserRequestDTO();
         userRequestDTO.setUserName(userName);
 
-        List<UserResponseDTO> userResponseDTO = userService.obtenerUsuarioPorUserName(userRequestDTO);
+        List<UserResponseDTO> response = userService.obtenerUsuarioPorUserName(userRequestDTO);
 
-        if (userResponseDTO == null || userResponseDTO.isEmpty()) {
-            log.warn("⚠️ [RESPUESTA] No se encontraron usuarios con userName: {}.", userName);
+        if (response.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
 
-        log.info("📤 [RESPUESTA] Se encontraron {} usuarios con userName: {}.", userResponseDTO.size(), userName);
-
-        return ResponseEntity.ok(userResponseDTO);
+        return ResponseEntity.ok(response);
     }
 
+    // ─── Buscar por nombres ───────────────────────────────────────────────────
     @GetMapping("/nombres")
     public ResponseEntity<List<UserResponseDTO>> obtenerUsuarioPorNombres(@RequestParam("nombres") String nombres) {
         log.info("📥 [SOLICITUD] /usuario/nombres -> Buscar usuario con nombres: {}.", nombres);
@@ -102,18 +96,16 @@ public class UserController {
         UserRequestDTO userRequestDTO = new UserRequestDTO();
         userRequestDTO.setNombres(nombres);
 
-        List<UserResponseDTO> userResponseDTO = userService.obtenerUsuarioPorNombres(userRequestDTO);
+        List<UserResponseDTO> response = userService.obtenerUsuarioPorNombres(userRequestDTO);
 
-        if (userResponseDTO == null || userResponseDTO.isEmpty()) {
-            log.warn("⚠️ [RESPUESTA] No se encontraron usuarios con nombres: {}.", nombres);
+        if (response.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
 
-        log.info("📤 [RESPUESTA] Se encontraron {} usuarios con nombres: {}.", userResponseDTO.size(), nombres);
-
-        return ResponseEntity.ok(userResponseDTO);
+        return ResponseEntity.ok(response);
     }
 
+    // ─── Buscar por apellidos ─────────────────────────────────────────────────
     @GetMapping("/apellidos")
     public ResponseEntity<List<UserResponseDTO>> obtenerUsuarioPorApellidos(@RequestParam("apellidos") String apellidos) {
         log.info("📥 [SOLICITUD] /usuario/apellidos -> Buscar usuario con apellidos: {}.", apellidos);
@@ -121,18 +113,16 @@ public class UserController {
         UserRequestDTO userRequestDTO = new UserRequestDTO();
         userRequestDTO.setApellidos(apellidos);
 
-        List<UserResponseDTO> userResponseDTO = userService.obtenerUsuarioPorApellidos(userRequestDTO);
+        List<UserResponseDTO> response = userService.obtenerUsuarioPorApellidos(userRequestDTO);
 
-        if (userResponseDTO == null || userResponseDTO.isEmpty()) {
-            log.warn("⚠️ [RESPUESTA] No se encontraron usuarios con apellidos: {}.", apellidos);
+        if (response.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
 
-        log.info("📤 [RESPUESTA] Se encontraron {} usuarios con apellidos: {}.", userResponseDTO.size(), apellidos);
-
-        return ResponseEntity.ok(userResponseDTO);
+        return ResponseEntity.ok(response);
     }
 
+    // ─── Buscar por roleCode ──────────────────────────────────────────────────
     @GetMapping("/roleCode")
     public ResponseEntity<UserResponseDTO> obtenerUsuarioPorRoleCode(@RequestParam("roleCode") Integer roleCode) {
         log.info("📥 [SOLICITUD] /usuario/roleCode -> Buscar usuario con roleCode: {}.", roleCode);
@@ -140,34 +130,30 @@ public class UserController {
         UserRequestDTO userRequestDTO = new UserRequestDTO();
         userRequestDTO.setRoleCode(roleCode);
 
-        UserResponseDTO userResponseDTO = userService.obtenerUsuarioPorRoleCode(userRequestDTO);
+        UserResponseDTO response = userService.obtenerUsuarioPorRoleCode(userRequestDTO);
 
-        if (userResponseDTO == null || userResponseDTO.getRoleCode() == null) {
-            log.warn("⚠️ [RESPUESTA] Usuario no encontrado con roleCode: {}.", roleCode);
+        if (response == null || response.getRoleCode() == null) {
             return ResponseEntity.noContent().build();
         }
 
-        log.info("📤 [RESPUESTA] Usuario obtenido correctamente con roleCode: {}.", userResponseDTO.getRoleCode());
-
-        return ResponseEntity.ok(userResponseDTO);
+        return ResponseEntity.ok(response);
     }
 
+    // ─── Buscar por roleName ──────────────────────────────────────────────────
     @GetMapping("/roleName")
     public ResponseEntity<List<UserResponseDTO>> obtenerUsuarioPorRoleName(@RequestParam("roleName") String roleName) {
         log.info("📥 [SOLICITUD] /usuario/roleName -> Buscar usuarios con roleName: {}.", roleName);
 
-        List<UserResponseDTO> userResponseDTO = userService.obtenerUsuarioPorRoleName(roleName);
+        List<UserResponseDTO> response = userService.obtenerUsuarioPorRoleName(roleName);
 
-        if (userResponseDTO == null || userResponseDTO.isEmpty()) {
-            log.warn("⚠️ [RESPUESTA] No se encontraron usuarios con roleName: {}.", roleName);
+        if (response.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
 
-        log.info("📤 [RESPUESTA] Se encontraron {} usuarios con roleName: {}.", userResponseDTO.size(), roleName);
-
-        return ResponseEntity.ok(userResponseDTO);
+        return ResponseEntity.ok(response);
     }
 
+    // ─── Buscar por fecha de creación ─────────────────────────────────────────
     @GetMapping("/fechaCreacion")
     public ResponseEntity<List<UserResponseDTO>> obtenerUsuarioPorFechaCreacion(
             @RequestParam("fechaInicio") String fechaInicio,
@@ -175,18 +161,16 @@ public class UserController {
 
         log.info("📥 [SOLICITUD] Buscar usuarios por rango de fecha de creacion: {} - {}", fechaInicio, fechaFin);
 
-        List<UserResponseDTO> usuariosFecha = userService.obtenerUsuarioPorFechaCreacion(fechaInicio, fechaFin);
+        List<UserResponseDTO> response = userService.obtenerUsuarioPorFechaCreacion(fechaInicio, fechaFin);
 
-        if (usuariosFecha == null || usuariosFecha.isEmpty()) {
-            log.warn("⚠️ [RESPUESTA] No se encontraron usuarios en el rango de fechas.");
+        if (response.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
 
-        log.info("📤 [RESPUESTA] Se retornan {} usuarios en el rango de fechas.", usuariosFecha.size());
-
-        return ResponseEntity.ok(usuariosFecha);
+        return ResponseEntity.ok(response);
     }
 
+    // ─── Buscar por fecha de actualización ───────────────────────────────────
     @GetMapping("/fechaActualizacion")
     public ResponseEntity<List<UserResponseDTO>> obtenerUsuarioPorFechaActualizacion(
             @RequestParam("fechaInicio") String fechaInicio,
@@ -194,39 +178,33 @@ public class UserController {
 
         log.info("📥 [SOLICITUD] Buscar usuarios por rango de fecha de actualizacion: {} - {}", fechaInicio, fechaFin);
 
-        List<UserResponseDTO> usuariosFecha = userService.obtenerUsuarioPorFechaActualizacion(fechaInicio, fechaFin);
+        List<UserResponseDTO> response = userService.obtenerUsuarioPorFechaActualizacion(fechaInicio, fechaFin);
 
-        if (usuariosFecha == null || usuariosFecha.isEmpty()) {
-            log.warn("⚠️ [RESPUESTA] No se encontraron usuarios en el rango de fecha de actualizacion.");
+        if (response.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
 
-        log.info("📤 [RESPUESTA] Se retornan {} usuarios por fecha de actualizacion.", usuariosFecha.size());
-
-        return ResponseEntity.ok(usuariosFecha);
+        return ResponseEntity.ok(response);
     }
 
+    // ─── Actualizar ───────────────────────────────────────────────────────────
     @PutMapping("/update")
     public ResponseEntity<UserResponseDTO> actualizarUsuario(
             @RequestBody @Valid UserRequestDTO userRequestDTO,
             @RequestParam("userLogin") String userLogin) {
+        log.info("📥 [SOLICITUD] Actualizar usuario: {}", userRequestDTO.getUserName());
 
-        log.info("📥 [SOLICITUD] /usuario/update -> Actualizar usuario: {}.", userRequestDTO.getUserName());
+        UserResponseDTO response = userService.actualizarUsuario(userRequestDTO, userLogin);
 
-        UserResponseDTO userResponseDTO = userService.actualizarUsuario(userRequestDTO, userLogin);
+        log.info("📤 [RESPUESTA] Usuario actualizado: {}", response.getIdentificacion());
 
-        if (userResponseDTO == null || userResponseDTO.getIdentificacion() == null) {
-            log.warn("⚠️ [RESPUESTA] No se pudo actualizar el usuario: {}.", userRequestDTO.getUserName());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-
-        log.info("📤 [RESPUESTA] Usuario actualizado correctamente: {} (identificacion: {}).", userResponseDTO.getUserName(), userResponseDTO.getIdentificacion());
-
-        return ResponseEntity.ok(userResponseDTO);
+        return ResponseEntity.ok(response);
     }
 
+    // ─── Resetear password ────────────────────────────────────────────────────
     @PutMapping("/forgot-password")
     public ResponseEntity<Void> resetearPassword(@RequestBody java.util.Map<String, String> body) {
+
         String userName = body.get("userName");
         String password = body.get("password");
 
@@ -244,16 +222,61 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    // ─── Soft delete (enviar a papelera) ──────────────────────────────────────
     @DeleteMapping("/delete")
-    public ResponseEntity<Void> eliminarUsuario(@RequestParam("identificacion") Long identificacion) {
-        log.info("📥 [SOLICITUD] Eliminar usuario con identificacion: {}", identificacion);
+    public ResponseEntity<Void> eliminarUsuario(
+            @RequestParam("identificacion") Long identificacion,
+            @RequestParam("eliminadoPorId") String eliminadoPorId,
+            @RequestParam("eliminadoPorNombre") String eliminadoPorNombre) {
 
-        UserRequestDTO userRequestDTO = new UserRequestDTO();
-        userRequestDTO.setIdentificacion(identificacion);
+        log.info("📥 [SOLICITUD] Enviar a papelera usuario con identificacion: {}", identificacion);
 
-        userService.eliminarUsuario(userRequestDTO);
+        userService.eliminarUsuario(identificacion, eliminadoPorId, eliminadoPorNombre);
 
-        log.info("📤 [RESPUESTA] Usuario eliminado correctamente con identificacion: {}", identificacion);
+        log.info("📤 [RESPUESTA] Usuario {} enviado a papelera por: {}", identificacion, eliminadoPorNombre);
+
+        return ResponseEntity.ok().build();
+    }
+
+    // ─── Listar papelera ──────────────────────────────────────────────────────
+    @GetMapping("/trash")
+    public ResponseEntity<List<UserPapeleraResponseDTO>> listarPapelera() {
+
+        log.info("📥 [SOLICITUD] Listar usuarios en papelera");
+
+        List<UserPapeleraResponseDTO> papelera = userService.listarPapelera();
+
+        if (papelera.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        log.info("📤 [RESPUESTA] Se retornan {} usuarios en papelera", papelera.size());
+
+        return ResponseEntity.ok(papelera);
+    }
+
+    // ─── Restaurar desde papelera ─────────────────────────────────────────────
+    @PutMapping("/restore")
+    public ResponseEntity<UserResponseDTO> restaurarUsuario(@RequestParam("identificacion") Long identificacion) {
+
+        log.info("📥 [SOLICITUD] Restaurar usuario con identificacion: {}", identificacion);
+
+        UserResponseDTO response = userService.restaurarUsuario(identificacion);
+
+        log.info("📤 [RESPUESTA] Usuario restaurado: {}", identificacion);
+
+        return ResponseEntity.ok(response);
+    }
+
+    // ─── Eliminar definitivamente ─────────────────────────────────────────────
+    @DeleteMapping("/permanent-delete")
+    public ResponseEntity<Void> eliminarDefinitivo(@RequestParam("identificacion") Long identificacion) {
+
+        log.info("📥 [SOLICITUD] Eliminar definitivamente usuario con identificacion: {}", identificacion);
+
+        userService.eliminarDefinitivo(identificacion);
+
+        log.info("📤 [RESPUESTA] Usuario {} eliminado definitivamente", identificacion);
 
         return ResponseEntity.ok().build();
     }
