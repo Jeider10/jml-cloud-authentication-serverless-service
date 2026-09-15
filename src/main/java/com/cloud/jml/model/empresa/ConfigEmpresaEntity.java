@@ -39,4 +39,17 @@ public class ConfigEmpresaEntity {
 
     @Column(name = "fecha_actualizacion")
     private LocalDateTime fechaActualizacion;
+
+    // ─── Soft delete (papelera) ───────────────────────────────────────────────
+    @Column(name = "eliminado", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean eliminado = false;
+
+    @Column(name = "fecha_eliminacion")
+    private LocalDateTime fechaEliminacion;
+
+    @Column(name = "eliminado_por_id", length = 150)
+    private String eliminadoPorId;
+
+    @Column(name = "eliminado_por_nombre", length = 200)
+    private String eliminadoPorNombre;
 }

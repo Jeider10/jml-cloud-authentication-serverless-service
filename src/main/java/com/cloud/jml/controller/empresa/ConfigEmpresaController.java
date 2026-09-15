@@ -1,5 +1,6 @@
 package com.cloud.jml.controller.empresa;
 
+import com.cloud.jml.dto.empresa.ConfigEmpresaPapeleraResponseDTO;
 import com.cloud.jml.dto.empresa.ConfigEmpresaRequestDTO;
 import com.cloud.jml.dto.empresa.ConfigEmpresaResponseDTO;
 import com.cloud.jml.service.empresa.ConfigEmpresaService;
@@ -23,30 +24,29 @@ public class ConfigEmpresaController {
         log.info("🔥 ConfigEmpresaController inicializado correctamente.");
     }
 
+    // ─── Obtener empresa activa ───────────────────────────────────────────────
     @GetMapping
     public ResponseEntity<List<ConfigEmpresaResponseDTO>> obtenerPrimeraEmpresa() {
-        log.info("📥 [SOLICITUD] /empresa -> Obtener empresa registrada (primera encontrada).");
+        log.info("📥 [SOLICITUD] Obtener empresa registrada");
 
-        List<ConfigEmpresaResponseDTO> primeraEmpresa = configEmpresaService.obtenerPrimeraEmpresa();
+        List<ConfigEmpresaResponseDTO> empresa = configEmpresaService.obtenerPrimeraEmpresa();
 
-        if (primeraEmpresa == null || primeraEmpresa.isEmpty()) {
-            log.warn("⚠️ [RESPUESTA] No se encontro ninguna empresa registrada.");
+        if (empresa.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
 
-        log.info("📤 [RESPUESTA] Empresa encontrada: {}", primeraEmpresa.size());
-
-        return ResponseEntity.ok(primeraEmpresa);
+        return ResponseEntity.ok(empresa);
     }
 
+    // ─── Buscar por NIT ───────────────────────────────────────────────────────
     @GetMapping("/nit")
     public ResponseEntity<ConfigEmpresaResponseDTO> buscarEmpresaNit(@RequestParam("nit") Long nit) {
-        log.info("📥 [SOLICITUD] /empresa/nit -> Buscar empresa con NIT: {}", nit);
+        log.info("📥 [SOLICITUD] Buscar empresa con NIT: {}", nit);
 
-        ConfigEmpresaRequestDTO configEmpresaRequestDTO = new ConfigEmpresaRequestDTO();
-        configEmpresaRequestDTO.setNit(nit);
+        ConfigEmpresaRequestDTO dto = new ConfigEmpresaRequestDTO();
+        dto.setNit(nit);
 
-        ConfigEmpresaResponseDTO response = configEmpresaService.buscarEmpresaNit(configEmpresaRequestDTO);
+        ConfigEmpresaResponseDTO response = configEmpresaService.buscarEmpresaNit(dto);
 
         if (response == null || response.getNit() == null) {
             log.warn("⚠️ [RESPUESTA] No se encontro empresa con NIT: {}", nit);
@@ -58,54 +58,91 @@ public class ConfigEmpresaController {
         return ResponseEntity.ok(response);
     }
 
+    // ─── Registrar ────────────────────────────────────────────────────────────
     @PostMapping(value = "/register", consumes = {"multipart/form-data"})
     public ResponseEntity<ConfigEmpresaResponseDTO> registrarDatosEmpresa(
-            @RequestPart("empresa") ConfigEmpresaRequestDTO configEmpresaRequestDTO,
+            @RequestPart("empresa") ConfigEmpresaRequestDTO dto,
             @RequestPart(value = "file", required = false) MultipartFile file) {
 
-        log.info("📥 [SOLICITUD] /empresa/register -> Crear empresa: {}", configEmpresaRequestDTO.getNombreEmpresa());
+        log.info("📥 [SOLICITUD] Crear empresa: {}", dto.getNombreEmpresa());
 
-        ConfigEmpresaResponseDTO configEmpresaResponseDTO = configEmpresaService.registrarDatosEmpresa(configEmpresaRequestDTO, file);
+        ConfigEmpresaResponseDTO response = configEmpresaService.registrarDatosEmpresa(dto, file);
 
-        if (configEmpresaResponseDTO == null || configEmpresaResponseDTO.getNit() == null) {
-            log.warn("⚠️ [RESPUESTA] No se pudo crear la empresa: {}", configEmpresaRequestDTO.getNombreEmpresa());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+        log.info("📤 [RESPUESTA] Empresa creada: {} (NIT: {})", response.getNombreEmpresa(), response.getNit());
 
-        log.info("📤 [RESPUESTA] Empresa creada exitosamente: {} (NIT: {})", configEmpresaResponseDTO.getNombreEmpresa(), configEmpresaResponseDTO.getNit());
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(configEmpresaResponseDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    // ─── Actualizar ───────────────────────────────────────────────────────────
     @PutMapping(value = "/update", consumes = {"multipart/form-data"})
     public ResponseEntity<ConfigEmpresaResponseDTO> actualizarEmpresa(
-            @RequestPart("empresa") ConfigEmpresaRequestDTO configEmpresaRequestDTO,
+            @RequestPart("empresa") ConfigEmpresaRequestDTO dto,
             @RequestPart(value = "file", required = false) MultipartFile file) {
 
-        log.info("📥 [SOLICITUD] /empresa/update -> Actualizar empresa: {}", configEmpresaRequestDTO.getNombreEmpresa());
+        log.info("📥 [SOLICITUD] Actualizar empresa: {}", dto.getNombreEmpresa());
 
-        ConfigEmpresaResponseDTO configEmpresaResponseDTO = configEmpresaService.actualizarEmpresa(configEmpresaRequestDTO, file);
+        ConfigEmpresaResponseDTO response = configEmpresaService.actualizarEmpresa(dto, file);
 
-        if (configEmpresaResponseDTO == null || configEmpresaResponseDTO.getNit() == null) {
-            log.warn("⚠️ [RESPUESTA] No se pudo actualizar la empresa: {}", configEmpresaRequestDTO.getNombreEmpresa());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+        log.info("📤 [RESPUESTA] Empresa actualizada: {} (NIT: {})", response.getNombreEmpresa(), response.getNit());
 
-        log.info("📤 [RESPUESTA] Empresa actualizada correctamente: {} (NIT: {})", configEmpresaResponseDTO.getNombreEmpresa(), configEmpresaResponseDTO.getNit());
-
-        return ResponseEntity.ok(configEmpresaResponseDTO);
+        return ResponseEntity.ok(response);
     }
 
+    // ─── Soft delete (enviar a papelera) ──────────────────────────────────────
     @DeleteMapping("/delete")
-    public ResponseEntity<Void> eliminarEmpresa(@RequestParam("nit") Long nit) {
-        log.info("📥 [SOLICITUD] /empresa/delete -> Eliminar empresa con NIT: {}", nit);
+    public ResponseEntity<Void> eliminarEmpresa(
+            @RequestParam("nit") Long nit,
+            @RequestParam("eliminadoPorId") String eliminadoPorId,
+            @RequestParam("eliminadoPorNombre") String eliminadoPorNombre) {
 
-        ConfigEmpresaRequestDTO configEmpresaRequestDTO = new ConfigEmpresaRequestDTO();
-        configEmpresaRequestDTO.setNit(nit);
+        log.info("📥 [SOLICITUD] Enviar a papelera empresa con NIT: {}", nit);
 
-        configEmpresaService.eliminarEmpresa(configEmpresaRequestDTO);
+        configEmpresaService.eliminarEmpresa(nit, eliminadoPorId, eliminadoPorNombre);
 
-        log.info("📤 [RESPUESTA] Empresa eliminada correctamente (NIT: {}).", nit);
+        log.info("📤 [RESPUESTA] Empresa {} enviada a papelera por: {}", nit, eliminadoPorNombre);
+
+        return ResponseEntity.ok().build();
+    }
+
+    // ─── Listar papelera ──────────────────────────────────────────────────────
+    @GetMapping("/trash")
+    public ResponseEntity<List<ConfigEmpresaPapeleraResponseDTO>> listarPapelera() {
+
+        log.info("📥 [SOLICITUD] Listar empresas en papelera");
+
+        List<ConfigEmpresaPapeleraResponseDTO> papelera = configEmpresaService.listarPapelera();
+
+        if (papelera.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        log.info("📤 [RESPUESTA] Se retornan {} empresas en papelera", papelera.size());
+
+        return ResponseEntity.ok(papelera);
+    }
+
+    // ─── Restaurar desde papelera ─────────────────────────────────────────────
+    @PutMapping("/restore")
+    public ResponseEntity<ConfigEmpresaResponseDTO> restaurarEmpresa(@RequestParam("nit") Long nit) {
+
+        log.info("📥 [SOLICITUD] Restaurar empresa con NIT: {}", nit);
+
+        ConfigEmpresaResponseDTO response = configEmpresaService.restaurarEmpresa(nit);
+
+        log.info("📤 [RESPUESTA] Empresa restaurada: {}", nit);
+
+        return ResponseEntity.ok(response);
+    }
+
+    // ─── Eliminar definitivamente ─────────────────────────────────────────────
+    @DeleteMapping("/permanent-delete")
+    public ResponseEntity<Void> eliminarDefinitivo(@RequestParam("nit") Long nit) {
+
+        log.info("📥 [SOLICITUD] Eliminar definitivamente empresa con NIT: {}", nit);
+
+        configEmpresaService.eliminarDefinitivo(nit);
+
+        log.info("📤 [RESPUESTA] Empresa {} eliminada definitivamente", nit);
 
         return ResponseEntity.ok().build();
     }

@@ -1,93 +1,109 @@
 package com.cloud.jml.utils.empresa;
 
+import com.cloud.jml.dto.empresa.ConfigEmpresaPapeleraResponseDTO;
 import com.cloud.jml.dto.empresa.ConfigEmpresaRequestDTO;
 import com.cloud.jml.dto.empresa.ConfigEmpresaResponseDTO;
 import com.cloud.jml.model.empresa.ConfigEmpresaEntity;
+import com.cloud.jml.utils.date.FormatearFecha;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
 @Slf4j
-@Component // 🔹 Anotacion para indicar que es un componente de Spring
+@Component
 public class ConfigEmpresaMapper {
 
     private final ConfigEmpresaFormatearFecha configEmpresaFormatearFecha;
+    private final FormatearFecha formatearFecha;
 
-    public ConfigEmpresaMapper(ConfigEmpresaFormatearFecha configEmpresaFormatearFecha) {
+    public ConfigEmpresaMapper(ConfigEmpresaFormatearFecha configEmpresaFormatearFecha, FormatearFecha formatearFecha) {
         this.configEmpresaFormatearFecha = configEmpresaFormatearFecha;
+        this.formatearFecha = formatearFecha;
         log.info("🔥 ConfigEmpresaMapper inicializado correctamente.");
-    }
-
-    public void actualizarDatosEmpresa(ConfigEmpresaRequestDTO configEmpresaRequestDTO, ConfigEmpresaEntity configEmpresaEntity) {
-        log.info("📌 Actualizando datos de la empresa: {}", configEmpresaRequestDTO.getNombreEmpresa());
-
-        // NOTA: El NIT es el @Id — no se modifica en un update.
-        // Solo actualizamos los campos de negocio permitidos.
-        configEmpresaEntity.setNombreEmpresa(configEmpresaRequestDTO.getNombreEmpresa());
-        configEmpresaEntity.setDireccion(configEmpresaRequestDTO.getDireccion());
-        configEmpresaEntity.setTelefono(configEmpresaRequestDTO.getTelefono());
-        configEmpresaEntity.setMensaje(configEmpresaRequestDTO.getMensaje());
-        configEmpresaEntity.setEmail(configEmpresaRequestDTO.getEmail());
-
-        // El logo solo se actualiza si viene uno nuevo en el DTO
-        if (configEmpresaRequestDTO.getLogo() != null) {
-            configEmpresaEntity.setLogo(configEmpresaRequestDTO.getLogo());
-        }
-
-        // Actualiza fecha
-        configEmpresaEntity.setFechaActualizacion(LocalDateTime.now());
-
-        log.info("✅ Datos de la empresa actualizados correctamente: {}", configEmpresaEntity.getNombreEmpresa());
     }
 
     public ConfigEmpresaEntity mapRequestDtoToEntity(ConfigEmpresaRequestDTO configEmpresaRequestDTO) {
         log.info("📦 [MAPEO] Iniciando mapeo DTO → Entity para empresa: nombre={}", configEmpresaRequestDTO.getNombreEmpresa());
 
-        ConfigEmpresaEntity configEmpresaEntity = new ConfigEmpresaEntity();
+        ConfigEmpresaEntity entity = new ConfigEmpresaEntity();
 
-        configEmpresaEntity.setNit(configEmpresaRequestDTO.getNit());
-        configEmpresaEntity.setNombreEmpresa(configEmpresaRequestDTO.getNombreEmpresa());
-        configEmpresaEntity.setDireccion(configEmpresaRequestDTO.getDireccion());
-        configEmpresaEntity.setTelefono(configEmpresaRequestDTO.getTelefono());
-        configEmpresaEntity.setMensaje(configEmpresaRequestDTO.getMensaje());
-        configEmpresaEntity.setEmail(configEmpresaRequestDTO.getEmail());
-        configEmpresaEntity.setLogo(configEmpresaRequestDTO.getLogo());
-        configEmpresaEntity.setFechaCreacion(LocalDateTime.now());
+        entity.setNit(configEmpresaRequestDTO.getNit());
+        entity.setNombreEmpresa(configEmpresaRequestDTO.getNombreEmpresa());
+        entity.setDireccion(configEmpresaRequestDTO.getDireccion());
+        entity.setTelefono(configEmpresaRequestDTO.getTelefono());
+        entity.setMensaje(configEmpresaRequestDTO.getMensaje());
+        entity.setEmail(configEmpresaRequestDTO.getEmail());
+        entity.setLogo(configEmpresaRequestDTO.getLogo());
+        entity.setFechaCreacion(LocalDateTime.now());
+        entity.setEliminado(false);
 
-        log.info("✅ [MAPEO] Mapeo completado DTO → Entity para empresa: nombre={}", configEmpresaEntity.getNombreEmpresa());
+        log.info("✅ [MAPEO] Mapeo completado DTO → Entity para empresa: nombre={}", entity.getNombreEmpresa());
 
-        return configEmpresaEntity;
+        return entity;
     }
 
-    public ConfigEmpresaResponseDTO mapEntityToResponseDto(ConfigEmpresaEntity configEmpresaEntity) {
-        log.info("📦 [MAPEO] Iniciando mapeo Entity → DTO para empresa: nombre={}", configEmpresaEntity.getNombreEmpresa());
+    public ConfigEmpresaResponseDTO mapEntityToResponseDto(ConfigEmpresaEntity entity) {
+        log.info("📦 [MAPEO] Iniciando mapeo Entity → DTO para empresa: nombre={}", entity.getNombreEmpresa());
 
-        ConfigEmpresaResponseDTO configEmpresaResponseDTO = buildConfigEmpresaResponseDTO(configEmpresaEntity);
+        ConfigEmpresaResponseDTO dto = buildConfigEmpresaResponseDTO(entity);
+        configEmpresaFormatearFecha.asignarFechasFormateadas(entity, dto);
 
-        // 🕓 Formateo de fechas
-        configEmpresaFormatearFecha.asignarFechasFormateadas(configEmpresaEntity, configEmpresaResponseDTO);
+        log.info("✅ [MAPEO] Mapeo completado Entity → DTO para empresa: nombre={}", dto.getNombreEmpresa());
 
-        log.info("✅ [MAPEO] Mapeo completado Entity → DTO para empresa: nombre={}", configEmpresaResponseDTO.getNombreEmpresa());
-
-        return configEmpresaResponseDTO;
+        return dto;
     }
 
-    public ConfigEmpresaResponseDTO buildConfigEmpresaResponseDTO(ConfigEmpresaEntity configEmpresaEntity) {
-        log.info("📦 [MAPEO] Iniciando construccion de DTO de respuesta para empresa: {}", configEmpresaEntity.getNombreEmpresa());
+    public ConfigEmpresaResponseDTO buildConfigEmpresaResponseDTO(ConfigEmpresaEntity entity) {
 
-        ConfigEmpresaResponseDTO configEmpresaResponseDTO = new ConfigEmpresaResponseDTO();
+        ConfigEmpresaResponseDTO dto = new ConfigEmpresaResponseDTO();
 
-        configEmpresaResponseDTO.setNit(configEmpresaEntity.getNit());
-        configEmpresaResponseDTO.setNombreEmpresa(configEmpresaEntity.getNombreEmpresa());
-        configEmpresaResponseDTO.setDireccion(configEmpresaEntity.getDireccion());
-        configEmpresaResponseDTO.setTelefono(configEmpresaEntity.getTelefono());
-        configEmpresaResponseDTO.setMensaje(configEmpresaEntity.getMensaje());
-        configEmpresaResponseDTO.setEmail(configEmpresaEntity.getEmail());
-        configEmpresaResponseDTO.setLogo(configEmpresaEntity.getLogo());
+        dto.setNit(entity.getNit());
+        dto.setNombreEmpresa(entity.getNombreEmpresa());
+        dto.setDireccion(entity.getDireccion());
+        dto.setTelefono(entity.getTelefono());
+        dto.setMensaje(entity.getMensaje());
+        dto.setEmail(entity.getEmail());
+        dto.setLogo(entity.getLogo());
 
-        log.info("✅ [MAPEO] Mapeo completado de DTO de respuesta para empresa: {}", configEmpresaResponseDTO.getNombreEmpresa());
+        return dto;
+    }
 
-        return configEmpresaResponseDTO;
+    public ConfigEmpresaPapeleraResponseDTO mapEntityToPapeleraDto(ConfigEmpresaEntity entity) {
+        log.info("📦 [MAPEO] Iniciando mapeo Entity → PapeleraDTO para empresa: {}", entity.getNit());
+
+        ConfigEmpresaPapeleraResponseDTO dto = new ConfigEmpresaPapeleraResponseDTO();
+
+        dto.setNit(entity.getNit());
+        dto.setNombreEmpresa(entity.getNombreEmpresa());
+        dto.setDireccion(entity.getDireccion());
+        dto.setTelefono(entity.getTelefono());
+        dto.setEmail(entity.getEmail());
+        dto.setFechaCreacion(formatearFecha.formatearFecha(entity.getFechaCreacion()));
+        dto.setFechaEliminacion(formatearFecha.formatearFecha(entity.getFechaEliminacion()));
+        dto.setEliminadoPorId(entity.getEliminadoPorId());
+        dto.setEliminadoPorNombre(entity.getEliminadoPorNombre());
+
+        log.info("✅ [MAPEO] Mapeo papelera completado para empresa: {}", dto.getNit());
+
+        return dto;
+    }
+
+    public void actualizarDatosEmpresa(ConfigEmpresaRequestDTO dto, ConfigEmpresaEntity entity) {
+        log.info("📌 Actualizando datos de la empresa: {}", dto.getNombreEmpresa());
+
+        entity.setNombreEmpresa(dto.getNombreEmpresa());
+        entity.setDireccion(dto.getDireccion());
+        entity.setTelefono(dto.getTelefono());
+        entity.setMensaje(dto.getMensaje());
+        entity.setEmail(dto.getEmail());
+
+        if (dto.getLogo() != null) {
+            entity.setLogo(dto.getLogo());
+        }
+
+        entity.setFechaActualizacion(LocalDateTime.now());
+
+        log.info("✅ Datos de la empresa actualizados: {}", entity.getNombreEmpresa());
     }
 }
