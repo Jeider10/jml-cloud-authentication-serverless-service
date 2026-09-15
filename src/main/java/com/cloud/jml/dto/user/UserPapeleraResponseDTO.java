@@ -17,6 +17,8 @@ public class UserPapeleraResponseDTO {
     private String userName;
     private String roleName;
     private String email;
+    private String telefono;
+    private String direccion;
     private String creadoPor;
     private String fechaCreacion;
     private String fechaEliminacion;

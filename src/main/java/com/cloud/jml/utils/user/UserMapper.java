@@ -103,6 +103,8 @@ public class UserMapper {
         dto.setUserName(userEntity.getUserName());
         dto.setRoleName(userEntity.getRoleName());
         dto.setEmail(userEntity.getEmail());
+        dto.setTelefono(userEntity.getTelefono());
+        dto.setDireccion(userEntity.getDireccion());
         dto.setCreadoPor(userEntity.getCreadoPor());
         dto.setFechaCreacion(formatearFecha.formatearFecha(userEntity.getFechaCreacion()));
         dto.setFechaEliminacion(formatearFecha.formatearFecha(userEntity.getFechaEliminacion()));
