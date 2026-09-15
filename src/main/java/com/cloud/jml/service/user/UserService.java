@@ -62,6 +62,11 @@ public class UserService {
     public UserResponseDTO registrarUsuario(UserRequestDTO userRequestDTO, String creadoPor) {
         log.info("🔍 [SOLICITUD] Creando usuario: {} con identificacion: {}", userRequestDTO.getUserName(), userRequestDTO.getIdentificacion());
 
+        // Validar que la contraseña no venga vacía al crear un usuario nuevo
+        if (userRequestDTO.getPassword() == null || userRequestDTO.getPassword().isBlank()) {
+            throw new IllegalArgumentException("El campo 'password' es obligatorio al registrar un usuario");
+        }
+
         Optional<UserEntity> existingUserAndRole = userRepository.findByUserNameAndRoleCode(userRequestDTO.getUserName(), userRequestDTO.getRoleCode());
 
         if (existingUserAndRole.isPresent()) {
