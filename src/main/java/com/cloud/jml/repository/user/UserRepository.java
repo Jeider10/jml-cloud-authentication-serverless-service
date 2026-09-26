@@ -33,6 +33,10 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     Optional<UserEntity> findByIdentificacionAndEliminadoTrue(Long identificacion);
 
+    List<UserEntity> findByFechaEliminacionBetweenAndEliminadoTrue(LocalDateTime inicio, LocalDateTime fin);
+
+    List<UserEntity> findByEliminadoPorIdContainingIgnoreCaseAndEliminadoTrue(String eliminadoPorId);
+
     // ─── Sin filtro: para auth, resetPassword, validaciones existentes ────────
     Optional<UserEntity> findByIdentificacion(Long identificacion);
 

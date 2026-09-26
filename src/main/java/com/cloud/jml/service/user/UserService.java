@@ -62,7 +62,7 @@ public class UserService {
     public UserResponseDTO registrarUsuario(UserRequestDTO userRequestDTO, String creadoPor) {
         log.info("🔍 [SOLICITUD] Creando usuario: {} con identificacion: {}", userRequestDTO.getUserName(), userRequestDTO.getIdentificacion());
 
-        // Validar que la contraseña no venga vacía al crear un usuario nuevo
+        // Validar que la contraseña no venga vacia al crear un usuario nuevo
         if (userRequestDTO.getPassword() == null || userRequestDTO.getPassword().isBlank()) {
             throw new IllegalArgumentException("El campo 'password' es obligatorio al registrar un usuario");
         }
@@ -89,7 +89,7 @@ public class UserService {
         return mapper.mapEntityToResponseDto(guardado);
     }
 
-    // ─── Buscar por identificación ────────────────────────────────────────────
+    // ─── Buscar por identificacion ────────────────────────────────────────────
     @Transactional(readOnly = true)
     public UserResponseDTO obtenerUsuarioPorIdentificacion(UserRequestDTO userRequestDTO) {
         log.info("🔍 [CONSULTA] Buscando usuario con identificacion: {}", userRequestDTO.getIdentificacion());
@@ -175,7 +175,7 @@ public class UserService {
         return entidades.stream().map(mapper::mapEntityToResponseDto).toList();
     }
 
-    // ─── Buscar por fecha de creación ─────────────────────────────────────────
+    // ─── Buscar por fecha de creacion ─────────────────────────────────────────
     @Transactional(readOnly = true)
     public List<UserResponseDTO> obtenerUsuarioPorFechaCreacion(String fechaInicio, String fechaFin) {
 
@@ -191,7 +191,7 @@ public class UserService {
         return entidades.stream().map(mapper::mapEntityToResponseDto).toList();
     }
 
-    // ─── Buscar por fecha de actualización ───────────────────────────────────
+    // ─── Buscar por fecha de actualizacion ───────────────────────────────────
     @Transactional(readOnly = true)
     public List<UserResponseDTO> obtenerUsuarioPorFechaActualizacion(String fechaInicio, String fechaFin) {
 
@@ -329,5 +329,34 @@ public class UserService {
         userUtils.eliminarUsuarioBD(entidad);
 
         log.info("🗑️ [ELIMINADO] Usuario eliminado definitivamente: {}", identificacion);
+    }
+
+    // ─── Filtrar papelera por fecha de eliminacion ────────────────────────────
+    @Transactional(readOnly = true)
+    public List<UserPapeleraResponseDTO> listarPapeleraPorFecha(String fechaInicio, String fechaFin) {
+
+        LocalDateTime inicio = userUtils.parsearFechaInicio(fechaInicio);
+        LocalDateTime fin = userUtils.parsearFechaFin(fechaFin);
+
+        List<UserEntity> entidades = userRepository.findByFechaEliminacionBetweenAndEliminadoTrue(inicio, fin);
+
+        if (entidades.isEmpty()) {
+            return List.of();
+        }
+
+        return entidades.stream().map(mapper::mapEntityToPapeleraDto).toList();
+    }
+
+    // ─── Filtrar papelera por quien elimino ───────────────────────────────────
+    @Transactional(readOnly = true)
+    public List<UserPapeleraResponseDTO> listarPapeleraPorEliminadoPor(String eliminadoPorId) {
+
+        List<UserEntity> entidades = userRepository.findByEliminadoPorIdContainingIgnoreCaseAndEliminadoTrue(eliminadoPorId);
+
+        if (entidades.isEmpty()) {
+            return List.of();
+        }
+
+        return entidades.stream().map(mapper::mapEntityToPapeleraDto).toList();
     }
 }

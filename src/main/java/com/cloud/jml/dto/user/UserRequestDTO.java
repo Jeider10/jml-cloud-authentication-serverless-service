@@ -30,8 +30,8 @@ public class UserRequestDTO {
     @Size(max = 50, message = "El campo 'userName' no puede exceder 50 caracteres")
     private String userName;
 
-    // La contraseña es opcional en actualizaciones — si viene vacía, no se modifica.
-    // Solo se valida el tamaño mínimo cuando sí se proporciona un valor.
+    // La contraseña es opcional en actualizaciones — si viene vacia, no se modifica.
+    // Solo se valida el tamaño minimo cuando si se proporciona un valor.
     @Size(min = 3, message = "El campo 'password' debe tener al menos 3 caracteres si se proporciona")
     private String password;
 

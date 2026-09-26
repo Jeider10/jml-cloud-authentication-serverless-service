@@ -54,7 +54,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    // ─── Buscar por identificación ────────────────────────────────────────────
+    // ─── Buscar por identificacion ────────────────────────────────────────────
     @GetMapping("/identificacion")
     public ResponseEntity<UserResponseDTO> obtenerUsuarioPorIdentificacion(@RequestParam("identificacion") Long identificacion) {
         log.info("📥 [SOLICITUD] Obtener usuario con identificacion: {}", identificacion);
@@ -153,7 +153,7 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    // ─── Buscar por fecha de creación ─────────────────────────────────────────
+    // ─── Buscar por fecha de creacion ─────────────────────────────────────────
     @GetMapping("/fechaCreacion")
     public ResponseEntity<List<UserResponseDTO>> obtenerUsuarioPorFechaCreacion(
             @RequestParam("fechaInicio") String fechaInicio,
@@ -170,7 +170,7 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    // ─── Buscar por fecha de actualización ───────────────────────────────────
+    // ─── Buscar por fecha de actualizacion ───────────────────────────────────
     @GetMapping("/fechaActualizacion")
     public ResponseEntity<List<UserResponseDTO>> obtenerUsuarioPorFechaActualizacion(
             @RequestParam("fechaInicio") String fechaInicio,
@@ -279,5 +279,34 @@ public class UserController {
         log.info("📤 [RESPUESTA] Usuario {} eliminado definitivamente", identificacion);
 
         return ResponseEntity.ok().build();
+    }
+
+    // ─── Filtrar papelera por fecha de eliminacion ────────────────────────────
+    @GetMapping("/trash/fecha")
+    public ResponseEntity<List<UserPapeleraResponseDTO>> listarPapeleraPorFecha(
+            @RequestParam("fechaInicio") String fechaInicio,
+            @RequestParam("fechaFin") String fechaFin) {
+
+        List<UserPapeleraResponseDTO> resultado = userService.listarPapeleraPorFecha(fechaInicio, fechaFin);
+
+        if (resultado.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(resultado);
+    }
+
+    // ─── Filtrar papelera por quien elimino ───────────────────────────────────
+    @GetMapping("/trash/eliminadoPor")
+    public ResponseEntity<List<UserPapeleraResponseDTO>> listarPapeleraPorEliminadoPor(
+            @RequestParam("eliminadoPorId") String eliminadoPorId) {
+
+        List<UserPapeleraResponseDTO> resultado = userService.listarPapeleraPorEliminadoPor(eliminadoPorId);
+
+        if (resultado.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(resultado);
     }
 }

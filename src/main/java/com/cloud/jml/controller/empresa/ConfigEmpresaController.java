@@ -146,4 +146,33 @@ public class ConfigEmpresaController {
 
         return ResponseEntity.ok().build();
     }
+
+    // ─── Filtrar papelera por fecha de eliminacion ────────────────────────────
+    @GetMapping("/trash/fecha")
+    public ResponseEntity<List<ConfigEmpresaPapeleraResponseDTO>> listarPapeleraPorFecha(
+            @RequestParam("fechaInicio") String fechaInicio,
+            @RequestParam("fechaFin") String fechaFin) {
+
+        List<ConfigEmpresaPapeleraResponseDTO> resultado = configEmpresaService.listarPapeleraPorFecha(fechaInicio, fechaFin);
+
+        if (resultado.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(resultado);
+    }
+
+    // ─── Filtrar papelera por quien elimino ───────────────────────────────────
+    @GetMapping("/trash/eliminadoPor")
+    public ResponseEntity<List<ConfigEmpresaPapeleraResponseDTO>> listarPapeleraPorEliminadoPor(
+            @RequestParam("eliminadoPorId") String eliminadoPorId) {
+
+        List<ConfigEmpresaPapeleraResponseDTO> resultado = configEmpresaService.listarPapeleraPorEliminadoPor(eliminadoPorId);
+
+        if (resultado.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(resultado);
+    }
 }

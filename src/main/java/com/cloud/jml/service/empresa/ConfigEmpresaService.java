@@ -196,4 +196,33 @@ public class ConfigEmpresaService {
 
         log.info("🗑️ [ELIMINADO] Empresa eliminada definitivamente: {}", nit);
     }
+
+    // ─── Filtrar papelera por fecha de eliminacion ────────────────────────────
+    @Transactional(readOnly = true)
+    public List<ConfigEmpresaPapeleraResponseDTO> listarPapeleraPorFecha(String fechaInicio, String fechaFin) {
+
+        LocalDateTime inicio = configEmpresaUtils.parsearFechaInicio(fechaInicio);
+        LocalDateTime fin = configEmpresaUtils.parsearFechaFin(fechaFin);
+
+        List<ConfigEmpresaEntity> entidades = configEmpresaRepository.findByFechaEliminacionBetweenAndEliminadoTrue(inicio, fin);
+
+        if (entidades.isEmpty()) {
+            return List.of();
+        }
+
+        return entidades.stream().map(mapper::mapEntityToPapeleraDto).toList();
+    }
+
+    // ─── Filtrar papelera por quien elimino ───────────────────────────────────
+    @Transactional(readOnly = true)
+    public List<ConfigEmpresaPapeleraResponseDTO> listarPapeleraPorEliminadoPor(String eliminadoPorId) {
+
+        List<ConfigEmpresaEntity> entidades = configEmpresaRepository.findByEliminadoPorIdContainingIgnoreCaseAndEliminadoTrue(eliminadoPorId);
+
+        if (entidades.isEmpty()) {
+            return List.of();
+        }
+
+        return entidades.stream().map(mapper::mapEntityToPapeleraDto).toList();
+    }
 }

@@ -13,6 +13,10 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Base64;
 import java.util.Optional;
 
@@ -116,6 +120,54 @@ public class ConfigEmpresaUtils {
         } catch (Exception e) {
             log.error("🚨 Error inesperado al eliminar la empresa: {}", e.getMessage(), e);
             throw ConfigEmpresaDeletionException.unexpected(e);
+        }
+    }
+
+    public LocalDateTime parsearFechaInicio(String fecha) {
+        if (fecha == null || fecha.isBlank()) {
+            throw new IllegalArgumentException("La fecha de inicio es obligatoria");
+        }
+
+        try {
+            return LocalDateTime.parse(fecha, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        } catch (DateTimeParseException e) {
+            log.debug("Formato 'yyyy-MM-dd HH:mm:ss' no aplica para '{}'", fecha);
+        }
+
+        try {
+            return LocalDateTime.parse(fecha);
+        } catch (DateTimeParseException e) {
+            log.debug("Formato ISO DateTime no aplica para '{}'", fecha);
+        }
+
+        try {
+            return LocalDate.parse(fecha, DateTimeFormatter.ofPattern("yyyy-MM-dd")).atStartOfDay();
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Formato de fecha de inicio invalido. Use yyyy-MM-dd o yyyy-MM-dd HH:mm:ss");
+        }
+    }
+
+    public LocalDateTime parsearFechaFin(String fecha) {
+        if (fecha == null || fecha.isBlank()) {
+            throw new IllegalArgumentException("La fecha de fin es obligatoria");
+        }
+
+        try {
+            return LocalDateTime.parse(fecha, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        } catch (DateTimeParseException e) {
+            log.debug("Formato 'yyyy-MM-dd HH:mm:ss' no aplica para '{}'", fecha);
+        }
+
+        try {
+            return LocalDateTime.parse(fecha);
+        } catch (DateTimeParseException e) {
+            log.debug("Formato ISO DateTime no aplica para '{}'", fecha);
+        }
+
+        try {
+            return LocalDate.parse(fecha, DateTimeFormatter.ofPattern("yyyy-MM-dd")).atTime(23, 59, 59);
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Formato de fecha de fin invalido. Use yyyy-MM-dd o yyyy-MM-dd HH:mm:ss");
         }
     }
 }

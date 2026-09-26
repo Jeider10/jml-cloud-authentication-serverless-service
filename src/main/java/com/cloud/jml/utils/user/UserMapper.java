@@ -129,7 +129,7 @@ public class UserMapper {
         userEntity.setDireccion(userRequestDTO.getDireccion());
         userEntity.setHistorialUltimoActualizado(userLogin);
 
-        // Actualizar contraseña SOLO si viene una nueva (no vacía)
+        // Actualizar contraseña SOLO si viene una nueva (no vacia)
         String nuevaPassword = userRequestDTO.getPassword();
         if (nuevaPassword != null && !nuevaPassword.isBlank()) {
             userEntity.setPassword(passwordEncoder.encode(nuevaPassword));
