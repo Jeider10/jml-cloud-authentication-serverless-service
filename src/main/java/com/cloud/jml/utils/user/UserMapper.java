@@ -87,6 +87,14 @@ public class UserMapper {
         userResponseDTO.setHistorialUltimoActualizado(userEntity.getHistorialUltimoActualizado());
         userResponseDTO.setCreadoPor(userEntity.getCreadoPor());
 
+        // ─── Permisos ─────────────────────────────────────────────────────────
+        userResponseDTO.setPermisoNuevaVenta(userEntity.isPermisoNuevaVenta());
+        userResponseDTO.setPermisoClientes(userEntity.isPermisoClientes());
+        userResponseDTO.setPermisoProveedores(userEntity.isPermisoProveedores());
+        userResponseDTO.setPermisoProductos(userEntity.isPermisoProductos());
+        userResponseDTO.setPermisoHistorial(userEntity.isPermisoHistorial());
+        userResponseDTO.setPermisoPapelera(userEntity.isPermisoPapelera());
+
         log.info("✅ [MAPEO] Mapeo completado de DTO de respuesta para usuario: {}", userResponseDTO.getUserName());
 
         return userResponseDTO;

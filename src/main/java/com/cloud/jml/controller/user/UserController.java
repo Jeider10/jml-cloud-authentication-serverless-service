@@ -1,6 +1,7 @@
 package com.cloud.jml.controller.user;
 
 import com.cloud.jml.dto.user.UserPapeleraResponseDTO;
+import com.cloud.jml.dto.user.UserPermisosRequestDTO;
 import com.cloud.jml.dto.user.UserRequestDTO;
 import com.cloud.jml.dto.user.UserResponseDTO;
 import com.cloud.jml.service.user.UserService;
@@ -220,6 +221,20 @@ public class UserController {
         log.info("📤 [RESPUESTA] Password reseteado correctamente para usuario: {}", userName);
 
         return ResponseEntity.ok().build();
+    }
+
+    // ─── Actualizar permisos granulares ──────────────────────────────────────
+    @PutMapping("/permisos")
+    public ResponseEntity<UserResponseDTO> actualizarPermisos(
+            @RequestBody @Valid UserPermisosRequestDTO dto) {
+
+        log.info("📥 [SOLICITUD] Actualizar permisos del usuario con identificacion: {}", dto.getIdentificacion());
+
+        UserResponseDTO response = userService.actualizarPermisos(dto);
+
+        log.info("📤 [RESPUESTA] Permisos actualizados para usuario: {}", response.getIdentificacion());
+
+        return ResponseEntity.ok(response);
     }
 
     // ─── Soft delete (enviar a papelera) ──────────────────────────────────────

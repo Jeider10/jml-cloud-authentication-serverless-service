@@ -24,4 +24,12 @@ public class UserResponseDTO {
     private String fechaActualizacion;
     private String historialUltimoActualizado;
     private String creadoPor;
+
+    // ─── Permisos granulares ──────────────────────────────────────────────────
+    private boolean permisoClientes;
+    private boolean permisoProveedores;
+    private boolean permisoProductos;
+    private boolean permisoHistorial;
+    private boolean permisoNuevaVenta;
+    private boolean permisoPapelera;
 }

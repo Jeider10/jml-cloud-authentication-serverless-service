@@ -56,6 +56,26 @@ public class UserEntity {
     @Column(name = "creado_por")
     private String creadoPor;
 
+    // ─── Permisos granulares (aplica solo a rol CAJERO) ──────────────────────
+    // true = habilitado, false = deshabilitado por el administrador
+    @Column(name = "permiso_clientes", nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
+    private boolean permisoClientes = true;
+
+    @Column(name = "permiso_proveedores", nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
+    private boolean permisoProveedores = true;
+
+    @Column(name = "permiso_productos", nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
+    private boolean permisoProductos = true;
+
+    @Column(name = "permiso_historial", nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
+    private boolean permisoHistorial = true;
+
+    @Column(name = "permiso_nueva_venta", nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
+    private boolean permisoNuevaVenta = true;
+
+    @Column(name = "permiso_papelera", nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
+    private boolean permisoPapelera = true;
+
     // ─── Soft delete (papelera) ───────────────────────────────────────────────
     @Column(name = "eliminado", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean eliminado = false;

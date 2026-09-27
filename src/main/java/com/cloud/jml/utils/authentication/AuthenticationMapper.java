@@ -58,6 +58,14 @@ public class AuthenticationMapper {
         authenticationOptionsDTO.setNombres(userEntity.getNombres());
         authenticationOptionsDTO.setApellidos(userEntity.getApellidos());
 
+        // ─── Permisos ─────────────────────────────────────────────────────────
+        authenticationOptionsDTO.setPermisoClientes(userEntity.isPermisoClientes());
+        authenticationOptionsDTO.setPermisoProveedores(userEntity.isPermisoProveedores());
+        authenticationOptionsDTO.setPermisoProductos(userEntity.isPermisoProductos());
+        authenticationOptionsDTO.setPermisoHistorial(userEntity.isPermisoHistorial());
+        authenticationOptionsDTO.setPermisoNuevaVenta(userEntity.isPermisoNuevaVenta());
+        authenticationOptionsDTO.setPermisoPapelera(userEntity.isPermisoPapelera());
+
         log.info("✅ [MAPEO] Mapeo completado DTO → Entity para autenticacion de usuario: nombre={}", authenticationOptionsDTO.getLogin());
 
         return authenticationOptionsDTO;
@@ -79,6 +87,14 @@ public class AuthenticationMapper {
         userResponseDTO.setEmail(userEntity.getEmail());
         userResponseDTO.setDireccion(userEntity.getDireccion());
         userResponseDTO.setHistorialUltimoActualizado(userEntity.getHistorialUltimoActualizado());
+
+        // ─── Permisos ─────────────────────────────────────────────────────────
+        userResponseDTO.setPermisoClientes(userEntity.isPermisoClientes());
+        userResponseDTO.setPermisoProveedores(userEntity.isPermisoProveedores());
+        userResponseDTO.setPermisoProductos(userEntity.isPermisoProductos());
+        userResponseDTO.setPermisoHistorial(userEntity.isPermisoHistorial());
+        userResponseDTO.setPermisoNuevaVenta(userEntity.isPermisoNuevaVenta());
+        userResponseDTO.setPermisoPapelera(userEntity.isPermisoPapelera());
 
         // 🕓 Formateo de fechas
         userFormatearFecha.asignarFechasFormateadas(userEntity, userResponseDTO);

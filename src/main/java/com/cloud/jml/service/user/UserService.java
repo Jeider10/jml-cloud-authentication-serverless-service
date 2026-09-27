@@ -1,6 +1,7 @@
 package com.cloud.jml.service.user;
 
 import com.cloud.jml.dto.user.UserPapeleraResponseDTO;
+import com.cloud.jml.dto.user.UserPermisosRequestDTO;
 import com.cloud.jml.dto.user.UserRequestDTO;
 import com.cloud.jml.dto.user.UserResponseDTO;
 import com.cloud.jml.exception.user.UserDuplicationException;
@@ -329,6 +330,29 @@ public class UserService {
         userUtils.eliminarUsuarioBD(entidad);
 
         log.info("🗑️ [ELIMINADO] Usuario eliminado definitivamente: {}", identificacion);
+    }
+
+    // ─── Actualizar permisos granulares ──────────────────────────────────────
+    @Transactional
+    public UserResponseDTO actualizarPermisos(UserPermisosRequestDTO dto) {
+        log.info("🔍 [SOLICITUD] Actualizando permisos del usuario con identificacion: {}", dto.getIdentificacion());
+
+        UserEntity entidad = userRepository.findByIdentificacionAndEliminadoFalse(dto.getIdentificacion())
+                .orElseThrow(() -> new UserNotFoundException(dto.getIdentificacion()));
+
+        entidad.setPermisoNuevaVenta(dto.isPermisoNuevaVenta());
+        entidad.setPermisoClientes(dto.isPermisoClientes());
+        entidad.setPermisoProveedores(dto.isPermisoProveedores());
+        entidad.setPermisoProductos(dto.isPermisoProductos());
+        entidad.setPermisoHistorial(dto.isPermisoHistorial());
+        entidad.setPermisoPapelera(dto.isPermisoPapelera());
+        entidad.setFechaActualizacion(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+
+        UserEntity guardado = userUtils.guardarUsuarioBD(entidad);
+
+        log.info("✅ [FINALIZADO] Permisos actualizados para usuario: {}", guardado.getIdentificacion());
+
+        return mapper.mapEntityToResponseDto(guardado);
     }
 
     // ─── Filtrar papelera por fecha de eliminacion ────────────────────────────

@@ -17,4 +17,12 @@ public class AuthenticationOptionsDTO {
     private Long identificacion;
     private String nombres;
     private String apellidos;
+
+    // ─── Permisos granulares (viajan en el token de respuesta al login) ───────
+    private boolean permisoClientes;
+    private boolean permisoProveedores;
+    private boolean permisoProductos;
+    private boolean permisoHistorial;
+    private boolean permisoNuevaVenta;
+    private boolean permisoPapelera;
 }
