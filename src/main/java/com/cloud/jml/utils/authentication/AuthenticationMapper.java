@@ -7,6 +7,7 @@ import com.cloud.jml.dto.user.UserResponseDTO;
 import com.cloud.jml.model.authentication.AuthenticationEntity;
 import com.cloud.jml.model.token.RefreshTokenEntity;
 import com.cloud.jml.model.user.UserEntity;
+import com.cloud.jml.service.columnas.UsuarioColumnasService;
 import com.cloud.jml.utils.jwt.JwtProperties;
 import com.cloud.jml.utils.user.UserFormatearFecha;
 import lombok.extern.slf4j.Slf4j;
@@ -20,10 +21,13 @@ public class AuthenticationMapper {
 
     private final JwtProperties jwtProperties;
     private final UserFormatearFecha userFormatearFecha;
+    private final UsuarioColumnasService columnasService;
 
-    public AuthenticationMapper(JwtProperties jwtProperties, UserFormatearFecha userFormatearFecha) {
+    public AuthenticationMapper(JwtProperties jwtProperties, UserFormatearFecha userFormatearFecha,
+                                UsuarioColumnasService columnasService) {
         this.jwtProperties = jwtProperties;
         this.userFormatearFecha = userFormatearFecha;
+        this.columnasService = columnasService;
         log.info("🔥 AuthenticationMapper inicializado correctamente.");
     }
 
@@ -65,6 +69,16 @@ public class AuthenticationMapper {
         authenticationOptionsDTO.setPermisoHistorial(userEntity.isPermisoHistorial());
         authenticationOptionsDTO.setPermisoNuevaVenta(userEntity.isPermisoNuevaVenta());
         authenticationOptionsDTO.setPermisoPapelera(userEntity.isPermisoPapelera());
+
+        // ─── Columnas ocultas por seccion ──────────────────────────────────────
+        try {
+            authenticationOptionsDTO.setColumnasOcultas(
+                    columnasService.obtenerTodasPorUsuario(userEntity.getIdentificacion())
+            );
+        } catch (Exception e) {
+            log.warn("⚠️ No se pudo cargar la config de columnas para usuario {}: {}", userEntity.getIdentificacion(), e.getMessage());
+            authenticationOptionsDTO.setColumnasOcultas(java.util.Map.of());
+        }
 
         log.info("✅ [MAPEO] Mapeo completado DTO → Entity para autenticacion de usuario: nombre={}", authenticationOptionsDTO.getLogin());
 

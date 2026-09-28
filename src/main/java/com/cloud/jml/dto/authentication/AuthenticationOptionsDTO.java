@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+import java.util.Map;
+
 @Setter
 @Getter
 @NoArgsConstructor // Constructor sin argumentos
@@ -25,4 +28,9 @@ public class AuthenticationOptionsDTO {
     private boolean permisoHistorial;
     private boolean permisoNuevaVenta;
     private boolean permisoPapelera;
+
+    // ─── Columnas ocultas por seccion (viajan en el token de respuesta al login) ──
+    // Mapa seccion → lista de nombres de columnas ocultas
+    // ej: {"clientes": ["Telefono","Direccion"], "productos": ["Precio"]}
+    private Map<String, List<String>> columnasOcultas;
 }
