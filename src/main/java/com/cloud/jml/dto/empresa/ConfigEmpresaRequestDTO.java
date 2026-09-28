@@ -31,6 +31,12 @@ public class ConfigEmpresaRequestDTO {
     private String mensaje;
     private String logo;
 
-    @Size(max = 150, message = "El campo 'email' no puede exceder 150 caracteres")
-    private String email;
+    @Size(max = 150, message = "El campo 'correo' no puede exceder 150 caracteres")
+    private String correo;
+
+    @Size(max = 150, message = "El campo 'creadoPor' no puede exceder 150 caracteres")
+    private String creadoPor;
+
+    @Size(max = 150, message = "El campo 'actualizadoPor' no puede exceder 150 caracteres")
+    private String actualizadoPor;
 }

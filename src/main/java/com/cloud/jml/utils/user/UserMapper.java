@@ -42,7 +42,7 @@ public class UserMapper {
         // Siempre encodear la contraseña con BCrypt al crear
         userEntity.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
         userEntity.setIdentificacion(userRequestDTO.getIdentificacion());
-        userEntity.setEmail(userRequestDTO.getEmail());
+        userEntity.setCorreo(userRequestDTO.getCorreo());
         userEntity.setTelefono(userRequestDTO.getTelefono());
         userEntity.setDireccion(userRequestDTO.getDireccion());
         userEntity.setFechaCreacion(LocalDateTime.now().truncatedTo(java.time.temporal.ChronoUnit.SECONDS));
@@ -81,11 +81,11 @@ public class UserMapper {
         userResponseDTO.setIdentificacion(userEntity.getIdentificacion());
         userResponseDTO.setRoleCode(userEntity.getRoleCode());
         userResponseDTO.setRoleName(userEntity.getRoleName());
-        userResponseDTO.setEmail(userEntity.getEmail());
+        userResponseDTO.setCorreo(userEntity.getCorreo());
         userResponseDTO.setTelefono(userEntity.getTelefono());
         userResponseDTO.setDireccion(userEntity.getDireccion());
-        userResponseDTO.setHistorialUltimoActualizado(userEntity.getHistorialUltimoActualizado());
         userResponseDTO.setCreadoPor(userEntity.getCreadoPor());
+        userResponseDTO.setActualizadoPor(userEntity.getActualizadoPor());
 
         // ─── Permisos ─────────────────────────────────────────────────────────
         userResponseDTO.setPermisoNuevaVenta(userEntity.isPermisoNuevaVenta());
@@ -110,7 +110,7 @@ public class UserMapper {
         dto.setApellidos(userEntity.getApellidos());
         dto.setUserName(userEntity.getUserName());
         dto.setRoleName(userEntity.getRoleName());
-        dto.setEmail(userEntity.getEmail());
+        dto.setCorreo(userEntity.getCorreo());
         dto.setTelefono(userEntity.getTelefono());
         dto.setDireccion(userEntity.getDireccion());
         dto.setCreadoPor(userEntity.getCreadoPor());
@@ -132,10 +132,10 @@ public class UserMapper {
         userEntity.setUserName(userRequestDTO.getUserName());
         userEntity.setNombres(userRequestDTO.getNombres());
         userEntity.setApellidos(userRequestDTO.getApellidos());
-        userEntity.setEmail(userRequestDTO.getEmail());
+        userEntity.setCorreo(userRequestDTO.getCorreo());
         userEntity.setTelefono(userRequestDTO.getTelefono());
         userEntity.setDireccion(userRequestDTO.getDireccion());
-        userEntity.setHistorialUltimoActualizado(userLogin);
+        userEntity.setActualizadoPor(userLogin);
 
         // Actualizar contraseña SOLO si viene una nueva (no vacia)
         String nuevaPassword = userRequestDTO.getPassword();

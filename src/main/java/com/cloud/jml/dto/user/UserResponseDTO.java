@@ -18,12 +18,12 @@ public class UserResponseDTO {
     private Integer roleCode;
     private String roleName;
     private String telefono;
-    private String email;
+    private String correo;
     private String direccion;
     private String fechaCreacion;
     private String fechaActualizacion;
-    private String historialUltimoActualizado;
     private String creadoPor;
+    private String actualizadoPor;
 
     // ─── Permisos granulares ──────────────────────────────────────────────────
     private boolean permisoClientes;

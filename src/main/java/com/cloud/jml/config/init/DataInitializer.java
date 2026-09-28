@@ -28,7 +28,7 @@ import java.util.Optional;
  * Credenciales por defecto:
  * usuario  : admin
  * password : admin
- * email    : admin@admin.com
+ * correo    : admin@admin.com
  */
 @Slf4j
 @Component
@@ -80,7 +80,7 @@ public class DataInitializer implements CommandLineRunner {
             if (pwd == null || (!pwd.startsWith("$2a$") && !pwd.startsWith("$2b$"))) {
                 admin.setPassword(passwordEncoder.encode("admin"));
                 admin.setFechaActualizacion(LocalDateTime.now());
-                admin.setHistorialUltimoActualizado("Contraseña re-encodeada con BCrypt por DataInitializer");
+                admin.setActualizadoPor("Contraseña re-encodeada con BCrypt por DataInitializer");
                 userRepository.save(admin);
                 log.info("🔑 [DataInitializer] Contraseña del admin corregida con BCrypt.");
             } else {
@@ -98,15 +98,16 @@ public class DataInitializer implements CommandLineRunner {
         admin.setPassword(passwordEncoder.encode("admin"));
         admin.setRoleCode(1);
         admin.setRoleName("ADMIN");
-        admin.setEmail("admin@admin.com");
+        admin.setCorreo("admin@admin.com");
         admin.setTelefono("3000000000");
         admin.setDireccion("Centro");
         admin.setFechaCreacion(LocalDateTime.now());
         admin.setFechaActualizacion(LocalDateTime.now());
-        admin.setHistorialUltimoActualizado("Creado por DataInitializer");
+        admin.setCreadoPor("Creado por DataInitializer");
+        admin.setActualizadoPor("Administrador");
 
         userRepository.save(admin);
-        log.info("✅ [DataInitializer] Usuario admin creado → userName=admin | email=admin@admin.com");
+        log.info("✅ [DataInitializer] Usuario admin creado → userName=admin | correo=admin@admin.com");
         log.warn("⚠️  [DataInitializer] Recuerda cambiar la contraseña del admin en produccion.");
     }
 }

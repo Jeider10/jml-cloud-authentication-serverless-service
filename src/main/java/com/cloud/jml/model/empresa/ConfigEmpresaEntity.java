@@ -29,10 +29,16 @@ public class ConfigEmpresaEntity {
     private String direccion;
     private String telefono;
     private String mensaje;
-    private String email;
+    private String correo;
 
     @Column(name = "logo", columnDefinition = "LONGTEXT")
     private String logo;
+
+    @Column(name = "creado_por", length = 150)
+    private String creadoPor;
+
+    @Column(name = "actualizado_por", length = 150)
+    private String actualizadoPor;
 
     @Column(name = "fecha_creacion", nullable = false, updatable = false)
     private LocalDateTime fechaCreacion;

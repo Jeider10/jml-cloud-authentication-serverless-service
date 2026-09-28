@@ -15,7 +15,7 @@ public class ConfigEmpresaPapeleraResponseDTO {
     private String nombreEmpresa;
     private String direccion;
     private String telefono;
-    private String email;
+    private String correo;
     private String fechaCreacion;
     private String fechaEliminacion;
     private String eliminadoPorId;

@@ -40,9 +40,12 @@ public class UserRequestDTO {
     @Size(max = 20, message = "El campo 'telefono' no puede exceder 20 caracteres")
     private String telefono;
 
-    @Email(message = "El campo 'email' debe ser un correo electronico valido")
-    private String email;
+    @Email(message = "El campo 'correo' debe ser un correo electronico valido")
+    private String correo;
 
     @Size(max = 200, message = "El campo 'direccion' no puede exceder 200 caracteres")
     private String direccion;
+
+    @Size(max = 150, message = "El campo 'actualizadoPor' no puede exceder 150 caracteres")
+    private String actualizadoPor;
 }

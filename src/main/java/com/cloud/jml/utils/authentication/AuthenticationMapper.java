@@ -84,9 +84,9 @@ public class AuthenticationMapper {
         userResponseDTO.setRoleCode(userEntity.getRoleCode());
         userResponseDTO.setRoleName(userEntity.getRoleName());
         userResponseDTO.setTelefono(userEntity.getTelefono());
-        userResponseDTO.setEmail(userEntity.getEmail());
+        userResponseDTO.setCorreo(userEntity.getCorreo());
         userResponseDTO.setDireccion(userEntity.getDireccion());
-        userResponseDTO.setHistorialUltimoActualizado(userEntity.getHistorialUltimoActualizado());
+        userResponseDTO.setActualizadoPor(userEntity.getActualizadoPor());
 
         // ─── Permisos ─────────────────────────────────────────────────────────
         userResponseDTO.setPermisoClientes(userEntity.isPermisoClientes());

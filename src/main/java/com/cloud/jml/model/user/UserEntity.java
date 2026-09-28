@@ -42,7 +42,7 @@ public class UserEntity {
     private String roleName;
 
     private String telefono;
-    private String email;
+    private String correo;
     private String direccion;
 
     @Column(name = "fecha_creacion", nullable = false, updatable = false)
@@ -51,10 +51,11 @@ public class UserEntity {
     @Column(name = "fecha_actualizacion")
     private LocalDateTime fechaActualizacion;
 
-    private String historialUltimoActualizado;
-
     @Column(name = "creado_por")
     private String creadoPor;
+
+    @Column(name = "actualizado_por", length = 150)
+    private String actualizadoPor;
 
     // ─── Permisos granulares (aplica solo a rol CAJERO) ──────────────────────
     // true = habilitado, false = deshabilitado por el administrador

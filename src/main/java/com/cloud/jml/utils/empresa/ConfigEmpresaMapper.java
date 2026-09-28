@@ -33,8 +33,9 @@ public class ConfigEmpresaMapper {
         entity.setDireccion(configEmpresaRequestDTO.getDireccion());
         entity.setTelefono(configEmpresaRequestDTO.getTelefono());
         entity.setMensaje(configEmpresaRequestDTO.getMensaje());
-        entity.setEmail(configEmpresaRequestDTO.getEmail());
+        entity.setCorreo(configEmpresaRequestDTO.getCorreo());
         entity.setLogo(configEmpresaRequestDTO.getLogo());
+        entity.setCreadoPor(configEmpresaRequestDTO.getCreadoPor());
         entity.setFechaCreacion(LocalDateTime.now());
         entity.setEliminado(false);
 
@@ -63,8 +64,10 @@ public class ConfigEmpresaMapper {
         dto.setDireccion(entity.getDireccion());
         dto.setTelefono(entity.getTelefono());
         dto.setMensaje(entity.getMensaje());
-        dto.setEmail(entity.getEmail());
+        dto.setCorreo(entity.getCorreo());
         dto.setLogo(entity.getLogo());
+        dto.setCreadoPor(entity.getCreadoPor());
+        dto.setActualizadoPor(entity.getActualizadoPor());
 
         return dto;
     }
@@ -78,7 +81,7 @@ public class ConfigEmpresaMapper {
         dto.setNombreEmpresa(entity.getNombreEmpresa());
         dto.setDireccion(entity.getDireccion());
         dto.setTelefono(entity.getTelefono());
-        dto.setEmail(entity.getEmail());
+        dto.setCorreo(entity.getCorreo());
         dto.setFechaCreacion(formatearFecha.formatearFecha(entity.getFechaCreacion()));
         dto.setFechaEliminacion(formatearFecha.formatearFecha(entity.getFechaEliminacion()));
         dto.setEliminadoPorId(entity.getEliminadoPorId());
@@ -96,12 +99,13 @@ public class ConfigEmpresaMapper {
         entity.setDireccion(dto.getDireccion());
         entity.setTelefono(dto.getTelefono());
         entity.setMensaje(dto.getMensaje());
-        entity.setEmail(dto.getEmail());
+        entity.setCorreo(dto.getCorreo());
 
         if (dto.getLogo() != null) {
             entity.setLogo(dto.getLogo());
         }
 
+        entity.setActualizadoPor(dto.getActualizadoPor());
         entity.setFechaActualizacion(LocalDateTime.now());
 
         log.info("✅ Datos de la empresa actualizados: {}", entity.getNombreEmpresa());
