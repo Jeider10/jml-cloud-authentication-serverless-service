@@ -135,7 +135,10 @@ public class UserMapper {
         userEntity.setCorreo(userRequestDTO.getCorreo());
         userEntity.setTelefono(userRequestDTO.getTelefono());
         userEntity.setDireccion(userRequestDTO.getDireccion());
-        userEntity.setActualizadoPor(userLogin);
+        // Usar el nombre completo enviado por el front; si viene vacio, usar el userLogin como fallback
+        String nombreActualizador = userRequestDTO.getActualizadoPor();
+        userEntity.setActualizadoPor(nombreActualizador != null && !nombreActualizador.isBlank()
+                ? nombreActualizador : userLogin);
 
         // Actualizar contraseña SOLO si viene una nueva (no vacia)
         String nuevaPassword = userRequestDTO.getPassword();
