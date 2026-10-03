@@ -4,6 +4,7 @@ import com.cloud.jml.dto.columnas.UsuarioColumnasRequestDTO;
 import com.cloud.jml.dto.columnas.UsuarioColumnasResponseDTO;
 import com.cloud.jml.model.columnas.UsuarioColumnasEntity;
 import com.cloud.jml.repository.columnas.UsuarioColumnasRepository;
+import com.cloud.jml.repository.user.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -22,10 +25,12 @@ import java.util.stream.Collectors;
 public class UsuarioColumnasService {
 
     private final UsuarioColumnasRepository repository;
+    private final UserRepository userRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public UsuarioColumnasService(UsuarioColumnasRepository repository) {
+    public UsuarioColumnasService(UsuarioColumnasRepository repository, UserRepository userRepository) {
         this.repository = repository;
+        this.userRepository = userRepository;
         log.info("🔥 UsuarioColumnasService inicializado correctamente.");
     }
 
@@ -77,6 +82,16 @@ public class UsuarioColumnasService {
         entidad.setColumnasOcultas(serializarColumnas(columnas));
 
         UsuarioColumnasEntity guardado = repository.save(entidad);
+
+        // Actualizar fechaActualizacion del usuario — cualquier cambio de configuracion
+        // debe reflejarse en la fecha de modificacion del registro de usuario
+        userRepository.findByIdentificacionAndEliminadoFalse(dto.getIdentificacionUsuario())
+                .ifPresent(u -> {
+                    u.setFechaActualizacion(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+                    userRepository.save(u);
+                    log.info("🕒 [COLUMNAS] fechaActualizacion actualizada para usuario={}", dto.getIdentificacionUsuario());
+                });
+
         log.info("✅ Columnas ocultas guardadas: usuario={} seccion={} columnas={}", dto.getIdentificacionUsuario(), dto.getSeccion(), columnas);
 
         return mapToDTO(guardado);
