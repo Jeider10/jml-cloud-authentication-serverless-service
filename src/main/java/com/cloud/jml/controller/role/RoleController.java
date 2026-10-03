@@ -30,8 +30,8 @@ public class RoleController {
         List<RoleResponseDTO> roles = roleService.listarRoles();
 
         if (roles == null || roles.isEmpty()) {
-            log.warn("⚠️ [RESPUESTA] No se encontraron roles registrados.");
-            return ResponseEntity.noContent().build();
+            log.info("📤 [RESPUESTA] No hay roles registrados — lista vacia");
+            return ResponseEntity.ok(List.of());
         }
 
         log.info("📤 [RESPUESTA] Se retornan {} roles.", roles.size());
@@ -84,8 +84,8 @@ public class RoleController {
         List<RoleResponseDTO> roles = roleService.buscarRolePorNombre(request);
 
         if (roles == null || roles.isEmpty()) {
-            log.warn("⚠️ [RESPUESTA] No se encontraron roles con nombre: {}", roleName);
-            return ResponseEntity.noContent().build();
+            log.info("📤 [RESPUESTA] No se encontraron roles con nombre: {} — lista vacia", roleName);
+            return ResponseEntity.ok(List.of());
         }
 
         log.info("📤 [RESPUESTA] Se encontraron {} roles con nombre: {}", roles.size(), roleName);
@@ -103,8 +103,8 @@ public class RoleController {
         List<RoleResponseDTO> roleFecha = roleService.obtenerRolePorFechaCreacion(fechaInicio, fechaFin);
 
         if (roleFecha == null || roleFecha.isEmpty()) {
-            log.warn("⚠️ [RESPUESTA] No se encontraron roles en el rango de fechas.");
-            return ResponseEntity.noContent().build();
+            log.info("📤 [RESPUESTA] No se encontraron roles en el rango {} - {} — lista vacia", fechaInicio, fechaFin);
+            return ResponseEntity.ok(List.of());
         }
 
         log.info("📤 [RESPUESTA] Se retornan {} roles en el rango de fechas.", roleFecha.size());

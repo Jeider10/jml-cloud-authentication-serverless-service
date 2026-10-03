@@ -33,7 +33,8 @@ public class UserController {
         List<UserResponseDTO> usuarios = userService.listarUsuarios();
 
         if (usuarios.isEmpty()) {
-            return ResponseEntity.noContent().build();
+            log.info("📤 [RESPUESTA] No hay usuarios activos — lista vacia");
+            return ResponseEntity.ok(List.of());
         }
 
         log.info("📤 [RESPUESTA] Se retornan {} usuarios", usuarios.size());
@@ -66,8 +67,11 @@ public class UserController {
         UserResponseDTO response = userService.obtenerUsuarioPorIdentificacion(userRequestDTO);
 
         if (response == null || response.getIdentificacion() == null) {
+            log.warn("⚠️ [RESPUESTA] No se encontro usuario con identificacion: {}", identificacion);
             return ResponseEntity.noContent().build();
         }
+
+        log.info("📤 [RESPUESTA] Usuario encontrado: {} (identificacion: {})", response.getUserName(), identificacion);
 
         return ResponseEntity.ok(response);
     }
@@ -83,8 +87,11 @@ public class UserController {
         List<UserResponseDTO> response = userService.obtenerUsuarioPorUserName(userRequestDTO);
 
         if (response.isEmpty()) {
-            return ResponseEntity.noContent().build();
+            log.info("📤 [RESPUESTA] No se encontraron usuarios con userName: {} — lista vacia", userName);
+            return ResponseEntity.ok(List.of());
         }
+
+        log.info("📤 [RESPUESTA] Se retornan {} usuarios con userName: {}", response.size(), userName);
 
         return ResponseEntity.ok(response);
     }
@@ -100,8 +107,11 @@ public class UserController {
         List<UserResponseDTO> response = userService.obtenerUsuarioPorNombres(userRequestDTO);
 
         if (response.isEmpty()) {
-            return ResponseEntity.noContent().build();
+            log.info("📤 [RESPUESTA] No se encontraron usuarios con nombres: {} — lista vacia", nombres);
+            return ResponseEntity.ok(List.of());
         }
+
+        log.info("📤 [RESPUESTA] Se retornan {} usuarios con nombres: {}", response.size(), nombres);
 
         return ResponseEntity.ok(response);
     }
@@ -117,8 +127,11 @@ public class UserController {
         List<UserResponseDTO> response = userService.obtenerUsuarioPorApellidos(userRequestDTO);
 
         if (response.isEmpty()) {
-            return ResponseEntity.noContent().build();
+            log.info("📤 [RESPUESTA] No se encontraron usuarios con apellidos: {} — lista vacia", apellidos);
+            return ResponseEntity.ok(List.of());
         }
+
+        log.info("📤 [RESPUESTA] Se retornan {} usuarios con apellidos: {}", response.size(), apellidos);
 
         return ResponseEntity.ok(response);
     }
@@ -134,8 +147,11 @@ public class UserController {
         UserResponseDTO response = userService.obtenerUsuarioPorRoleCode(userRequestDTO);
 
         if (response == null || response.getRoleCode() == null) {
+            log.warn("⚠️ [RESPUESTA] No se encontro usuario con roleCode: {}", roleCode);
             return ResponseEntity.noContent().build();
         }
+
+        log.info("📤 [RESPUESTA] Usuario encontrado con roleCode: {}", roleCode);
 
         return ResponseEntity.ok(response);
     }
@@ -148,8 +164,11 @@ public class UserController {
         List<UserResponseDTO> response = userService.obtenerUsuarioPorRoleName(roleName);
 
         if (response.isEmpty()) {
-            return ResponseEntity.noContent().build();
+            log.info("📤 [RESPUESTA] No se encontraron usuarios con roleName: {} — lista vacia", roleName);
+            return ResponseEntity.ok(List.of());
         }
+
+        log.info("📤 [RESPUESTA] Se retornan {} usuarios con roleName: {}", response.size(), roleName);
 
         return ResponseEntity.ok(response);
     }
@@ -165,8 +184,11 @@ public class UserController {
         List<UserResponseDTO> response = userService.obtenerUsuarioPorFechaCreacion(fechaInicio, fechaFin);
 
         if (response.isEmpty()) {
-            return ResponseEntity.noContent().build();
+            log.info("📤 [RESPUESTA] No se encontraron usuarios en el rango {} - {} — lista vacia", fechaInicio, fechaFin);
+            return ResponseEntity.ok(List.of());
         }
+
+        log.info("📤 [RESPUESTA] Se retornan {} usuarios en el rango de fechas", response.size());
 
         return ResponseEntity.ok(response);
     }
@@ -182,8 +204,11 @@ public class UserController {
         List<UserResponseDTO> response = userService.obtenerUsuarioPorFechaActualizacion(fechaInicio, fechaFin);
 
         if (response.isEmpty()) {
-            return ResponseEntity.noContent().build();
+            log.info("📤 [RESPUESTA] No se encontraron usuarios en el rango {} - {} — lista vacia", fechaInicio, fechaFin);
+            return ResponseEntity.ok(List.of());
         }
+
+        log.info("📤 [RESPUESTA] Se retornan {} usuarios en el rango de fechas de actualizacion", response.size());
 
         return ResponseEntity.ok(response);
     }
@@ -262,7 +287,8 @@ public class UserController {
         List<UserPapeleraResponseDTO> papelera = userService.listarPapelera();
 
         if (papelera.isEmpty()) {
-            return ResponseEntity.noContent().build();
+            log.info("📤 [RESPUESTA] No hay usuarios en papelera — lista vacia");
+            return ResponseEntity.ok(List.of());
         }
 
         log.info("📤 [RESPUESTA] Se retornan {} usuarios en papelera", papelera.size());
@@ -302,11 +328,16 @@ public class UserController {
             @RequestParam("fechaInicio") String fechaInicio,
             @RequestParam("fechaFin") String fechaFin) {
 
+        log.info("📥 [SOLICITUD] Filtrar papelera de usuarios por fecha: {} - {}", fechaInicio, fechaFin);
+
         List<UserPapeleraResponseDTO> resultado = userService.listarPapeleraPorFecha(fechaInicio, fechaFin);
 
         if (resultado.isEmpty()) {
-            return ResponseEntity.noContent().build();
+            log.info("📤 [RESPUESTA] No hay usuarios en papelera en el rango {} - {} — lista vacia", fechaInicio, fechaFin);
+            return ResponseEntity.ok(List.of());
         }
+
+        log.info("📤 [RESPUESTA] Se retornan {} usuarios en papelera en el rango de fechas", resultado.size());
 
         return ResponseEntity.ok(resultado);
     }
@@ -316,11 +347,16 @@ public class UserController {
     public ResponseEntity<List<UserPapeleraResponseDTO>> listarPapeleraPorEliminadoPor(
             @RequestParam("eliminadoPorId") String eliminadoPorId) {
 
+        log.info("📥 [SOLICITUD] Filtrar papelera de usuarios por eliminadoPorId: {}", eliminadoPorId);
+
         List<UserPapeleraResponseDTO> resultado = userService.listarPapeleraPorEliminadoPor(eliminadoPorId);
 
         if (resultado.isEmpty()) {
-            return ResponseEntity.noContent().build();
+            log.info("📤 [RESPUESTA] No hay usuarios en papelera eliminados por: {} — lista vacia", eliminadoPorId);
+            return ResponseEntity.ok(List.of());
         }
+
+        log.info("📤 [RESPUESTA] Se retornan {} usuarios en papelera eliminados por: {}", resultado.size(), eliminadoPorId);
 
         return ResponseEntity.ok(resultado);
     }

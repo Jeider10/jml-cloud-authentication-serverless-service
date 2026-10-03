@@ -32,8 +32,11 @@ public class ConfigEmpresaController {
         List<ConfigEmpresaResponseDTO> empresa = configEmpresaService.obtenerPrimeraEmpresa();
 
         if (empresa.isEmpty()) {
-            return ResponseEntity.noContent().build();
+            log.info("📤 [RESPUESTA] No hay empresa registrada — lista vacia");
+            return ResponseEntity.ok(List.of());
         }
+
+        log.info("📤 [RESPUESTA] Se retorna empresa: {}", empresa.getFirst().getNombreEmpresa());
 
         return ResponseEntity.ok(empresa);
     }
@@ -113,7 +116,8 @@ public class ConfigEmpresaController {
         List<ConfigEmpresaPapeleraResponseDTO> papelera = configEmpresaService.listarPapelera();
 
         if (papelera.isEmpty()) {
-            return ResponseEntity.noContent().build();
+            log.info("📤 [RESPUESTA] No hay empresas en papelera — lista vacia");
+            return ResponseEntity.ok(List.of());
         }
 
         log.info("📤 [RESPUESTA] Se retornan {} empresas en papelera", papelera.size());
@@ -153,11 +157,16 @@ public class ConfigEmpresaController {
             @RequestParam("fechaInicio") String fechaInicio,
             @RequestParam("fechaFin") String fechaFin) {
 
+        log.info("📥 [SOLICITUD] Filtrar papelera de empresas por fecha: {} - {}", fechaInicio, fechaFin);
+
         List<ConfigEmpresaPapeleraResponseDTO> resultado = configEmpresaService.listarPapeleraPorFecha(fechaInicio, fechaFin);
 
         if (resultado.isEmpty()) {
-            return ResponseEntity.noContent().build();
+            log.info("📤 [RESPUESTA] No hay empresas en papelera en el rango {} - {} — lista vacia", fechaInicio, fechaFin);
+            return ResponseEntity.ok(List.of());
         }
+
+        log.info("📤 [RESPUESTA] Se retornan {} empresas en papelera en el rango de fechas", resultado.size());
 
         return ResponseEntity.ok(resultado);
     }
@@ -167,11 +176,16 @@ public class ConfigEmpresaController {
     public ResponseEntity<List<ConfigEmpresaPapeleraResponseDTO>> listarPapeleraPorEliminadoPor(
             @RequestParam("eliminadoPorId") String eliminadoPorId) {
 
+        log.info("📥 [SOLICITUD] Filtrar papelera de empresas por eliminadoPorId: {}", eliminadoPorId);
+
         List<ConfigEmpresaPapeleraResponseDTO> resultado = configEmpresaService.listarPapeleraPorEliminadoPor(eliminadoPorId);
 
         if (resultado.isEmpty()) {
-            return ResponseEntity.noContent().build();
+            log.info("📤 [RESPUESTA] No hay empresas en papelera eliminadas por: {} — lista vacia", eliminadoPorId);
+            return ResponseEntity.ok(List.of());
         }
+
+        log.info("📤 [RESPUESTA] Se retornan {} empresas en papelera eliminadas por: {}", resultado.size(), eliminadoPorId);
 
         return ResponseEntity.ok(resultado);
     }
