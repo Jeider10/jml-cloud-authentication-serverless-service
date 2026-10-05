@@ -102,9 +102,9 @@ public class DataInitializer implements CommandLineRunner {
         admin.setTelefono("3000000000");
         admin.setDireccion("Centro");
         admin.setFechaCreacion(LocalDateTime.now());
-        admin.setFechaActualizacion(LocalDateTime.now());
+//        admin.setFechaActualizacion(LocalDateTime.now());
         admin.setCreadoPor("Creado por DataInitializer");
-        admin.setActualizadoPor("Administrador");
+//        admin.setActualizadoPor("Administrador");
 
         userRepository.save(admin);
         log.info("✅ [DataInitializer] Usuario admin creado → userName=admin | correo=admin@admin.com");
