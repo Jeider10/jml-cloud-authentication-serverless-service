@@ -24,6 +24,22 @@ public class ConfigEmpresaController {
         log.info("🔥 ConfigEmpresaController inicializado correctamente.");
     }
 
+    // ─── Obtener empresa activa (objeto unico) ────────────────────────────────
+    // Devuelve la empresa activa como objeto unico o null si no hay ninguna.
+    // Devuelve 200 en todos los casos (incluso sin empresa) para que el frontend
+    // distinga entre "no hay empresa" (body null) y error de red (4xx/5xx).
+    // No usar 204 porque el interceptor Axios lo convierte a [] rompiendo el tipo.
+    @GetMapping("/current")
+    public ResponseEntity<ConfigEmpresaResponseDTO> obtenerEmpresaActual() {
+        log.info("📥 [SOLICITUD] Obtener empresa activa (objeto unico)");
+
+        ConfigEmpresaResponseDTO empresa = configEmpresaService.obtenerEmpresaActual();
+
+        log.info("📤 [RESPUESTA] Empresa: {}", empresa != null ? empresa.getNombreEmpresa() : "ninguna registrada");
+
+        return ResponseEntity.ok(empresa);
+    }
+
     // ─── Obtener empresa activa ───────────────────────────────────────────────
     @GetMapping
     public ResponseEntity<List<ConfigEmpresaResponseDTO>> obtenerPrimeraEmpresa() {

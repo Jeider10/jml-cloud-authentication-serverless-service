@@ -170,4 +170,30 @@ public class ConfigEmpresaUtils {
             throw new IllegalArgumentException("Formato de fecha de fin invalido. Use yyyy-MM-dd o yyyy-MM-dd HH:mm:ss");
         }
     }
+
+    /**
+     * Convierte el logo almacenado en BD (base64 puro) a un data URI completo.
+     * Si ya es una URL o un data URI formateado, lo devuelve sin modificar.
+     * Detecta el formato de imagen por los primeros bytes del base64:
+     * - JPEG: /9j/  → data:image/jpeg;base64,...
+     * - PNG:  iVBOR → data:image/png;base64,...
+     * - WEBP: UklGR → data:image/webp;base64,...
+     * - GIF:  R0lGO → data:image/gif;base64,...
+     * Con esto el frontend recibe siempre un data URI listo, sin necesidad
+     * de hacer heuristicas en el cliente.
+     */
+    public String resolverLogoDataUri(String logo) {
+        if (logo == null || logo.isBlank()) return null;
+        // Ya es una URL absoluta o un data URI — devolver tal cual
+        if (logo.startsWith("http://") || logo.startsWith("https://") || logo.startsWith("data:image")) {
+            return logo;
+        }
+        // Detectar tipo por cabecera base64
+        if (logo.startsWith("/9j/")) return "data:image/jpeg;base64," + logo;
+        if (logo.startsWith("iVBOR")) return "data:image/png;base64," + logo;
+        if (logo.startsWith("UklGR")) return "data:image/webp;base64," + logo;
+        if (logo.startsWith("R0lGO")) return "data:image/gif;base64," + logo;
+        // Fallback: asumir JPEG (formato mas comun en uploads de logo empresarial)
+        return "data:image/jpeg;base64," + logo;
+    }
 }

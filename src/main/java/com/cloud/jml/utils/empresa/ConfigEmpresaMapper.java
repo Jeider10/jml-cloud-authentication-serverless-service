@@ -16,10 +16,12 @@ public class ConfigEmpresaMapper {
 
     private final ConfigEmpresaFormatearFecha configEmpresaFormatearFecha;
     private final FormatearFecha formatearFecha;
+    private final ConfigEmpresaUtils configEmpresaUtils;
 
-    public ConfigEmpresaMapper(ConfigEmpresaFormatearFecha configEmpresaFormatearFecha, FormatearFecha formatearFecha) {
+    public ConfigEmpresaMapper(ConfigEmpresaFormatearFecha configEmpresaFormatearFecha, FormatearFecha formatearFecha, ConfigEmpresaUtils configEmpresaUtils) {
         this.configEmpresaFormatearFecha = configEmpresaFormatearFecha;
         this.formatearFecha = formatearFecha;
+        this.configEmpresaUtils = configEmpresaUtils;
         log.info("🔥 ConfigEmpresaMapper inicializado correctamente.");
     }
 
@@ -65,7 +67,9 @@ public class ConfigEmpresaMapper {
         dto.setTelefono(entity.getTelefono());
         dto.setMensaje(entity.getMensaje());
         dto.setCorreo(entity.getCorreo());
-        dto.setLogo(entity.getLogo());
+        // Convertir el logo a data URI completo para que el frontend lo use
+        // directamente como src de <img> sin heuristicas adicionales.
+        dto.setLogo(configEmpresaUtils.resolverLogoDataUri(entity.getLogo()));
         dto.setCreadoPor(entity.getCreadoPor());
         dto.setActualizadoPor(entity.getActualizadoPor());
 

@@ -35,6 +35,27 @@ public class ConfigEmpresaService {
         log.info("🔥 ConfigEmpresaService inicializado correctamente.");
     }
 
+    // ─── Obtener empresa activa (objeto unico) ────────────────────────────────
+    // Devuelve la primera empresa activa como objeto unico.
+    // Usado por el nuevo endpoint GET /empresa/current.
+    @Transactional(readOnly = true)
+    public ConfigEmpresaResponseDTO obtenerEmpresaActual() {
+        log.info("🔍 [CONSULTA] Recuperando empresa activa como objeto unico");
+
+        List<ConfigEmpresaEntity> entidades = configEmpresaRepository.findAllByEliminadoFalse();
+
+        if (entidades.isEmpty()) {
+            log.warn("⚠️ [RESULTADO] No se encontro ninguna empresa activa");
+            return null;
+        }
+
+        ConfigEmpresaResponseDTO dto = mapper.mapEntityToResponseDto(entidades.getFirst());
+
+        log.info("✅ [FINALIZADO] Empresa retornada: {}", dto.getNombreEmpresa());
+
+        return dto;
+    }
+
     // ─── Obtener empresa activa ───────────────────────────────────────────────
     @Transactional(readOnly = true)
     public List<ConfigEmpresaResponseDTO> obtenerPrimeraEmpresa() {
