@@ -355,6 +355,42 @@ public class UserService {
         return mapper.mapEntityToResponseDto(guardado);
     }
 
+    // ─── Actualizar foto de perfil ────────────────────────────────────────────
+    @Transactional
+    public UserResponseDTO actualizarFoto(Long identificacion, String fotoBase64) {
+        log.info("📷 [SOLICITUD] Actualizando foto de perfil del usuario con identificacion: {}", identificacion);
+
+        UserEntity entidad = userRepository.findByIdentificacionAndEliminadoFalse(identificacion)
+                .orElseThrow(() -> new UserNotFoundException(identificacion));
+
+        entidad.setFoto(fotoBase64);
+        entidad.setFechaActualizacion(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+
+        UserEntity guardado = userUtils.guardarUsuarioBD(entidad);
+
+        log.info("✅ [FINALIZADO] Foto actualizada para usuario: {}", identificacion);
+
+        return mapper.mapEntityToResponseDto(guardado);
+    }
+
+    // ─── Eliminar foto de perfil ──────────────────────────────────────────────
+    @Transactional
+    public UserResponseDTO eliminarFoto(Long identificacion) {
+        log.info("🗑️ [SOLICITUD] Eliminando foto de perfil del usuario con identificacion: {}", identificacion);
+
+        UserEntity entidad = userRepository.findByIdentificacionAndEliminadoFalse(identificacion)
+                .orElseThrow(() -> new UserNotFoundException(identificacion));
+
+        entidad.setFoto(null);
+        entidad.setFechaActualizacion(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+
+        UserEntity guardado = userUtils.guardarUsuarioBD(entidad);
+
+        log.info("✅ [FINALIZADO] Foto eliminada para usuario: {}", identificacion);
+
+        return mapper.mapEntityToResponseDto(guardado);
+    }
+
     // ─── Filtrar papelera por fecha de eliminacion ────────────────────────────
     @Transactional(readOnly = true)
     public List<UserPapeleraResponseDTO> listarPapeleraPorFecha(String fechaInicio, String fechaFin) {

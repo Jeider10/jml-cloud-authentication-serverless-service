@@ -89,4 +89,10 @@ public class UserEntity {
 
     @Column(name = "eliminado_por_nombre", length = 200)
     private String eliminadoPorNombre;
+
+    // ─── Foto de perfil (base64) ──────────────────────────────────────────────
+    // Se almacena como texto largo para evitar dependencia de almacenamiento externo.
+    // El frontend envia la imagen codificada en base64 y la muestra directamente con <img src=...>
+    @Column(name = "foto", columnDefinition = "TEXT")
+    private String foto;
 }

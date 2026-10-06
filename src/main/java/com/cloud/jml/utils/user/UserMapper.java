@@ -95,6 +95,9 @@ public class UserMapper {
         userResponseDTO.setPermisoHistorial(userEntity.isPermisoHistorial());
         userResponseDTO.setPermisoPapelera(userEntity.isPermisoPapelera());
 
+        // ─── Foto de perfil ───────────────────────────────────────────────────
+        userResponseDTO.setFoto(userEntity.getFoto());
+
         log.info("✅ [MAPEO] Mapeo completado de DTO de respuesta para usuario: {}", userResponseDTO.getUserName());
 
         return userResponseDTO;

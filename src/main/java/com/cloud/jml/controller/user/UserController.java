@@ -262,6 +262,36 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    // ─── Actualizar foto de perfil ────────────────────────────────────────────
+    // Recibe la imagen como base64 en el body del request (Content-Type: text/plain)
+    @PutMapping("/foto")
+    public ResponseEntity<UserResponseDTO> actualizarFoto(
+            @RequestParam("identificacion") Long identificacion,
+            @RequestBody String fotoBase64) {
+
+        log.info("📥 [SOLICITUD] Actualizar foto de perfil del usuario con identificacion: {}", identificacion);
+
+        UserResponseDTO response = userService.actualizarFoto(identificacion, fotoBase64);
+
+        log.info("📤 [RESPUESTA] Foto actualizada para usuario: {}", identificacion);
+
+        return ResponseEntity.ok(response);
+    }
+
+    // ─── Eliminar foto de perfil ──────────────────────────────────────────────
+    @DeleteMapping("/foto")
+    public ResponseEntity<UserResponseDTO> eliminarFoto(
+            @RequestParam("identificacion") Long identificacion) {
+
+        log.info("📥 [SOLICITUD] Eliminar foto de perfil del usuario con identificacion: {}", identificacion);
+
+        UserResponseDTO response = userService.eliminarFoto(identificacion);
+
+        log.info("📤 [RESPUESTA] Foto eliminada para usuario: {}", identificacion);
+
+        return ResponseEntity.ok(response);
+    }
+
     // ─── Soft delete (enviar a papelera) ──────────────────────────────────────
     @DeleteMapping("/delete")
     public ResponseEntity<Void> eliminarUsuario(

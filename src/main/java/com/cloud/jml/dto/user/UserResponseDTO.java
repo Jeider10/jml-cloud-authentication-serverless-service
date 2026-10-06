@@ -32,4 +32,8 @@ public class UserResponseDTO {
     private boolean permisoHistorial;
     private boolean permisoNuevaVenta;
     private boolean permisoPapelera;
+
+    // ─── Foto de perfil (base64) ──────────────────────────────────────────────
+    // Viene del campo 'foto' de UserEntity; el frontend lo usa como src de <img>
+    private String foto;
 }
