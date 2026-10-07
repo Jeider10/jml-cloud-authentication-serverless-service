@@ -68,7 +68,12 @@ public class UserService {
             throw new IllegalArgumentException("El campo 'password' es obligatorio al registrar un usuario");
         }
 
-        Optional<UserEntity> existingUserAndRole = userRepository.findByUserNameAndRoleCode(userRequestDTO.getUserName(), userRequestDTO.getRoleCode());
+//        Optional<UserEntity> existingUserAndRole = userRepository.findByUserNameAndRoleCode(userRequestDTO.getUserName(), userRequestDTO.getRoleCode());
+
+        // Verificar duplicados solo entre usuarios ACTIVOS.
+        // No filtrar por eliminado = false causaria Duplicate entry en BD
+        // cuando se intenta registrar con un userName que esta en papelera.
+        Optional<UserEntity> existingUserAndRole = userRepository.findByUserNameAndRoleCodeAndEliminadoFalse(userRequestDTO.getUserName(), userRequestDTO.getRoleCode());
 
         if (existingUserAndRole.isPresent()) {
             log.warn("❌ [ERROR] Usuario: {} ya existe con ese role: {}", userRequestDTO.getUserName(), userRequestDTO.getRoleCode());
@@ -81,7 +86,8 @@ public class UserService {
 
         userEntity.setCreadoPor(creadoPor);
 
-        userUtils.validarUnicoAdministrador(userEntity);
+//        userUtils.validarUnicoAdministrador(userEntity);
+        userUtils.validarAdministradores(userEntity);
 
         UserEntity guardado = userUtils.guardarUsuarioBD(userEntity);
 

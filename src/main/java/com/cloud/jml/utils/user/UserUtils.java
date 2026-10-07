@@ -116,6 +116,43 @@ public class UserUtils {
         }
     }
 
+    public void validarAdministradores(UserEntity userEntity) {
+        log.info("✅ Verificando si el usuario excede el limite de administradores: {}", userEntity.getUserName());
+
+        // Validar que el rol sea uno de los permitidos
+        validarRolPermitido(userEntity);
+
+        // 🚫 Validar el limite de administradores
+        if (esRolAdministrador(userEntity)) {
+            // 1. Contamos cuantos usuarios activos tienen ya ese rol de administrador
+            long cantidadAdmins = userRepository.countByRoleNameIgnoreCase(userEntity.getRoleName());
+
+            log.info("✅ Cantidad actual de administradores en la base de datos: {}", cantidadAdmins);
+
+            // 2. Verificamos si el usuario ya existe fisicamente en la base de datos
+            boolean esUsuarioExistente = false;
+            if (userEntity.getIdentificacion() != null) {
+                esUsuarioExistente = userRepository.existsById(userEntity.getIdentificacion());
+            }
+
+            // 3. Evaluamos segun el estado del usuario (Nuevo o Edicion)
+            // Si es nuevo (no existe en BD) y ya hay 2, o si se esta editando y el conteo supera los 2
+            if ((!esUsuarioExistente && cantidadAdmins >= 2) || (esUsuarioExistente && cantidadAdmins > 2)) {
+
+                // Define el mensaje base ajustado al nuevo limite
+                String baseMessage = "❌ [ERROR] Ya se alcanzo el limite maximo de dos usuarios con el rol de administrador ('%s'). "
+                        + "No se permiten mas de dos administradores en el sistema.";
+
+                // Formatea el mensaje
+                String formattedMessage = String.format(baseMessage, userEntity.getRoleName());
+
+                // Usa el mensaje formateado para el log y la excepcion
+                log.warn(formattedMessage);
+                throw new RoleDuplicationException(formattedMessage);
+            }
+        }
+    }
+
     /**
      * Valida que el rol del usuario sea uno de los permitidos en el sistema.
      * Roles validos: ADMIN, ADMINISTRADOR, SUPERADMIN, USER, USUARIO, CAJERO

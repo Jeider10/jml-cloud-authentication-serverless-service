@@ -58,6 +58,11 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     Optional<UserEntity> findByUserNameAndRoleCode(String userName, int roleCode);
 
+    // Usado en el registro para verificar duplicados solo entre usuarios activos.
+    // findByUserNameAndRoleCode sin filtro puede retornar usuarios en papelera,
+    // provocando Duplicate entry al intentar reutilizar un userName eliminado.
+    Optional<UserEntity> findByUserNameAndRoleCodeAndEliminadoFalse(String userName, int roleCode);
+
     boolean existsByRoleNameIgnoreCase(String roleName);
 
     long countByRoleNameIgnoreCase(String roleName);

@@ -29,7 +29,9 @@ public class UserEntity {
     @Column(nullable = false)
     private String apellidos;
 
-    @Column(unique = true, nullable = false)
+    // unique = false: el userName puede repetirse entre usuarios activos y eliminados (papelera).
+    // La unicidad real se gestiona en UserService verificando solo usuarios con eliminado = false.
+    @Column(unique = false, nullable = false)
     private String userName;
 
     @Column(nullable = false)
