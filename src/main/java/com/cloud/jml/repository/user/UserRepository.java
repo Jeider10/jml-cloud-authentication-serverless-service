@@ -59,4 +59,6 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     Optional<UserEntity> findByUserNameAndRoleCode(String userName, int roleCode);
 
     boolean existsByRoleNameIgnoreCase(String roleName);
+
+    long countByRoleNameIgnoreCase(String roleName);
 }

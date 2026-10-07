@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Slf4j
 @Component // 🔹 Anotacion para indicar que es un componente de Spring
@@ -119,8 +120,15 @@ public class UserMapper {
         dto.setCreadoPor(userEntity.getCreadoPor());
         dto.setFechaCreacion(formatearFecha.formatearFecha(userEntity.getFechaCreacion()));
         dto.setFechaEliminacion(formatearFecha.formatearFecha(userEntity.getFechaEliminacion()));
+        // Calcular fechaExpiracion y diasRestantes al vuelo usando el reloj del servidor
+        if (userEntity.getFechaExpiracion() != null) {
+            dto.setFechaExpiracion(formatearFecha.formatearFecha(userEntity.getFechaExpiracion()));
+            dto.setDiasRestantes(ChronoUnit.DAYS.between(LocalDateTime.now(), userEntity.getFechaExpiracion()));
+        }
         dto.setEliminadoPorId(userEntity.getEliminadoPorId());
         dto.setEliminadoPorNombre(userEntity.getEliminadoPorNombre());
+        dto.setEliminadoPorRol(userEntity.getEliminadoPorRol());
+        dto.setMotivo(userEntity.getMotivo());
 
         log.info("✅ [MAPEO] Mapeo papelera completado para usuario: {}", dto.getIdentificacion());
 

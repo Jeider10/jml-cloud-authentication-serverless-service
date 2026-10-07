@@ -141,7 +141,7 @@ public class ConfigEmpresaService {
 
     // ─── Soft delete (a papelera) ─────────────────────────────────────────────
     @Transactional
-    public void eliminarEmpresa(Long nit, String eliminadoPorId, String eliminadoPorNombre) {
+    public void eliminarEmpresa(Long nit, String eliminadoPorId, String eliminadoPorNombre, String eliminadoPorRol, String motivo) {
         log.info("🔍 [SOLICITUD] Enviando a papelera empresa con nit: {}", nit);
 
         ConfigEmpresaEntity entidad = configEmpresaRepository.findByNitAndEliminadoFalse(nit)
@@ -149,8 +149,11 @@ public class ConfigEmpresaService {
 
         entidad.setEliminado(true);
         entidad.setFechaEliminacion(LocalDateTime.now());
+        entidad.setFechaExpiracion(LocalDateTime.now().plusMonths(2));
         entidad.setEliminadoPorId(eliminadoPorId);
         entidad.setEliminadoPorNombre(eliminadoPorNombre);
+        entidad.setEliminadoPorRol(eliminadoPorRol);
+        entidad.setMotivo(motivo != null ? motivo : "Sin motivo especificado");
 
         configEmpresaUtils.guardarEmpresaBD(entidad);
 
@@ -191,8 +194,11 @@ public class ConfigEmpresaService {
 
         entidad.setEliminado(false);
         entidad.setFechaEliminacion(null);
+        entidad.setFechaExpiracion(null);
         entidad.setEliminadoPorId(null);
         entidad.setEliminadoPorNombre(null);
+        entidad.setEliminadoPorRol(null);
+        entidad.setMotivo(null);
         entidad.setFechaActualizacion(LocalDateTime.now());
 
         ConfigEmpresaEntity restaurada = configEmpresaUtils.guardarEmpresaBD(entidad);

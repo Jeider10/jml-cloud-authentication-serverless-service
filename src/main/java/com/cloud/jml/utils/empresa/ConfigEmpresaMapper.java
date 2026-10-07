@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Slf4j
 @Component
@@ -88,8 +89,15 @@ public class ConfigEmpresaMapper {
         dto.setCorreo(entity.getCorreo());
         dto.setFechaCreacion(formatearFecha.formatearFecha(entity.getFechaCreacion()));
         dto.setFechaEliminacion(formatearFecha.formatearFecha(entity.getFechaEliminacion()));
+        // Calcular fechaExpiracion y diasRestantes al vuelo usando el reloj del servidor
+        if (entity.getFechaExpiracion() != null) {
+            dto.setFechaExpiracion(formatearFecha.formatearFecha(entity.getFechaExpiracion()));
+            dto.setDiasRestantes(ChronoUnit.DAYS.between(LocalDateTime.now(), entity.getFechaExpiracion()));
+        }
         dto.setEliminadoPorId(entity.getEliminadoPorId());
         dto.setEliminadoPorNombre(entity.getEliminadoPorNombre());
+        dto.setEliminadoPorRol(entity.getEliminadoPorRol());
+        dto.setMotivo(entity.getMotivo());
 
         log.info("✅ [MAPEO] Mapeo papelera completado para empresa: {}", dto.getNit());
 

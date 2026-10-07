@@ -84,11 +84,24 @@ public class UserEntity {
     @Column(name = "fecha_eliminacion")
     private LocalDateTime fechaEliminacion;
 
+    // Fecha hasta la que el registro se conserva en papelera antes de poder eliminarse definitivamente.
+    // Se calcula al hacer el soft delete: fechaEliminacion + 2 meses.
+    @Column(name = "fecha_expiracion")
+    private LocalDateTime fechaExpiracion;
+
     @Column(name = "eliminado_por_id", length = 150)
     private String eliminadoPorId;
 
     @Column(name = "eliminado_por_nombre", length = 200)
     private String eliminadoPorNombre;
+
+    // Rol del usuario que envio el registro a papelera
+    @Column(name = "eliminado_por_rol", length = 100)
+    private String eliminadoPorRol;
+
+    // Motivo de eliminacion (opcional)
+    @Column(name = "motivo", length = 500)
+    private String motivo;
 
     // ─── Foto de perfil (base64) ──────────────────────────────────────────────
     // Se almacena como texto largo para evitar dependencia de almacenamiento externo.

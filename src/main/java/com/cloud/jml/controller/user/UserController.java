@@ -297,11 +297,13 @@ public class UserController {
     public ResponseEntity<Void> eliminarUsuario(
             @RequestParam("identificacion") Long identificacion,
             @RequestParam("eliminadoPorId") String eliminadoPorId,
-            @RequestParam("eliminadoPorNombre") String eliminadoPorNombre) {
+            @RequestParam("eliminadoPorNombre") String eliminadoPorNombre,
+            @RequestParam("eliminadoPorRol") String eliminadoPorRol,
+            @RequestParam(value = "motivo", required = false) String motivo) {
 
         log.info("📥 [SOLICITUD] Enviar a papelera usuario con identificacion: {}", identificacion);
 
-        userService.eliminarUsuario(identificacion, eliminadoPorId, eliminadoPorNombre);
+        userService.eliminarUsuario(identificacion, eliminadoPorId, eliminadoPorNombre, eliminadoPorRol, motivo);
 
         log.info("📤 [RESPUESTA] Usuario {} enviado a papelera por: {}", identificacion, eliminadoPorNombre);
 

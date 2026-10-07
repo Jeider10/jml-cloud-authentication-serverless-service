@@ -112,11 +112,13 @@ public class ConfigEmpresaController {
     public ResponseEntity<Void> eliminarEmpresa(
             @RequestParam("nit") Long nit,
             @RequestParam("eliminadoPorId") String eliminadoPorId,
-            @RequestParam("eliminadoPorNombre") String eliminadoPorNombre) {
+            @RequestParam("eliminadoPorNombre") String eliminadoPorNombre,
+            @RequestParam("eliminadoPorRol") String eliminadoPorRol,
+            @RequestParam(value = "motivo", required = false) String motivo) {
 
         log.info("📥 [SOLICITUD] Enviar a papelera empresa con NIT: {}", nit);
 
-        configEmpresaService.eliminarEmpresa(nit, eliminadoPorId, eliminadoPorNombre);
+        configEmpresaService.eliminarEmpresa(nit, eliminadoPorId, eliminadoPorNombre, eliminadoPorRol, motivo);
 
         log.info("📤 [RESPUESTA] Empresa {} enviada a papelera por: {}", nit, eliminadoPorNombre);
 

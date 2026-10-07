@@ -255,7 +255,7 @@ public class UserService {
 
     // ─── Soft delete (a papelera) ─────────────────────────────────────────────
     @Transactional
-    public void eliminarUsuario(Long identificacion, String eliminadoPorId, String eliminadoPorNombre) {
+    public void eliminarUsuario(Long identificacion, String eliminadoPorId, String eliminadoPorNombre, String eliminadoPorRol, String motivo) {
         log.info("🔍 [SOLICITUD] Enviando a papelera usuario con identificacion: {}", identificacion);
 
         UserEntity entidad = userRepository.findByIdentificacionAndEliminadoFalse(identificacion)
@@ -263,8 +263,11 @@ public class UserService {
 
         entidad.setEliminado(true);
         entidad.setFechaEliminacion(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+        entidad.setFechaExpiracion(LocalDateTime.now().plusMonths(2).truncatedTo(ChronoUnit.SECONDS));
         entidad.setEliminadoPorId(eliminadoPorId);
         entidad.setEliminadoPorNombre(eliminadoPorNombre);
+        entidad.setEliminadoPorRol(eliminadoPorRol);
+        entidad.setMotivo(motivo != null ? motivo : "Sin motivo especificado");
 
         userUtils.guardarUsuarioBD(entidad);
 
@@ -305,8 +308,11 @@ public class UserService {
 
         entidad.setEliminado(false);
         entidad.setFechaEliminacion(null);
+        entidad.setFechaExpiracion(null);
         entidad.setEliminadoPorId(null);
         entidad.setEliminadoPorNombre(null);
+        entidad.setEliminadoPorRol(null);
+        entidad.setMotivo(null);
         entidad.setFechaActualizacion(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
 
         UserEntity restaurado = userUtils.guardarUsuarioBD(entidad);
